@@ -1,94 +1,170 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.1",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
+    "title": "Swich.Merchant.API",
+    "version": "1.0",
+    "description": "The Swich Gateway enables merchants to initiate and manage payments, charge mobile wallets, and process refunds. Use your Swich-API-Key to authenticate every request. Typical flow: initiate a payment to receive a checkoutUrl, redirect the customer, then optionally manage refunds. Wallet charges allow tokenized wallet payments."
   },
-  "servers": [
+  "tags": [
     {
-      "url": "http://sandbox.mintlify.com"
+      "name": "Payments",
+      "description": "Create and manage payments and payment intents."
+    },
+    {
+      "name": "Wallet",
+      "description": "Charge and manage mobile wallet payments."
+    },
+    {
+      "name": "Refunds",
+      "description": "Create and manage refunds."
+    },
+    {
+      "name": "Webhooks",
+      "description": "Webhook event types and delivery (placeholder for future expansion)."
+    },
+    {
+      "name": "Authentication",
+      "description": "API authentication using Swich-API-Key."
     }
   ],
   "security": [
     {
-      "bearerAuth": []
+      "SwichApiKey": []
     }
   ],
   "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
+    "/Gateway/v{version}/Payment/initiate": {
+      "post": {
+        "tags": [
+          "Payments"
+        ],
+        "summary": "Initiate a payment",
+        "description": "Creates a payment intent and returns a checkoutUrl where the customer can complete payment. Use the returned paymentIntentId to track status.",
         "parameters": [
           {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "description": "API version segment (e.g., 1 or 1.0).",
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string",
+              "example": "1"
             }
           }
         ],
+        "requestBody": {
+          "description": "Payment details used to create the payment intent.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentRequest"
+              },
+              "example": {
+                "amountMinor": 50000,
+                "currency": "PKR",
+                "description": "Order 12345",
+                "customerRef": {
+                  "name": "Ayesha Khan",
+                  "email": "ayesha@example.com",
+                  "phone": "+923001234567",
+                  "shippingAddress": "House 10, Street 2, DHA Phase 5, Karachi",
+                  "estimatedDays": "3-5"
+                },
+                "orderRef": {
+                  "orderRef": "ORD12345",
+                  "discount": "0",
+                  "tax": "0"
+                },
+                "successUrl": "https://merchant.example.com/checkout/success",
+                "cancelUrl": "https://merchant.example.com/checkout/cancel",
+                "metadataJson": "{\"cartId\":\"c_abc123\"}"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "Plant response",
+            "description": "Payment intent created successfully.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
+                  "$ref": "#/components/schemas/PaymentResponse"
+                },
+                "example": {
+                  "paymentIntentId": "2c4b7c5a-f7a6-4f2d-a8b9-9b1b2c3d4e5f",
+                  "checkoutUrl": "https://pay.swich.com/checkout/2c4b7c5a-f7a6-4f2d-a8b9-9b1b2c3d4e5f",
+                  "expiresAt": "2025-11-15T12:00:00Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request – validation or formatting error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ProblemDetails"
+                    }
+                  ]
+                },
+                "example": {
+                  "code": "validation_error",
+                  "message": "description must match ^[A-Za-z0-9 ]{1,200}$",
+                  "details": {
+                    "field": "description",
+                    "issue": "invalid_format"
                   }
                 }
               }
             }
           },
-          "400": {
-            "description": "Unexpected error",
+          "401": {
+            "description": "Unauthorized – missing or invalid API key.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ProblemDetails"
+                    }
+                  ]
+                },
+                "example": {
+                  "code": "unauthorized",
+                  "message": "Invalid or missing Swich-API-Key",
+                  "details": null
                 }
               }
             }
           },
-          "400": {
-            "description": "unexpected error",
+          "422": {
+            "description": "Unprocessable Content – business rule violation.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ProblemDetails"
+                    }
+                  ]
+                },
+                "example": {
+                  "code": "amount_out_of_range",
+                  "message": "amountMinor must be greater than 0",
+                  "details": {
+                    "minimum": 1
+                  }
                 }
               }
             }
@@ -96,121 +172,695 @@
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/Gateway/v{version}/Payment/charge-mobile-wallet": {
+      "post": {
+        "tags": [
+          "Wallet"
+        ],
+        "summary": "Charge a mobile wallet",
+        "description": "Initiates a charge against a tokenized mobile wallet. The response includes a transaction reference and status which may be pending if an OTP/approval is required by the wallet provider.",
         "parameters": [
           {
-            "name": "id",
+            "name": "version",
             "in": "path",
-            "description": "ID of plant to delete",
             "required": true,
+            "description": "API version segment (e.g., 1 or 1.0).",
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string",
+              "example": "1"
             }
           }
         ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "webhooks": {
-    "/plant/webhook": {
-      "post": {
-        "description": "Information about a new plant added to the store",
         "requestBody": {
-          "description": "Plant added to the store",
+          "description": "Mobile wallet charge request including token and payer verification details.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "$ref": "#/components/schemas/ChargeMobileWalletRequest"
+              },
+              "example": {
+                "token": "tok_mwallet_9xK3PQrA",
+                "mobileNumber": "+923001234567",
+                "amount": 1500.0,
+                "billReference": "INV-98127",
+                "description": "Wallet charge for order ORD-98127",
+                "last6CNICDigits": "123456"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
+            "description": "Charge request accepted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChargeMWalletResponse"
+                },
+                "example": {
+                  "trxnRef": "trx_7ZP8X2",
+                  "status": "PENDING",
+                  "message": "Awaiting wallet OTP confirmation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request – validation or formatting error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ProblemDetails"
+                    }
+                  ]
+                },
+                "example": {
+                  "code": "invalid_mobile",
+                  "message": "mobileNumber must include country code",
+                  "details": {
+                    "expectedFormat": "+92XXXXXXXXXX"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized – missing or invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ProblemDetails"
+                    }
+                  ]
+                },
+                "example": {
+                  "code": "unauthorized",
+                  "message": "Invalid or missing Swich-API-Key",
+                  "details": null
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content – business rule violation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ProblemDetails"
+                    }
+                  ]
+                },
+                "example": {
+                  "code": "insufficient_funds",
+                  "message": "Wallet has insufficient balance",
+                  "details": null
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Gateway/v{version}/Refunds": {
+      "post": {
+        "tags": [
+          "Refunds"
+        ],
+        "summary": "Create a refund",
+        "description": "Creates a refund for a previous transaction. If amount is omitted, a full refund is attempted.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "description": "API version segment (e.g., 1 or 1.0).",
+            "schema": {
+              "type": "string",
+              "example": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Refund details including original transaction reference.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefundRequest"
+              },
+              "example": {
+                "trxnRef": "trx_7ZP8X2",
+                "amount": 500.0,
+                "reason": "Customer returned the item"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefundRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefundRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Refund created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefundResponse"
+                },
+                "example": {
+                  "id": "9f2a0a7c-0d4e-4d1e-bb0c-2b7f1c9f0a12",
+                  "trxnRef": "trx_7ZP8X2",
+                  "amount": 500.0,
+                  "status": 1,
+                  "reason": "Customer returned the item",
+                  "createdAt": "2025-11-15T10:05:00Z",
+                  "updatedAt": "2025-11-15T10:05:00Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request – validation or formatting error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ProblemDetails"
+                    }
+                  ]
+                },
+                "example": {
+                  "code": "invalid_amount",
+                  "message": "amount must be at least 0.01",
+                  "details": {
+                    "minimum": 0.01
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized – missing or invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ProblemDetails"
+                    }
+                  ]
+                },
+                "example": {
+                  "code": "unauthorized",
+                  "message": "Invalid or missing Swich-API-Key",
+                  "details": null
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content – business rule violation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ProblemDetails"
+                    }
+                  ]
+                },
+                "example": {
+                  "code": "refund_not_allowed",
+                  "message": "Refund window has expired",
+                  "details": null
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Gateway/v{version}/Refunds/{id}/cancel": {
+      "post": {
+        "tags": [
+          "Refunds"
+        ],
+        "summary": "Cancel a refund",
+        "description": "Attempts to cancel a pending refund. Cancellation may fail if the refund is already processed.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Unique refund identifier (UUID).",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "9f2a0a7c-0d4e-4d1e-bb0c-2b7f1c9f0a12"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "description": "API version segment (e.g., 1 or 1.0).",
+            "schema": {
+              "type": "string",
+              "example": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cancellation request accepted (final status may still be pending)."
+          },
+          "401": {
+            "description": "Unauthorized – missing or invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ProblemDetails"
+                    }
+                  ]
+                },
+                "example": {
+                  "code": "unauthorized",
+                  "message": "Invalid or missing Swich-API-Key",
+                  "details": null
+                }
+              }
+            }
           }
         }
       }
     }
   },
   "components": {
+    "securitySchemes": {
+      "SwichApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Swich-API-Key",
+        "description": "Your Swich API key. Send this header with every request. Example: Swich-API-Key: sk_live_xxx"
+      }
+    },
     "schemas": {
-      "Plant": {
+      "PaymentRequest": {
+        "description": "Payment request payload (alias of InitiatePaymentRequest).",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/InitiatePaymentRequest"
+          }
+        ]
+      },
+      "PaymentResponse": {
+        "description": "Payment response payload (alias of InitiatePaymentResponse).",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/InitiatePaymentResponse"
+          }
+        ]
+      },
+      "RefundRequest": {
+        "description": "Refund request payload (alias of CreateRefundRequestGateway).",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CreateRefundRequestGateway"
+          }
+        ]
+      },
+      "RefundResponse": {
+        "description": "Refund response payload (alias of RefundDto).",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RefundDto"
+          }
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "description": "Standard error envelope returned on failures.",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Machine-readable error code."
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable summary of the error."
+          },
+          "details": {
+            "description": "Optional structured details to help diagnose the error.",
+            "nullable": true
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false,
+        "example": {
+          "code": "validation_error",
+          "message": "One or more validation errors occurred.",
+          "details": {
+            "field": "amountMinor",
+            "issue": "required"
+          }
+        }
+      },
+
+      "ChargeMWalletResponse": {
+        "type": "object",
+        "description": "Response of a mobile wallet charge request.",
+        "properties": {
+          "trxnRef": {
+            "type": "string",
+            "nullable": true,
+            "description": "Transaction reference assigned to the wallet charge."
+          },
+          "status": {
+            "type": "string",
+            "nullable": true,
+            "description": "Processing status, e.g., PENDING, SUCCESS, FAILED."
+          },
+          "message": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional provider or gateway message."
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChargeMobileWalletRequest": {
+        "required": [
+          "amount",
+          "last6CNICDigits",
+          "mobileNumber",
+          "token"
+        ],
+        "type": "object",
+        "description": "Request to charge a mobile wallet using a previously created token.",
+        "properties": {
+          "token": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Token representing a vaulted or authorized wallet."
+          },
+          "mobileNumber": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Customer mobile number including country code, e.g., +92XXXXXXXXXX."
+          },
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "description": "Amount to charge in major currency units (e.g., 1500.00)."
+          },
+          "billReference": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional bill or invoice reference for reconciliation."
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional human-readable description of the charge."
+          },
+          "last6CNICDigits": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Regulatory verification: last 6 digits of CNIC."
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateRefundRequestGateway": {
+        "required": [
+          "trxnRef"
+        ],
+        "type": "object",
+        "description": "Request to create a refund against a previous transaction.",
+        "properties": {
+          "trxnRef": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Original transaction reference to be refunded."
+          },
+          "amount": {
+            "minimum": 0.01,
+            "type": "number",
+            "format": "double",
+            "description": "Amount to refund. If omitted, a full refund is attempted."
+          },
+          "reason": {
+            "maxLength": 500,
+            "type": "string",
+            "nullable": true,
+            "description": "Optional reason for the refund."
+          }
+        },
+        "additionalProperties": false
+      },
+      "CustomerRefDto": {
         "required": [
           "name"
         ],
         "type": "object",
+        "description": "Optional customer context to display on checkout and in records.",
         "properties": {
           "name": {
-            "description": "The name of the plant",
-            "type": "string"
+            "minLength": 1,
+            "type": "string",
+            "description": "Customer full name."
           },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
-        }
-      },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
+          "email": {
+            "type": "string",
+            "nullable": true,
+            "description": "Customer email address."
           },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
+          "phone": {
+            "type": "string",
+            "nullable": true,
+            "description": "Customer phone number including country code."
+          },
+          "shippingAddress": {
+            "type": "string",
+            "nullable": true,
+            "description": "Shipping address if applicable."
+          },
+          "estimatedDays": {
+            "type": "string",
+            "nullable": true,
+            "description": "Estimated delivery window for goods/services."
           }
-        ]
+        },
+        "additionalProperties": {}
       },
-      "Error": {
+      "InitiatePaymentRequest": {
         "required": [
-          "error",
-          "message"
+          "description"
         ],
         "type": "object",
+        "description": "Payload to initiate a payment intent.",
         "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
+          "amountMinor": {
+            "type": "number",
+            "format": "double",
+            "description": "Payment amount in minor units (e.g., cents/paisa)."
           },
-          "message": {
-            "type": "string"
+          "currency": {
+            "type": "string",
+            "nullable": true,
+            "description": "ISO currency code (e.g., PKR, USD)."
+          },
+          "customerRef": {
+            "$ref": "#/components/schemas/CustomerRefDto"
+          },
+          "orderRef": {
+            "$ref": "#/components/schemas/OrderRefDto"
+          },
+          "description": {
+            "maxLength": 200,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9 ]{1,200}$",
+            "type": "string",
+            "description": "Short description shown to the customer (alphanumeric and spaces only)."
+          },
+          "successUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "Redirect URL after successful payment."
+          },
+          "cancelUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "Redirect URL if the customer cancels."
+          },
+          "metadataJson": {
+            "type": "string",
+            "nullable": true,
+            "description": "JSON string of additional metadata for your internal use."
           }
-        }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
+        },
+        "additionalProperties": false
+      },
+      "InitiatePaymentResponse": {
+        "type": "object",
+        "description": "Response from initiating a payment intent.",
+        "properties": {
+          "paymentIntentId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier of the payment intent."
+          },
+          "checkoutUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL to redirect the customer to complete payment."
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp when the checkout link expires."
+          }
+        },
+        "additionalProperties": false
+      },
+      "OrderRefDto": {
+        "required": [
+          "orderRef"
+        ],
+        "type": "object",
+        "description": "Order reference and optional pricing breakdown.",
+        "properties": {
+          "orderRef": {
+            "maxLength": 20,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9]{1,20}$",
+            "type": "string",
+            "description": "Your internal order reference."
+          },
+          "discount": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional discount applied (free-form)."
+          },
+          "tax": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional tax amount (free-form)."
+          }
+        },
+        "additionalProperties": {}
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "description": "RFC 7807 Problem Details envelope (legacy in some responses).",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "RefundDto": {
+        "type": "object",
+        "description": "Refund object representing a refund request and its status.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique refund identifier."
+          },
+          "trxnRef": {
+            "type": "string",
+            "description": "Original transaction reference being refunded."
+          },
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "description": "Refund amount in major currency units."
+          },
+          "status": {
+            "$ref": "#/components/schemas/RefundStatus"
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional reason provided when creating the refund."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the refund was created."
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the refund was last updated."
+          }
+        },
+        "additionalProperties": false
+      },
+      "RefundStatus": {
+        "enum": [0, 1, 2, 3, 4, 5, 6, 7],
+        "type": "integer",
+        "format": "int32",
+        "description": "Numeric status code of the refund lifecycle."
       }
     }
   }
