@@ -14,27 +14,7 @@
         "groups": [
           {
             "group": "Getting started",
-            "pages": [
-              "index",
-              "quickstart",
-              "development"
-            ]
-          },
-          {
-            "group": "Customization",
-            "pages": [
-              "essentials/settings",
-              "essentials/navigation"
-            ]
-          },
-          {
-            "group": "Writing content",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
+            "pages": ["index", "quickstart"]
           }
         ]
       },
@@ -43,15 +23,11 @@
         "groups": [
           {
             "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
-            ]
+            "pages": ["api-reference/introduction"]
           },
           {
             "group": "Authentication",
-            "pages": [
-              "api-reference/authentication"
-            ]
+            "pages": ["api-reference/authentication"]
           },
           {
             "group": "Endpoints",
@@ -62,11 +38,9 @@
               "api-reference/endpoints/refund-cancel"
             ]
           },
-           {
+          {
             "group": "Errors",
-            "pages": [
-              "api-reference/endpoints/errors"
-            ]
+            "pages": ["api-reference/endpoints/errors"]
           }
         ]
       }
@@ -95,15 +69,15 @@
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
   },
   "footer": {
     "socials": {
