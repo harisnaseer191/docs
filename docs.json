@@ -57,12 +57,24 @@
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Authentication",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "api-reference/authentication"
+            ]
+          },
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api-reference/endpoints/payment-initiate",
+              "api-reference/endpoints/charge-mobile-wallet",
+              "api-reference/endpoints/refund-create",
+              "api-reference/endpoints/refund-cancel"
+            ]
+          },
+           {
+            "group": "Errors",
+            "pages": [
+              "api-reference/endpoints/errors"
             ]
           }
         ]
@@ -74,11 +86,6 @@
           "anchor": "Documentation",
           "href": "https://mintlify.com/docs",
           "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
         }
       ]
     }

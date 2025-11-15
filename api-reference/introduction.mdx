@@ -1,33 +1,91 @@
 ---
 title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+description: 'Swich Gateway API overview and usage guide'
 ---
 
 <Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
+  This section documents the Swich Gateway API using the bundled OpenAPI spec.
 </Note>
 
-## Welcome
+## Overview
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
+The Swich Gateway lets merchants:
+- Initiate hosted checkout payment intents
+- Charge tokenized mobile wallets
+- Create and manage refunds
 
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+All requests must include your API key header:
+`Swich-API-Key: sk_live_XXXX`
+
+OpenAPI source: `/docs/api-reference/openapi.json`
+
+## Tags
+
+Payments – Initiate payment intents  
+Wallet – Charge mobile wallets  
+Refunds – Create / cancel refunds  
+Authentication – API key requirements  
+Webhooks – (reserved for future events)
+
+## Quick Start
+
+```bash
+export SWICH_API_KEY="sk_live_XXXX"
+
+curl -X POST "https://api.swich.com/Gateway/v1/Payment/initiate" \
+  -H "Content-Type: application/json" \
+  -H "Swich-API-Key: $SWICH_API_KEY" \
+  -d '{
+    "amountMinor": 50000,
+    "currency": "PKR",
+    "description": "Order 12345",
+    "orderRef": { "orderRef": "ORD12345" },
+    "successUrl": "https://merchant.example.com/checkout/success",
+    "cancelUrl": "https://merchant.example.com/checkout/cancel"
+  }'
+```
+
+Successful response returns `paymentIntentId` and `checkoutUrl`.
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+The spec defines an API Key security scheme:
 
 ```json
-"security": [
-  {
-    "bearerAuth": []
+"securitySchemes": {
+  "SwichApiKey": {
+    "type": "apiKey",
+    "in": "header",
+    "name": "Swich-API-Key"
   }
-]
+},
+"security": [{ "SwichApiKey": [] }]
 ```
+
+Send the header on every request.
+
+## Error Model
+
+Errors use `ErrorResponse` (preferred) or legacy `ProblemDetails`.
+
+`ErrorResponse` example:
+
+```json
+{
+  "code": "validation_error",
+  "message": "description must match ^[A-Za-z0-9 ]{1,200}$",
+  "details": {
+    "field": "description",
+    "issue": "invalid_format"
+  }
+}
+```
+
+## Flow
+
+1. POST /Payment/initiate → get checkoutUrl  
+2. Customer completes payment at hosted UI  
+3. (Optional) Charge mobile wallet directly for tokenized flows  
+4. (Optional) POST /Refunds to issue refund; cancel if still pending
+
+Proceed to endpoint examples for concrete requests and responses.

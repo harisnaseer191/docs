@@ -1,0 +1,109 @@
+---
+title: "Authentication"
+description: "Use your Merchant API key with the Swich-API-Key header"
+---
+
+## Overview
+
+The WayPay Merchant API uses an API key passed in the request headers. After your account is approved and active, you’ll see your key in the dashboard. Include it on every request with the header:
+
+- Header name: `Swich-API-Key`
+- Example value: `sk_live_XXXX`
+
+<Warning>
+  Keep your key secret. Do not embed it in client-side code or public repos. Rotate immediately if exposed.
+</Warning>
+
+## Send the header
+
+### cURL
+
+```bash
+export SWICH_API_KEY="sk_live_XXXX"
+
+curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate" \
+  -H "Content-Type: application/json" \
+  -H "Swich-API-Key: $SWICH_API_KEY" \
+  -d '{
+    "amountMinor": 50000,
+    "currency": "PKR",
+    "description": "Order 12345",
+    "orderRef": { "orderRef": "ORD12345" }
+  }'
+```
+
+### JavaScript (Node)
+
+```js
+import fetch from "node-fetch";
+
+const res = await fetch("https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Swich-API-Key": process.env.SWICH_API_KEY
+  },
+  body: JSON.stringify({
+    amountMinor: 50000,
+    currency: "PKR",
+    description: "Order 12345",
+    orderRef: { orderRef: "ORD12345" }
+  })
+});
+
+const data = await res.json();
+```
+
+### Python (requests)
+
+```py
+import os, requests
+
+api_key = os.getenv("SWICH_API_KEY")
+url = "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate"
+headers = {"Swich-API-Key": api_key, "Content-Type": "application/json"}
+payload = {
+  "amountMinor": 50000,
+  "currency": "PKR",
+  "description": "Order 12345",
+  "orderRef": { "orderRef": "ORD12345" }
+}
+
+r = requests.post(url, headers=headers, json=payload)
+print(r.status_code, r.json())
+```
+
+## Postman/Insomnia
+
+- Create an environment variable: `SWICH_API_KEY = sk_live_XXXX`
+- Add a collection-level header: `Swich-API-Key: {{SWICH_API_KEY}}`
+- Make calls; the header is applied to all requests.
+
+## Errors
+
+- 401 Unauthorized: missing or invalid API key.
+- Verify the header name is exactly `Swich-API-Key` and the key is active.
+
+## OpenAPI security (reference)
+
+```json
+{
+  "components": {
+    "securitySchemes": {
+      "SwichApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Swich-API-Key"
+      }
+    }
+  },
+  "security": [{ "SwichApiKey": [] }]
+}
+```
+
+## Best practices
+
+- Store keys in environment variables.
+- Send the header on every request.
+- Log only redacted keys.
+- Rotate keys regularly and remove unused keys.

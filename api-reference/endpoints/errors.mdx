@@ -1,0 +1,31 @@
+---
+title: 'Error Handling'
+description: 'Standard error shapes'
+---
+
+## ErrorResponse
+
+```json
+{
+  "code": "validation_error",
+  "message": "One or more validation errors occurred.",
+  "details": {
+    "field": "amountMinor",
+    "issue": "required"
+  }
+}
+```
+
+Fields:
+- code: Machine-readable code
+- message: Human-readable summary
+- details: Optional structured context
+
+## ProblemDetails (legacy)
+
+```json
+{
+  "type": "https://example.com/prob/validation",
+  "title": "Invalid request",
+  "status": 400,
+  "detail": "amountMinor is required",

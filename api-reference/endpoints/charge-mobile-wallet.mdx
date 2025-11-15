@@ -1,0 +1,43 @@
+---
+title: 'Charge Mobile Wallet'
+description: 'Charge a tokenized mobile wallet'
+---
+
+<Endpoint method="POST" path="/Gateway/v1/Payment/charge-mobile-wallet" />
+
+### Headers
+- Swich-API-Key: Your secret key
+- Content-Type: application/json
+
+### Body (ChargeMobileWalletRequest)
+
+```json
+{
+  "token": "tok_mwallet_9xK3PQrA",
+  "mobileNumber": "+923001234567",
+  "amount": 1500.0,
+  "billReference": "INV-98127",
+  "description": "Wallet charge for order ORD-98127",
+  "last6CNICDigits": "123456"
+}
+```
+
+### Pending Response (200)
+
+```json
+{
+  "trxnRef": "trx_7ZP8X2",
+  "status": "PENDING",
+  "message": "Awaiting wallet OTP confirmation"
+}
+```
+
+### Error Response (422)
+
+```json
+{
+  "code": "insufficient_funds",
+  "message": "Wallet has insufficient balance",
+  "details": null
+}
+```

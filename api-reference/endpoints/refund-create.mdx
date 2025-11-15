@@ -1,0 +1,46 @@
+---
+title: 'Create Refund'
+description: 'Issue a refund for a prior transaction'
+---
+
+<Endpoint method="POST" path="/Gateway/v1/Refunds" />
+
+### Headers
+- Swich-API-Key
+- Content-Type: application/json
+
+### Body (RefundRequest)
+
+```json
+{
+  "trxnRef": "trx_7ZP8X2",
+  "amount": 500.0,
+  "reason": "Customer returned the item"
+}
+```
+
+Omit amount for full refund.
+
+### Success Response (200)
+
+```json
+{
+  "id": "9f2a0a7c-0d4e-4d1e-bb0c-2b7f1c9f0a12",
+  "trxnRef": "trx_7ZP8X2",
+  "amount": 500.0,
+  "status": 1,
+  "reason": "Customer returned the item",
+  "createdAt": "2025-11-15T10:05:00Z",
+  "updatedAt": "2025-11-15T10:05:00Z"
+}
+```
+
+### Error Response (422)
+
+```json
+{
+  "code": "refund_not_allowed",
+  "message": "Refund window has expired",
+  "details": null
+}
+```

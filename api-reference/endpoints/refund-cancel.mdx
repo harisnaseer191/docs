@@ -1,0 +1,32 @@
+---
+title: 'Cancel Refund'
+description: 'Cancel a pending refund'
+---
+
+<Endpoint method="POST" path="/Gateway/v1/Refunds/{id}/cancel" />
+
+### Path Params
+- id (UUID) – Refund identifier
+
+### Headers
+- Swich-API-Key
+
+### Success Response (200)
+
+```json
+{
+  "message": "Cancellation requested",
+  "id": "9f2a0a7c-0d4e-4d1e-bb0c-2b7f1c9f0a12",
+  "status": "PENDING_CANCEL"
+}
+```
+
+### Error Response (401)
+
+```json
+{
+  "code": "unauthorized",
+  "message": "Invalid or missing Swich-API-Key",
+  "details": null
+}
+```
