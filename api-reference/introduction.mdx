@@ -39,6 +39,11 @@ curl -X POST "https://api.swich.com/Gateway/v1/Payment/initiate" \
     "amount": 50000,
     "currency": "PKR",
     "description": "Order 12345",
+    "customerRef": {
+    "name": "Ayesha Khan",
+    "email": "ayesha@example.com",
+    "phone": "+923001234567"
+    },
     "orderRef": { "orderRef": "ORD12345" },
     "successUrl": "https://merchant.example.com/checkout/success",
     "cancelUrl": "https://merchant.example.com/checkout/cancel"
