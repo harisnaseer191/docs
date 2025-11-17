@@ -14,18 +14,21 @@ To use the WayPay Merchant APIs, first create an account:
 - Submit for review and wait for approval. You’ll be notified once your account is active.
 
 <Note>
-  Your API access becomes available only after your account is approved and active. Approval timelines vary based on compliance review completeness.
+  Your API access becomes available only after your account is approved and
+  active. Approval timelines vary based on compliance review completeness.
 </Note>
 
 ## Get your API key
 
 Once approved:
+
 - Sign in to the merchant portal.
 - Locate your API key in the dashboard.
 - Copy it securely. Never commit keys to source control.
 - Use separate keys per environment and rotate them periodically.
 
 All API requests must include this header:
+
 - Swich-API-Key: YOUR_API_KEY
 
 <Warning>
@@ -50,6 +53,11 @@ curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azureconta
     "amount": 50000,
     "currency": "PKR",
     "description": "Order 12345",
+    "customerRef": {
+    "name": "Ayesha Khan",
+    "email": "ayesha@example.com",
+    "phone": "+923001234567"
+  },
     "orderRef": { "orderRef": "ORD12345" },
     "successUrl": "https://merchant.example.com/checkout/success",
     "cancelUrl": "https://merchant.example.com/checkout/cancel"
@@ -97,10 +105,10 @@ curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azureconta
   Check your payload fields and formats (e.g., description length and characters).
 
 <Note>
-  See the full API reference and schema at <code>/docs/api-reference/openapi.json</code>, and endpoint examples under API Reference → Endpoints.
+  See the full API reference and schema at{" "}
+  <code>/docs/api-reference/openapi.json</code>, and endpoint examples under API
+  Reference → Endpoints.
 </Note>
-
-
 
 ## Next steps
 
@@ -124,6 +132,4 @@ curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azureconta
 
 </CardGroup>
 
-<Note>
-  Need help? See the Mintlify docs or join the community.
-</Note>
+<Note>Need help? See the Mintlify docs or join the community.</Note>
