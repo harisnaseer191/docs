@@ -65,7 +65,7 @@ This endpoint allows you to charge a customer's mobile wallet (JazzCash, Easypai
 <RequestExample>
 ```bash cURL
 curl --request POST \
-  --url https://api.waypay.com/Gateway/v1/Payment/charge-mobile-wallet \
+  --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/charge-mobile-wallet \
   --header 'Authorization: Bearer <token>' \
   --header 'Content-Type: application/json' \
   --data '{
@@ -80,7 +80,7 @@ curl --request POST \
 ```
 
 ```javascript Node.js
-const response = await fetch('https://api.waypay.com/Gateway/v1/Payment/charge-mobile-wallet', {
+const response = await fetch('https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/charge-mobile-wallet', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer <token>',
@@ -103,7 +103,7 @@ const data = await response.json();
 import requests
 
 response = requests.post(
-    'https://api.waypay.com/Gateway/v1/Payment/charge-mobile-wallet',
+    'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/charge-mobile-wallet',
     headers={
         'Authorization': 'Bearer <token>',
         'Content-Type': 'application/json'

@@ -100,7 +100,7 @@ This endpoint creates a payment intent and returns a token that can be used to i
 <RequestExample>
 ```bash cURL
 curl --request POST \
-  --url https://api.waypay.com/Gateway/v1/Payment/initiate-token \
+  --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate-token \
   --header 'Authorization: Bearer <token>' \
   --header 'Content-Type: application/json' \
   --data '{
@@ -120,7 +120,7 @@ curl --request POST \
 ```
 
 ```javascript Node.js
-const response = await fetch('https://api.waypay.com/Gateway/v1/Payment/initiate-token', {
+const response = await fetch('https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate-token', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer <token>',
@@ -149,7 +149,7 @@ const data = await response.json();
 import requests
 
 response = requests.post(
-    'https://api.waypay.com/Gateway/v1/Payment/initiate-token',
+    'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate-token',
     headers={
         'Authorization': 'Bearer <token>',
         'Content-Type': 'application/json'
