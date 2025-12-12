@@ -1,0 +1,177 @@
+---
+title: "Get Transaction by Reference"
+api: "GET /Gateway/v{version}/Transaction/by-ref/{txnRef}"
+description: "Retrieve transaction details using transaction reference"
+---
+
+## Overview
+
+Retrieve detailed information about a specific transaction using its transaction reference number.
+
+## Path Parameters
+
+<ParamField path="txnRef" type="string" required>
+  Transaction reference number
+</ParamField>
+
+<ParamField path="version" type="string" required>
+  API version (e.g., "1")
+</ParamField>
+
+## Response
+
+<ResponseField name="id" type="uuid">
+  Unique transaction identifier
+</ResponseField>
+
+<ResponseField name="amount" type="number">
+  Transaction amount
+</ResponseField>
+
+<ResponseField name="currency" type="string">
+  Currency code (e.g., "PKR", "USD")
+</ResponseField>
+
+<ResponseField name="fee" type="number">
+  Transaction processing fee
+</ResponseField>
+
+<ResponseField name="netAmount" type="number">
+  Net amount after fees
+</ResponseField>
+
+<ResponseField name="txType" type="integer">
+  Transaction type:
+  - `0` - Payment
+  - `1` - Refund
+  - `2` - Payout
+  - `3` - Settlement
+  - `4` - Fee
+  - `5` - Adjustment
+  - `6` - Chargeback
+  - `7` - Reversal
+  - `8` - Transfer
+</ResponseField>
+
+<ResponseField name="txnType" type="string">
+  Transaction type description
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Transaction description
+</ResponseField>
+
+<ResponseField name="transactionNotes" type="string">
+  Additional transaction notes
+</ResponseField>
+
+<ResponseField name="txnprovider" type="string">
+  Payment provider used
+</ResponseField>
+
+<ResponseField name="txnRef" type="string">
+  Transaction reference number
+</ResponseField>
+
+<ResponseField name="status" type="integer">
+  Transaction status:
+  - `1` - Pending
+  - `2` - Processing
+  - `3` - Success
+  - `4` - Failed
+  - `5` - Cancelled
+  - `6` - Expired
+  - `7` - Refunded
+  - `8` - PartiallyRefunded
+  - `9` - Disputed
+  - `10` - OnHold
+  - `11` - RequiresAction
+  - `12` - Declined
+</ResponseField>
+
+<ResponseField name="statusText" type="string">
+  Human-readable status description
+</ResponseField>
+
+<ResponseField name="createdAtUtc" type="datetime">
+  Transaction creation timestamp (UTC)
+</ResponseField>
+
+<RequestExample>
+```bash cURL
+curl --request GET \
+  --url https://api.waypay.com/Gateway/v1/Transaction/by-ref/TXN20251212123456 \
+  --header 'Authorization: Bearer <token>'
+```
+
+```javascript Node.js
+const response = await fetch(
+  'https://api.waypay.com/Gateway/v1/Transaction/by-ref/TXN20251212123456',
+  {
+    method: 'GET',
+    headers: {
+      'Authorization': 'Bearer <token>'
+    }
+  }
+);
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    'https://api.waypay.com/Gateway/v1/Transaction/by-ref/TXN20251212123456',
+    headers={'Authorization': 'Bearer <token>'}
+)
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "amount": 1000,
+  "currency": "PKR",
+  "fee": 25,
+  "netAmount": 975,
+  "txType": 0,
+  "txnType": "Payment",
+  "description": "Product Purchase",
+  "transactionNotes": "Payment completed successfully",
+  "txnprovider": "JazzCash",
+  "txnRef": "TXN20251212123456",
+  "status": 3,
+  "statusText": "Success",
+  "createdAtUtc": "2025-12-12T10:30:00Z"
+}
+```
+
+```json 404 Not Found
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.4",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "Transaction not found"
+}
+```
+
+```json 400 Bad Request
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "Invalid transaction reference format"
+}
+```
+
+```json 401 Unauthorized
+{
+  "type": "https://tools.ietf.org/html/rfc7235#section-3.1",
+  "title": "Unauthorized",
+  "status": 401,
+  "detail": "Invalid or missing authentication token"
+}
+```
+</ResponseExample>

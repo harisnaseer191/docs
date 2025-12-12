@@ -1,31 +1,131 @@
 ---
-title: 'Error Handling'
-description: 'Standard error shapes'
+title: "Error Codes"
+description: "Understand error responses from the Waypay API"
 ---
 
-## ErrorResponse
+## Error Response Format
+
+All errors follow the [RFC 7807](https://tools.ietf.org/html/rfc7807) Problem Details specification:
 
 ```json
 {
-  "code": "validation_error",
-  "message": "One or more validation errors occurred.",
-  "details": {
-    "field": "amountMinor",
-    "issue": "required"
-  }
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "Detailed error message",
+  "instance": "/Gateway/v1/Payment/initiate-checkout"
 }
 ```
 
-Fields:
-- code: Machine-readable code
-- message: Human-readable summary
-- details: Optional structured context
+## HTTP Status Codes
 
-## ProblemDetails (legacy)
+<ResponseField name="200" type="OK">
+  Request successful
+</ResponseField>
+
+<ResponseField name="201" type="Created">
+  Resource created successfully
+</ResponseField>
+
+<ResponseField name="400" type="Bad Request">
+  Invalid request parameters or malformed request body
+</ResponseField>
+
+<ResponseField name="401" type="Unauthorized">
+  Missing or invalid authentication credentials
+</ResponseField>
+
+<ResponseField name="404" type="Not Found">
+  Requested resource not found
+</ResponseField>
+
+<ResponseField name="422" type="Unprocessable Content">
+  Request validation failed or business logic error
+</ResponseField>
+
+## Common Error Scenarios
+
+### Authentication Errors
 
 ```json
 {
-  "type": "https://example.com/prob/validation",
-  "title": "Invalid request",
+  "type": "https://tools.ietf.org/html/rfc7235#section-3.1",
+  "title": "Unauthorized",
+  "status": 401,
+  "detail": "Invalid or missing authentication token"
+}
+```
+
+**Causes:**
+- Missing `Authorization` header
+- Invalid API key
+- Expired token
+
+### Validation Errors
+
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc4918#section-11.2",
+  "title": "Unprocessable Content",
+  "status": 422,
+  "detail": "Amount must be greater than 0.01"
+}
+```
+
+**Causes:**
+- Invalid field values
+- Missing required fields
+- Format constraints not met
+
+### Not Found Errors
+
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.4",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "Transaction not found"
+}
+```
+
+**Causes:**
+- Invalid transaction reference
+- Resource doesn't exist
+- Unauthorized access to resource
+
+## Payment-Specific Errors
+
+### Insufficient Balance
+
+```json
+{
+  "status": 422,
+  "detail": "Insufficient balance in wallet"
+}
+```
+
+### Invalid Mobile Number
+
+```json
+{
   "status": 400,
-  "detail": "amountMinor is required",
+  "detail": "Invalid mobile number format"
+}
+```
+
+### Transaction Already Refunded
+
+```json
+{
+  "status": 422,
+  "detail": "Transaction has already been fully refunded"
+}
+```
+
+## Best Practices
+
+1. **Always check the status code** first to determine the error type
+2. **Log the complete error response** for debugging
+3. **Parse the `detail` field** for user-friendly error messages
+4. **Implement retry logic** for transient errors (5xx status codes)
+5. **Handle validation errors** by displaying specific field errors to users

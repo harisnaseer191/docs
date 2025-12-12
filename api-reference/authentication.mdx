@@ -1,109 +1,344 @@
 ---
-title: "API Authentication"
-description: "Use your Merchant API key with the Swich-API-Key header"
+title: "Authentication"
+description: "Secure your API requests with API key authentication"
 ---
 
 ## Overview
 
-The WayPay Merchant API uses an API key passed in the request headers. After your account is approved and active, you’ll see your key in the dashboard. Include it on every request with the header:
-
-- Header name: `Swich-API-Key`
-- Example value: `sk_live_XXXX`
+The Waypay API uses API keys to authenticate requests. You can view and manage your API keys in the [Waypay Dashboard](https://dashboard.waypay.com/settings/api).
 
 <Warning>
-  Keep your key secret. Do not embed it in client-side code or public repos. Rotate immediately if exposed.
+  Your API keys carry many privileges, so keep them secure! Do not share your secret API keys in publicly accessible areas such as GitHub, client-side code, or anywhere else that could expose them.
 </Warning>
 
-## Send the header
+## API Keys
 
-### cURL
+Waypay provides two types of API keys:
 
-```bash
-export SWICH_API_KEY="sk_live_XXXX"
+<CardGroup cols={2}>
+  <Card title="Test Keys" icon="flask">
+    Use these keys during development and testing. They start with `sk_test_`
+  </Card>
+  <Card title="Live Keys" icon="circle-check">
+    Use these keys in production. They start with `sk_live_`
+  </Card>
+</CardGroup>
 
-curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate" \
-  -H "Content-Type: application/json" \
-  -H "Swich-API-Key: $SWICH_API_KEY" \
-  -d '{
-    "amount": 50000,
-    "currency": "PKR",
-    "description": "Order 12345",
-    "orderRef": { "orderRef": "ORD12345" }
-  }'
+### Key Characteristics
+
+- **Test keys** process transactions in test mode - no real money is moved
+- **Live keys** process real transactions and charge actual payment methods
+- Both environments have separate databases and don't share data
+- API behavior is identical in both environments
+
+## Authentication Method
+
+Include your API key in the `Authorization` header using the Bearer authentication scheme:
+
+```
+Authorization: Bearer YOUR_API_KEY
 ```
 
-### JavaScript (Node)
+### Example Request
 
-```js
-import fetch from "node-fetch";
-
-const res = await fetch("https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Swich-API-Key": process.env.SWICH_API_KEY
-  },
-  body: JSON.stringify({
-    amount: 50000,
-    currency: "PKR",
-    description: "Order 12345",
-    orderRef: { orderRef: "ORD12345" }
-  })
-});
-
-const data = await res.json();
+<CodeGroup>
+```bash cURL
+curl --request GET \
+  --url https://api.waypay.com/Gateway/v1/Transaction/by-ref/TXN123456 \
+  --header 'Authorization: Bearer sk_live_xxxxxxxxxxxxx'
 ```
 
-### Python (requests)
+```javascript Node.js
+const fetch = require('node-fetch');
 
-```py
-import os, requests
+const response = await fetch(
+  'https://api.waypay.com/Gateway/v1/Transaction/by-ref/TXN123456',
+  {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${process.env.WAYPAY_API_KEY}`
+    }
+  }
+);
 
-api_key = os.getenv("SWICH_API_KEY")
-url = "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate"
-headers = {"Swich-API-Key": api_key, "Content-Type": "application/json"}
-payload = {
-  "amount": 50000,
-  "currency": "PKR",
-  "description": "Order 12345",
-  "orderRef": { "orderRef": "ORD12345" }
-}
-
-r = requests.post(url, headers=headers, json=payload)
-print(r.status_code, r.json())
+const data = await response.json();
 ```
 
-## Postman/Insomnia
+```python Python
+import os
+import requests
 
-- Create an environment variable: `SWICH_API_KEY = sk_live_XXXX`
-- Add a collection-level header: `Swich-API-Key: {{SWICH_API_KEY}}`
-- Make calls; the header is applied to all requests.
+api_key = os.environ.get('WAYPAY_API_KEY')
 
-## Errors
+response = requests.get(
+    'https://api.waypay.com/Gateway/v1/Transaction/by-ref/TXN123456',
+    headers={
+        'Authorization': f'Bearer {api_key}'
+    }
+)
 
-- 401 Unauthorized: missing or invalid API key.
-- Verify the header name is exactly `Swich-API-Key` and the key is active.
+data = response.json()
+```
 
-## OpenAPI security (reference)
+```php PHP
+<?php
+$api_key = getenv('WAYPAY_API_KEY');
+
+$curl = curl_init();
+
+curl_setopt_array($curl, [
+  CURLOPT_URL => "https://api.waypay.com/Gateway/v1/Transaction/by-ref/TXN123456",
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_HTTPHEADER => [
+    "Authorization: Bearer " . $api_key
+  ],
+]);
+
+$response = curl_exec($curl);
+$data = json_decode($response, true);
+
+curl_close($curl);
+?>
+```
+</CodeGroup>
+
+## Storing API Keys Securely
+
+### Environment Variables (Recommended)
+
+Store your API keys in environment variables:
+
+<CodeGroup>
+```bash Linux/macOS
+export WAYPAY_API_KEY="sk_live_xxxxxxxxxxxxx"
+```
+
+```powershell Windows PowerShell
+$env:WAYPAY_API_KEY="sk_live_xxxxxxxxxxxxx"
+```
+
+```bash .env File
+WAYPAY_API_KEY=sk_live_xxxxxxxxxxxxx
+```
+</CodeGroup>
+
+### Best Practices
+
+<Steps>
+  <Step title="Use Environment Variables">
+    Never hardcode API keys in your source code. Use environment variables or secure configuration management.
+  </Step>
+  
+  <Step title="Separate Keys by Environment">
+    Use different API keys for development, staging, and production environments.
+  </Step>
+  
+  <Step title="Restrict Key Permissions">
+    Create separate keys with limited permissions for different services or applications.
+  </Step>
+  
+  <Step title="Rotate Keys Regularly">
+    Periodically rotate your API keys and immediately revoke compromised keys.
+  </Step>
+  
+  <Step title="Use Server-Side Only">
+    Never include API keys in client-side code (JavaScript, mobile apps) where they can be extracted.
+  </Step>
+</Steps>
+
+## Authentication Errors
+
+### 401 Unauthorized
+
+This error occurs when:
+
+- No `Authorization` header is provided
+- The API key is invalid or has been revoked
+- The API key format is incorrect
+
+**Example Error Response:**
 
 ```json
 {
-  "components": {
-    "securitySchemes": {
-      "SwichApiKey": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "Swich-API-Key"
-      }
-    }
-  },
-  "security": [{ "SwichApiKey": [] }]
+  "type": "https://tools.ietf.org/html/rfc7235#section-3.1",
+  "title": "Unauthorized",
+  "status": 401,
+  "detail": "Invalid or missing authentication token"
 }
 ```
 
-## Best practices
+**Solutions:**
 
-- Store keys in environment variables.
-- Send the header on every request.
-- Log only redacted keys.
-- Rotate keys regularly and remove unused keys.
+1. Verify your API key is correct and active
+2. Ensure the header format is exactly: `Authorization: Bearer YOUR_API_KEY`
+3. Check that you're using the correct key for the environment (test vs live)
+4. Confirm the key hasn't been revoked in the dashboard
+
+### 403 Forbidden
+
+This error occurs when:
+
+- The API key doesn't have permission for the requested resource
+- The account is suspended or restricted
+
+**Example Error Response:**
+
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.3",
+  "title": "Forbidden",
+  "status": 403,
+  "detail": "Insufficient permissions to access this resource"
+}
+```
+
+## API Key Management
+
+### Creating API Keys
+
+1. Log in to your [Waypay Dashboard](https://dashboard.waypay.com)
+2. Navigate to **Settings** → **API Keys**
+3. Click **Create API Key**
+4. Choose the environment (Test or Live)
+5. Set permissions and restrictions
+6. Save the key securely - it will only be shown once
+
+### Revoking API Keys
+
+If you suspect a key has been compromised:
+
+1. Go to **Settings** → **API Keys** in your dashboard
+2. Find the compromised key
+3. Click **Revoke**
+4. Create a new key to replace it
+5. Update your application with the new key
+
+<Warning>
+  Revoking a key will immediately stop all API requests using that key. Ensure you have a rollover plan before revoking keys used in production.
+</Warning>
+
+## Testing Authentication
+
+Test your authentication setup with a simple API call:
+
+<CodeGroup>
+```bash cURL
+curl --request GET \
+  --url https://api.waypay.com/Gateway/v1/Settlements/schedule \
+  --header 'Authorization: Bearer YOUR_API_KEY'
+```
+
+```javascript Node.js
+const testAuth = async () => {
+  try {
+    const response = await fetch(
+      'https://api.waypay.com/Gateway/v1/Settlements/schedule',
+      {
+        headers: {
+          'Authorization': `Bearer ${process.env.WAYPAY_API_KEY}`
+        }
+      }
+    );
+    
+    if (response.ok) {
+      console.log('✓ Authentication successful');
+    } else {
+      console.error('✗ Authentication failed:', response.status);
+    }
+  } catch (error) {
+    console.error('✗ Request failed:', error.message);
+  }
+};
+
+testAuth();
+```
+
+```python Python
+import os
+import requests
+
+def test_auth():
+    api_key = os.environ.get('WAYPAY_API_KEY')
+    
+    response = requests.get(
+        'https://api.waypay.com/Gateway/v1/Settlements/schedule',
+        headers={'Authorization': f'Bearer {api_key}'}
+    )
+    
+    if response.status_code == 200:
+        print('✓ Authentication successful')
+    else:
+        print(f'✗ Authentication failed: {response.status_code}')
+
+test_auth()
+```
+</CodeGroup>
+
+## Security Recommendations
+
+<AccordionGroup>
+  <Accordion title="Use HTTPS Only">
+    Always use HTTPS for API requests. Never send API keys over unencrypted HTTP connections.
+  </Accordion>
+
+  <Accordion title="Implement Key Rotation">
+    Rotate API keys every 90 days or immediately after team member departures.
+  </Accordion>
+
+  <Accordion title="Monitor API Usage">
+    Regularly review API logs in your dashboard for unusual activity.
+  </Accordion>
+
+  <Accordion title="Principle of Least Privilege">
+    Grant each API key only the permissions it needs to perform its function.
+  </Accordion>
+
+  <Accordion title="Secure Key Storage">
+    Use secure key management services (AWS KMS, Azure Key Vault, HashiCorp Vault) in production.
+  </Accordion>
+</AccordionGroup>
+
+## Additional Headers
+
+While the `Authorization` header is required, you may also include optional headers:
+
+### Content-Type
+
+```
+Content-Type: application/json
+```
+
+Required for POST, PUT, and PATCH requests with JSON bodies.
+
+### Idempotency-Key
+
+```
+Idempotency-Key: unique-operation-id-123
+```
+
+Optional header to safely retry requests without duplicate processing.
+
+### User-Agent
+
+```
+User-Agent: MyApp/1.0.0
+```
+
+Optional header to identify your application in logs and support tickets.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Make Your First Payment" icon="credit-card" href="/api-reference/endpoints/payment-initiate">
+    Learn how to create a payment checkout session
+  </Card>
+  <Card title="Handle Webhooks" icon="webhook" href="/guides/webhooks">
+    Set up webhook endpoints for event notifications
+  </Card>
+  <Card title="Error Handling" icon="triangle-exclamation" href="/api-reference/endpoints/errors">
+    Learn about API error codes and handling
+  </Card>
+  <Card title="Quickstart Guide" icon="rocket" href="/quickstart">
+    Complete integration tutorial
+  </Card>
+</CardGroup>

@@ -1,0 +1,217 @@
+---
+title: "Create Settlement"
+api: "POST /Gateway/v{version}/Settlements"
+description: "Create a settlement request to withdraw funds to your bank account"
+---
+
+## Overview
+
+Create a settlement request to transfer funds from your Waypay wallet to your bank account or USDT address. Settlements can be in different currencies and support automatic currency conversion.
+
+## Path Parameters
+
+<ParamField path="version" type="string" required>
+  API version (e.g., "1")
+</ParamField>
+
+## Request Body
+
+<ParamField body="amount" type="number">
+  Settlement amount to withdraw
+</ParamField>
+
+<ParamField body="currency" type="string">
+  Source currency in your wallet (e.g., "PKR", "USD")
+</ParamField>
+
+<ParamField body="payoutCurrency" type="string">
+  Destination currency for payout (e.g., "PKR", "USD", "USDT")
+</ParamField>
+
+<ParamField body="bankName" type="string">
+  Name of your bank (required for bank transfers)
+</ParamField>
+
+<ParamField body="iban" type="string">
+  Your IBAN or account number (required for bank transfers)
+</ParamField>
+
+<ParamField body="accountTitle" type="string">
+  Account title/holder name (required for bank transfers)
+</ParamField>
+
+<ParamField body="usdtAddress" type="string">
+  USDT wallet address (required for crypto payouts)
+</ParamField>
+
+## Response
+
+<ResponseField name="id" type="uuid">
+  Unique settlement identifier
+</ResponseField>
+
+<ResponseField name="merchantId" type="uuid">
+  Your merchant ID
+</ResponseField>
+
+<ResponseField name="amount" type="number">
+  Settlement amount
+</ResponseField>
+
+<ResponseField name="currency" type="string">
+  Source currency
+</ResponseField>
+
+<ResponseField name="payoutCurrency" type="string">
+  Destination currency
+</ResponseField>
+
+<ResponseField name="payoutAmount" type="number">
+  Amount to be paid out (after conversion)
+</ResponseField>
+
+<ResponseField name="fee" type="number">
+  Settlement processing fee
+</ResponseField>
+
+<ResponseField name="netAmount" type="number">
+  Net amount after fees
+</ResponseField>
+
+<ResponseField name="fxRate" type="number">
+  Foreign exchange rate applied (if applicable)
+</ResponseField>
+
+<ResponseField name="fxRateTimestamp" type="datetime">
+  When the FX rate was locked
+</ResponseField>
+
+<ResponseField name="bankName" type="string">
+  Destination bank name
+</ResponseField>
+
+<ResponseField name="iban" type="string">
+  Destination IBAN
+</ResponseField>
+
+<ResponseField name="accountTitle" type="string">
+  Account holder name
+</ResponseField>
+
+<ResponseField name="usdtAddress" type="string">
+  USDT wallet address
+</ResponseField>
+
+<ResponseField name="status" type="integer">
+  Settlement status:
+  - `0` - Pending
+  - `1` - Approved
+  - `2` - Processing
+  - `3` - Completed
+  - `4` - Failed
+  - `5` - Cancelled
+</ResponseField>
+
+<ResponseField name="requestedAt" type="datetime">
+  When settlement was requested
+</ResponseField>
+
+<ResponseField name="approvedAt" type="datetime">
+  When settlement was approved
+</ResponseField>
+
+<ResponseField name="processedAt" type="datetime">
+  When settlement was processed
+</ResponseField>
+
+<ResponseField name="failureReason" type="string">
+  Reason for failure (if applicable)
+</ResponseField>
+
+<ResponseField name="isAuto" type="boolean">
+  Whether this was an automatic settlement
+</ResponseField>
+
+<RequestExample>
+```bash cURL
+curl --request POST \
+  --url https://api.waypay.com/Gateway/v1/Settlements \
+  --header 'Authorization: Bearer <token>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "amount": 50000,
+    "currency": "PKR",
+    "payoutCurrency": "PKR",
+    "bankName": "Meezan Bank",
+    "iban": "PK24MEZN0003490001234567",
+    "accountTitle": "My Business Account"
+  }'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.waypay.com/Gateway/v1/Settlements', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer <token>',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    amount: 50000,
+    currency: 'PKR',
+    payoutCurrency: 'PKR',
+    bankName: 'Meezan Bank',
+    iban: 'PK24MEZN0003490001234567',
+    accountTitle: 'My Business Account'
+  })
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.waypay.com/Gateway/v1/Settlements',
+    headers={
+        'Authorization': 'Bearer <token>',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'amount': 50000,
+        'currency': 'PKR',
+        'payoutCurrency': 'PKR',
+        'bankName': 'Meezan Bank',
+        'iban': 'PK24MEZN0003490001234567',
+        'accountTitle': 'My Business Account'
+    }
+)
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "id": "aa0e8400-e29b-41d4-a716-446655440000",
+  "merchantId": "bb0e8400-e29b-41d4-a716-446655440000",
+  "amount": 50000,
+  "currency": "PKR",
+  "payoutCurrency": "PKR",
+  "payoutAmount": 50000,
+  "fee": 100,
+  "netAmount": 49900,
+  "fxRate": null,
+  "fxRateTimestamp": null,
+  "bankName": "Meezan Bank",
+  "iban": "PK24MEZN0003490001234567",
+  "accountTitle": "My Business Account",
+  "usdtAddress": null,
+  "status": 0,
+  "requestedAt": "2025-12-12T11:00:00Z",
+  "approvedAt": null,
+  "processedAt": null,
+  "failureReason": null,
+  "isAuto": false
+}
+```
+</ResponseExample>

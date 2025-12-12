@@ -1,32 +1,68 @@
 ---
-title: 'Cancel Refund'
-description: 'Cancel a pending refund'
+title: "Cancel Refund"
+api: "POST /Gateway/v{version}/Refunds/{id}/cancel"
+description: "Cancel a pending refund request"
 ---
 
-<Endpoint method="POST" path="/Gateway/v1/Refunds/{id}/cancel" />
+## Overview
 
-### Path Params
-- id (UUID) – Refund identifier
+Cancel a refund that is in pending status. Once a refund is approved or processed, it cannot be cancelled.
 
-### Headers
-- Swich-API-Key
+## Path Parameters
 
-### Success Response (200)
+<ParamField path="id" type="uuid" required>
+  Refund ID to cancel
+</ParamField>
 
-```json
-{
-  "message": "Cancellation requested",
-  "id": "9f2a0a7c-0d4e-4d1e-bb0c-2b7f1c9f0a12",
-  "status": "PENDING_CANCEL"
-}
+<ParamField path="version" type="string" required>
+  API version (e.g., "1")
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Returns `true` if the refund was successfully cancelled, `false` otherwise
+</ResponseField>
+
+<RequestExample>
+```bash cURL
+curl --request POST \
+  --url https://api.waypay.com/Gateway/v1/Refunds/550e8400-e29b-41d4-a716-446655440000/cancel \
+  --header 'Authorization: Bearer <token>'
 ```
 
-### Error Response (401)
+```javascript Node.js
+const response = await fetch(
+  'https://api.waypay.com/Gateway/v1/Refunds/550e8400-e29b-41d4-a716-446655440000/cancel',
+  {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer <token>'
+    }
+  }
+);
 
-```json
-{
-  "code": "unauthorized",
-  "message": "Invalid or missing Swich-API-Key",
-  "details": null
-}
+const data = await response.json();
 ```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.waypay.com/Gateway/v1/Refunds/550e8400-e29b-41d4-a716-446655440000/cancel',
+    headers={
+        'Authorization': 'Bearer <token>'
+    }
+)
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+true
+```
+
+```json 200 Failed
+false
+```
+</ResponseExample>

@@ -1,43 +1,158 @@
 ---
-title: 'Charge Mobile Wallet'
-description: 'Charge a tokenized mobile wallet'
+title: "Charge Mobile Wallet"
+api: "POST /Gateway/v{version}/Payment/charge-mobile-wallet"
+description: "Charge a customer's mobile wallet using a payment token"
 ---
 
-<Endpoint method="POST" path="/Gateway/v1/Payment/charge-mobile-wallet" />
+## Overview
 
-### Headers
-- Swich-API-Key: Your secret key
-- Content-Type: application/json
+This endpoint allows you to charge a customer's mobile wallet (JazzCash, Easypaisa, etc.) using a previously generated payment token. This is useful for recurring payments or saved payment methods.
 
-### Body (ChargeMobileWalletRequest)
+## Path Parameters
 
-```json
+<ParamField path="version" type="string" required>
+  API version (e.g., "1")
+</ParamField>
+
+## Request Body
+
+<ParamField body="token" type="string" required>
+  Payment token obtained from initiate-token endpoint
+</ParamField>
+
+<ParamField body="mobileNumber" type="string" required>
+  Customer's mobile wallet number
+</ParamField>
+
+<ParamField body="amount" type="number" required>
+  Amount to charge (minimum 0.01)
+</ParamField>
+
+<ParamField body="walletProvider" type="integer" required>
+  Mobile wallet provider:
+  - `1` - JazzCash
+  - `2` - Easypaisa
+  - `3` - UPaisa
+  - `4` - Other provider
+</ParamField>
+
+<ParamField body="last6CNICDigits" type="string" required>
+  Last 6 digits of customer's CNIC (exactly 6 numeric digits)
+</ParamField>
+
+<ParamField body="billReference" type="string">
+  Optional bill reference number
+</ParamField>
+
+<ParamField body="description" type="string">
+  Payment description
+</ParamField>
+
+## Response
+
+<ResponseField name="trxnRef" type="string">
+  Transaction reference number
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Transaction status (e.g., "Success", "Pending", "Failed")
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Response message with additional details
+</ResponseField>
+
+<RequestExample>
+```bash cURL
+curl --request POST \
+  --url https://api.waypay.com/Gateway/v1/Payment/charge-mobile-wallet \
+  --header 'Authorization: Bearer <token>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "token": "abc123xyz789",
+    "mobileNumber": "03001234567",
+    "amount": 500,
+    "walletProvider": 1,
+    "last6CNICDigits": "123456",
+    "billReference": "BILL-2025-001",
+    "description": "Subscription payment"
+  }'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.waypay.com/Gateway/v1/Payment/charge-mobile-wallet', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer <token>',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    token: 'abc123xyz789',
+    mobileNumber: '03001234567',
+    amount: 500,
+    walletProvider: 1,
+    last6CNICDigits: '123456',
+    description: 'Subscription payment'
+  })
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.waypay.com/Gateway/v1/Payment/charge-mobile-wallet',
+    headers={
+        'Authorization': 'Bearer <token>',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'token': 'abc123xyz789',
+        'mobileNumber': '03001234567',
+        'amount': 500,
+        'walletProvider': 1,
+        'last6CNICDigits': '123456',
+        'description': 'Subscription payment'
+    }
+)
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
 {
-  "token": "tok_mwallet_9xK3PQrA",
-  "mobileNumber": "+923001234567",
-  "amount": 1500.0,
-  "billReference": "INV-98127",
-  "description": "Wallet charge for order ORD-98127",
-  "last6CNICDigits": "123456"
+  "trxnRef": "TXN20251212123456",
+  "status": "Success",
+  "message": "Payment processed successfully"
 }
 ```
 
-### Pending Response (200)
-
-```json
+```json 400 Bad Request
 {
-  "trxnRef": "trx_7ZP8X2",
-  "status": "PENDING",
-  "message": "Awaiting wallet OTP confirmation"
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "Invalid mobile number format"
 }
 ```
 
-### Error Response (422)
-
-```json
+```json 401 Unauthorized
 {
-  "code": "insufficient_funds",
-  "message": "Wallet has insufficient balance",
-  "details": null
+  "type": "https://tools.ietf.org/html/rfc7235#section-3.1",
+  "title": "Unauthorized",
+  "status": 401,
+  "detail": "Invalid or missing authentication token"
 }
 ```
+
+```json 422 Unprocessable Content
+{
+  "type": "https://tools.ietf.org/html/rfc4918#section-11.2",
+  "title": "Unprocessable Content",
+  "status": 422,
+  "detail": "Insufficient balance in wallet"
+}
+```
+</ResponseExample>

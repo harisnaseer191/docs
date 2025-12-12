@@ -1,0 +1,191 @@
+---
+title: "Get Settlement"
+api: "GET /Gateway/v{version}/Settlements/{id}"
+description: "Retrieve details of a specific settlement"
+---
+
+## Overview
+
+Get detailed information about a specific settlement using its unique identifier.
+
+## Path Parameters
+
+<ParamField path="id" type="uuid" required>
+  Settlement unique identifier
+</ParamField>
+
+<ParamField path="version" type="string" required>
+  API version (e.g., "1")
+</ParamField>
+
+## Response
+
+<ResponseField name="id" type="uuid">
+  Unique settlement identifier
+</ResponseField>
+
+<ResponseField name="merchantId" type="uuid">
+  Your merchant ID
+</ResponseField>
+
+<ResponseField name="amount" type="number">
+  Settlement amount
+</ResponseField>
+
+<ResponseField name="currency" type="string">
+  Source currency
+</ResponseField>
+
+<ResponseField name="payoutCurrency" type="string">
+  Destination currency
+</ResponseField>
+
+<ResponseField name="payoutAmount" type="number">
+  Amount to be paid out (after conversion)
+</ResponseField>
+
+<ResponseField name="fee" type="number">
+  Settlement processing fee
+</ResponseField>
+
+<ResponseField name="netAmount" type="number">
+  Net amount after fees
+</ResponseField>
+
+<ResponseField name="fxRate" type="number">
+  Foreign exchange rate applied
+</ResponseField>
+
+<ResponseField name="fxRateTimestamp" type="datetime">
+  When the FX rate was locked
+</ResponseField>
+
+<ResponseField name="bankName" type="string">
+  Destination bank name
+</ResponseField>
+
+<ResponseField name="iban" type="string">
+  Destination IBAN
+</ResponseField>
+
+<ResponseField name="accountTitle" type="string">
+  Account holder name
+</ResponseField>
+
+<ResponseField name="usdtAddress" type="string">
+  USDT wallet address
+</ResponseField>
+
+<ResponseField name="status" type="integer">
+  Settlement status (0-5)
+</ResponseField>
+
+<ResponseField name="requestedAt" type="datetime">
+  When settlement was requested
+</ResponseField>
+
+<ResponseField name="approvedAt" type="datetime">
+  When settlement was approved
+</ResponseField>
+
+<ResponseField name="processedAt" type="datetime">
+  When settlement was processed
+</ResponseField>
+
+<ResponseField name="failureReason" type="string">
+  Reason for failure
+</ResponseField>
+
+<ResponseField name="isAuto" type="boolean">
+  Whether this was an automatic settlement
+</ResponseField>
+
+<RequestExample>
+```bash cURL
+curl --request GET \
+  --url https://api.waypay.com/Gateway/v1/Settlements/aa0e8400-e29b-41d4-a716-446655440000 \
+  --header 'Authorization: Bearer <token>'
+```
+
+```javascript Node.js
+const response = await fetch(
+  'https://api.waypay.com/Gateway/v1/Settlements/aa0e8400-e29b-41d4-a716-446655440000',
+  {
+    method: 'GET',
+    headers: {
+      'Authorization': 'Bearer <token>'
+    }
+  }
+);
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    'https://api.waypay.com/Gateway/v1/Settlements/aa0e8400-e29b-41d4-a716-446655440000',
+    headers={'Authorization': 'Bearer <token>'}
+)
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "id": "aa0e8400-e29b-41d4-a716-446655440000",
+  "merchantId": "bb0e8400-e29b-41d4-a716-446655440000",
+  "amount": 50000,
+  "currency": "PKR",
+  "payoutCurrency": "PKR",
+  "payoutAmount": 50000,
+  "fee": 100,
+  "netAmount": 49900,
+  "fxRate": null,
+  "fxRateTimestamp": null,
+  "bankName": "Meezan Bank",
+  "iban": "PK24MEZN0003490001234567",
+  "accountTitle": "My Business Account",
+  "usdtAddress": null,
+  "status": 3,
+  "requestedAt": "2025-12-12T11:00:00Z",
+  "approvedAt": "2025-12-12T11:30:00Z",
+  "processedAt": "2025-12-12T14:00:00Z",
+  "failureReason": null,
+  "isAuto": false
+}
+```
+</ResponseExample>
+
+## List Settlements
+
+You can also retrieve a paginated list of all settlements:
+
+**Endpoint:** `GET /Gateway/v{version}/Settlements`
+
+### Query Parameters
+
+<ParamField query="MerchantId" type="uuid">
+  Filter by merchant ID
+</ParamField>
+
+<ParamField query="Status" type="integer">
+  Filter by status (0-5)
+</ParamField>
+
+<ParamField query="From" type="datetime">
+  Filter settlements from this date
+</ParamField>
+
+<ParamField query="To" type="datetime">
+  Filter settlements until this date
+</ParamField>
+
+<ParamField query="Page" type="integer">
+  Page number (default: 1)
+</ParamField>
+
+<ParamField query="PageSize" type="integer">
+  Items per page (default: 20)
+</ParamField>

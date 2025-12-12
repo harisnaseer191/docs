@@ -1,46 +1,149 @@
 ---
-title: 'Create Refund'
-description: 'Issue a refund for a prior transaction'
+title: "Create Refund"
+api: "POST /Gateway/v{version}/Refunds"
+description: "Create a refund request for a processed transaction"
 ---
 
-<Endpoint method="POST" path="/Gateway/v1/Refunds" />
+## Overview
 
-### Headers
-- Swich-API-Key
-- Content-Type: application/json
+This endpoint allows you to initiate a refund for a previously completed transaction. Refunds can be full or partial amounts.
 
-### Body (RefundRequest)
+## Path Parameters
 
-```json
-{
-  "trxnRef": "trx_7ZP8X2",
-  "amount": 500.0,
-  "reason": "Customer returned the item"
-}
+<ParamField path="version" type="string" required>
+  API version (e.g., "1")
+</ParamField>
+
+## Request Body
+
+<ParamField body="trxnRef" type="string" required>
+  Transaction reference number to refund
+</ParamField>
+
+<ParamField body="amount" type="number">
+  Refund amount (minimum 0.01). If not provided, full transaction amount will be refunded
+</ParamField>
+
+<ParamField body="reason" type="string">
+  Reason for refund (max 500 characters)
+</ParamField>
+
+## Response
+
+<ResponseField name="id" type="uuid">
+  Unique refund identifier
+</ResponseField>
+
+<ResponseField name="paymentIntentId" type="uuid">
+  Associated payment intent ID
+</ResponseField>
+
+<ResponseField name="amount" type="number">
+  Refund amount
+</ResponseField>
+
+<ResponseField name="currency" type="string">
+  Currency code
+</ResponseField>
+
+<ResponseField name="reason" type="string">
+  Refund reason
+</ResponseField>
+
+<ResponseField name="status" type="integer">
+  Refund status:
+  - `0` - Pending
+  - `1` - Approved
+  - `2` - Processing
+  - `3` - Completed
+  - `4` - Failed
+  - `5` - Cancelled
+  - `6` - Rejected
+  - `7` - Expired
+</ResponseField>
+
+<ResponseField name="isLive" type="boolean">
+  Whether this is a live or test refund
+</ResponseField>
+
+<ResponseField name="requestedAt" type="datetime">
+  When the refund was requested
+</ResponseField>
+
+<ResponseField name="approvedAt" type="datetime">
+  When the refund was approved
+</ResponseField>
+
+<ResponseField name="processedAt" type="datetime">
+  When the refund was processed
+</ResponseField>
+
+<ResponseField name="attemptCount" type="integer">
+  Number of processing attempts
+</ResponseField>
+
+<RequestExample>
+```bash cURL
+curl --request POST \
+  --url https://api.waypay.com/Gateway/v1/Refunds \
+  --header 'Authorization: Bearer <token>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "trxnRef": "TXN20251212123456",
+    "amount": 250,
+    "reason": "Customer requested refund"
+  }'
 ```
 
-Omit amount for full refund.
+```javascript Node.js
+const response = await fetch('https://api.waypay.com/Gateway/v1/Refunds', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer <token>',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    trxnRef: 'TXN20251212123456',
+    amount: 250,
+    reason: 'Customer requested refund'
+  })
+});
 
-### Success Response (200)
-
-```json
-{
-  "id": "9f2a0a7c-0d4e-4d1e-bb0c-2b7f1c9f0a12",
-  "trxnRef": "trx_7ZP8X2",
-  "amount": 500.0,
-  "status": 1,
-  "reason": "Customer returned the item",
-  "createdAt": "2025-11-15T10:05:00Z",
-  "updatedAt": "2025-11-15T10:05:00Z"
-}
+const data = await response.json();
 ```
 
-### Error Response (422)
+```python Python
+import requests
 
-```json
+response = requests.post(
+    'https://api.waypay.com/Gateway/v1/Refunds',
+    headers={
+        'Authorization': 'Bearer <token>',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'trxnRef': 'TXN20251212123456',
+        'amount': 250,
+        'reason': 'Customer requested refund'
+    }
+)
+```
+</RequestExample>
+
+<ResponseExample>
+```json 201 Created
 {
-  "code": "refund_not_allowed",
-  "message": "Refund window has expired",
-  "details": null
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "paymentIntentId": "660e8400-e29b-41d4-a716-446655440001",
+  "amount": 250,
+  "currency": "PKR",
+  "reason": "Customer requested refund",
+  "status": 0,
+  "isLive": true,
+  "requestedAt": "2025-12-12T10:30:00Z",
+  "approvedAt": null,
+  "processedAt": null,
+  "attemptCount": 0
 }
 ```
+</ResponseExample>

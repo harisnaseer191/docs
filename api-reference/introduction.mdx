@@ -1,96 +1,271 @@
 ---
 title: 'Introduction'
-description: 'Waypay Gateway API overview and usage guide'
+description: 'Complete guide to the Waypay Gateway API'
 ---
 
+## Welcome to Waypay API
+
+The Waypay Gateway API allows you to accept payments, process payouts, manage refunds, and handle settlements programmatically. Built on REST principles with predictable resource-oriented URLs, JSON responses, and standard HTTP response codes.
+
 <Note>
-  This section documents the Waypay Gateway API using the bundled OpenAPI spec.
+  All API requests require authentication using your API key. See the [Authentication](/api-reference/authentication) section for details.
 </Note>
 
-## Overview
+## Base URL
 
-The Waypay Gateway lets merchants:
-- Initiate hosted checkout payment intents
-- Charge tokenized mobile wallets
-- Create and manage refunds
+```
+https://api.waypay.com/Gateway/v1
+```
 
-All requests must include your API key header:
-`Swich-API-Key: sk_live_XXXX`
+## Key Features
 
-OpenAPI source: `/docs/api-reference/openapi.json`
+<CardGroup cols={2}>
+  <Card title="Payment Processing" icon="credit-card">
+    Accept payments via hosted checkout or custom integrations with support for cards and mobile wallets
+  </Card>
+  <Card title="Mobile Wallet Charging" icon="mobile">
+    Directly charge JazzCash, Easypaisa, and other Pakistani mobile wallets
+  </Card>
+  <Card title="Payouts & Disbursements" icon="money-bill-transfer">
+    Send money to bank accounts with automatic reconciliation
+  </Card>
+  <Card title="Refund Management" icon="rotate-left">
+    Process full or partial refunds with automated tracking
+  </Card>
+  <Card title="Settlement Control" icon="building-columns">
+    Manage fund withdrawals with manual or automatic scheduling
+  </Card>
+  <Card title="Real-time Webhooks" icon="webhook">
+    Receive instant notifications for transaction events
+  </Card>
+</CardGroup>
 
-## Tags
+## API Capabilities
 
-Payments – Initiate payment intents  
-Wallet – Charge mobile wallets  
-Refunds – Create / cancel refunds  
-Authentication – API key requirements  
-Webhooks – (reserved for future events)
+### Payment Endpoints
+
+- **Initiate Checkout** - Create hosted payment sessions
+- **Generate Token** - Create tokens for custom checkout flows
+- **Charge Mobile Wallet** - Process direct mobile wallet charges
+- **Process Payout** - Send money to bank accounts
+
+### Transaction Endpoints
+
+- **Get by Reference** - Retrieve transaction by reference number
+
+### Refund Endpoints
+
+- **Create Refund** - Initiate full or partial refunds
+- **Cancel Refund** - Cancel pending refunds
+
+### Settlement Endpoints
+
+- **Create Settlement** - Request fund withdrawal
+- **Get Settlement** - Retrieve specific settlement details
 
 ## Quick Start
 
-```bash
-export SWICH_API_KEY="sk_live_XXXX"
+Here's how to create your first payment:
 
-curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate" \
-  -H "Content-Type: application/json" \
-  -H "Swich-API-Key: $SWICH_API_KEY" \
-  -d '{
-    "amount": 50000,
+<CodeGroup>
+```bash cURL
+curl --request POST \
+  --url https://api.waypay.com/Gateway/v1/Payment/initiate-checkout \
+  --header 'Authorization: Bearer sk_live_xxxxx' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "amount": 1000,
     "currency": "PKR",
-    "description": "Order 12345",
+    "description": "Product Purchase",
     "customerRef": {
-    "name": "Ayesha Khan",
-    "email": "ayesha@example.com",
-    "phone": "+923001234567"
+      "name": "John Doe",
+      "email": "john@example.com",
+      "cnic": "1234567890123",
+      "phone": "+923001234567"
     },
-    "orderRef": { "orderRef": "ORD12345" },
-    "successUrl": "https://merchant.example.com/checkout/success",
-    "cancelUrl": "https://merchant.example.com/checkout/cancel"
+    "orderRef": {
+      "orderRef": "ORD123456"
+    },
+    "successUrl": "https://yoursite.com/success",
+    "cancelUrl": "https://yoursite.com/cancel"
   }'
 ```
 
-Successful response returns `paymentIntentId` and `checkoutUrl`.
+```javascript Node.js
+const response = await fetch('https://api.waypay.com/Gateway/v1/Payment/initiate-checkout', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer sk_live_xxxxx',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    amount: 1000,
+    currency: 'PKR',
+    description: 'Product Purchase',
+    customerRef: {
+      name: 'John Doe',
+      email: 'john@example.com',
+      cnic: '1234567890123',
+      phone: '+923001234567'
+    },
+    orderRef: {
+      orderRef: 'ORD123456'
+    },
+    successUrl: 'https://yoursite.com/success',
+    cancelUrl: 'https://yoursite.com/cancel'
+  })
+});
 
-## Authentication
-
-The spec defines an API Key security scheme:
-
-```json
-"securitySchemes": {
-  "SwichApiKey": {
-    "type": "apiKey",
-    "in": "header",
-    "name": "Swich-API-Key"
-  }
-},
-"security": [{ "SwichApiKey": [] }]
+const data = await response.json();
+// Redirect customer to data.checkoutUrl
 ```
 
-Send the header on every request.
+```python Python
+import requests
 
-## Error Model
+response = requests.post(
+    'https://api.waypay.com/Gateway/v1/Payment/initiate-checkout',
+    headers={
+        'Authorization': 'Bearer sk_live_xxxxx',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'amount': 1000,
+        'currency': 'PKR',
+        'description': 'Product Purchase',
+        'customerRef': {
+            'name': 'John Doe',
+            'email': 'john@example.com',
+            'cnic': '1234567890123',
+            'phone': '+923001234567'
+        },
+        'orderRef': {
+            'orderRef': 'ORD123456'
+        },
+        'successUrl': 'https://yoursite.com/success',
+        'cancelUrl': 'https://yoursite.com/cancel'
+    }
+)
 
-Errors use `ErrorResponse` (preferred) or legacy `ProblemDetails`.
+data = response.json()
+# Redirect customer to data['checkoutUrl']
+```
+</CodeGroup>
 
-`ErrorResponse` example:
+### Response
 
 ```json
 {
-  "code": "validation_error",
-  "message": "description must match ^[A-Za-z0-9 ]{1,200}$",
-  "details": {
-    "field": "description",
-    "issue": "invalid_format"
-  }
+  "paymentIntentId": "550e8400-e29b-41d4-a716-446655440000",
+  "checkoutUrl": "https://checkout.waypay.com/pay/abc123xyz",
+  "expiresAt": "2025-12-12T12:00:00Z"
 }
 ```
 
-## Flow
+## Authentication
 
-1. POST /Payment/initiate → get checkoutUrl  
-2. Customer completes payment at hosted UI  
-3. (Optional) Charge mobile wallet directly for tokenized flows  
-4. (Optional) POST /Refunds to issue refund; cancel if still pending
+All API requests must include your API key in the `SWICH-API-Key` header:
 
-Proceed to endpoint examples for concrete requests and responses.
+```
+SWICH-API-Key: sk_live_your_api_key
+```
+
+<Warning>
+  Never share your API key or commit it to version control. Use environment variables to store your keys securely.
+</Warning>
+
+## Environments
+
+Waypay provides separate environments for testing and production:
+
+| Environment | Base URL | API Key Prefix |
+|-------------|----------|----------------|
+| Test | `https://api-test.waypay.com/Gateway/v1` | `sk_test_` |
+| Production | `https://api.waypay.com/Gateway/v1` | `sk_live_` |
+
+<Tip>
+  Use test mode to integrate and test your application without processing real transactions.
+</Tip>
+
+## Versioning
+
+The API version is specified in the URL path. The current version is `v1`:
+
+```
+/Gateway/v1/Payment/initiate-checkout
+```
+
+We maintain backwards compatibility within major versions. Breaking changes will result in a new version number.
+
+## Rate Limits
+
+To ensure service stability, API requests are rate-limited:
+
+- **Test Environment**: 100 requests per minute
+- **Production Environment**: 1000 requests per minute
+
+Rate limit information is included in response headers:
+
+```
+X-RateLimit-Limit: 1000
+X-RateLimit-Remaining: 999
+X-RateLimit-Reset: 1639564800
+```
+
+## Error Handling
+
+Waypay uses conventional HTTP response codes:
+
+| Status Code | Meaning |
+|-------------|---------|
+| 200-299 | Success |
+| 400 | Bad Request - Invalid parameters |
+| 401 | Unauthorized - Invalid API key |
+| 404 | Not Found - Resource doesn't exist |
+| 422 | Unprocessable Entity - Validation error |
+| 429 | Too Many Requests - Rate limit exceeded |
+| 500 | Internal Server Error |
+
+### Error Response Format
+
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "Invalid request parameters",
+  "instance": "/Gateway/v1/Payment/initiate-checkout"
+}
+```
+
+See [Error Codes](/api-reference/endpoints/errors) for detailed information.
+
+
+
+Configure webhook endpoints in your dashboard.
+
+## Support
+
+Need help? We're here for you:
+
+- 📧 Email: support@waypay.live
+- 💬 Live Chat: Available in your dashboard
+- 📚 Documentation: https://docs.waypay.live
+- 🐛 Report Issues: support@waypay.live
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/api-reference/authentication">
+    Learn how to authenticate your API requests
+  </Card>
+  <Card title="Payment Endpoints" icon="credit-card" href="/api-reference/endpoints/payment-initiate">
+    Start accepting payments
+  </Card>
+  <Card title="Webhooks" icon="webhook" href="/guides/webhooks">
+    Set up real-time event notifications
+  </Card>
+  <Card title="Quickstart Guide" icon="rocket" href="/quickstart">
+    Build your first integration
+  </Card>
+</CardGroup>

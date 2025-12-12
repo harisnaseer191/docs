@@ -1,12 +1,12 @@
 ---
-title: "Initiate Payment"
-api: "POST /Gateway/v{version}/Payment/initiate-checkout"
-description: "Create a payment checkout session for customers to complete their payment"
+title: "Initiate Payment Token"
+api: "POST /Gateway/v{version}/Payment/initiate-token"
+description: "Generate a payment token for custom checkout implementation"
 ---
 
 ## Overview
 
-This endpoint creates a payment intent and returns a checkout URL where customers can complete their payment. The checkout session supports multiple payment methods including cards and mobile wallets.
+This endpoint creates a payment intent and returns a token that can be used to implement your own custom checkout flow. The token can be used to charge mobile wallets or process payouts.
 
 ## Path Parameters
 
@@ -89,62 +89,56 @@ This endpoint creates a payment intent and returns a checkout URL where customer
   Unique identifier for the payment intent
 </ResponseField>
 
-<ResponseField name="checkoutUrl" type="string">
-  URL where customer can complete the payment
+<ResponseField name="token" type="string">
+  Payment token to use for charging or payout
 </ResponseField>
 
 <ResponseField name="expiresAt" type="datetime">
-  Checkout session expiration timestamp
+  Token expiration timestamp
 </ResponseField>
 
 <RequestExample>
 ```bash cURL
 curl --request POST \
-  --url https://api.waypay.com/Gateway/v1/Payment/initiate-checkout \
+  --url https://api.waypay.com/Gateway/v1/Payment/initiate-token \
   --header 'Authorization: Bearer <token>' \
   --header 'Content-Type: application/json' \
   --data '{
-    "amount": 1000,
+    "amount": 1500,
     "currency": "PKR",
-    "description": "Product Purchase",
+    "description": "Subscription Payment",
     "customerRef": {
-      "name": "John Doe",
-      "email": "john@example.com",
-      "cnic": "1234567890123",
-      "phone": "+923001234567"
+      "name": "Jane Smith",
+      "email": "jane@example.com",
+      "cnic": "9876543210987",
+      "phone": "+923009876543"
     },
     "orderRef": {
-      "orderRef": "ORD123456",
-      "discount": "10",
-      "tax": "15"
-    },
-    "successUrl": "https://yoursite.com/success",
-    "cancelUrl": "https://yoursite.com/cancel"
+      "orderRef": "SUB789012"
+    }
   }'
 ```
 
 ```javascript Node.js
-const response = await fetch('https://api.waypay.com/Gateway/v1/Payment/initiate-checkout', {
+const response = await fetch('https://api.waypay.com/Gateway/v1/Payment/initiate-token', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer <token>',
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
-    amount: 1000,
+    amount: 1500,
     currency: 'PKR',
-    description: 'Product Purchase',
+    description: 'Subscription Payment',
     customerRef: {
-      name: 'John Doe',
-      email: 'john@example.com',
-      cnic: '1234567890123',
-      phone: '+923001234567'
+      name: 'Jane Smith',
+      email: 'jane@example.com',
+      cnic: '9876543210987',
+      phone: '+923009876543'
     },
     orderRef: {
-      orderRef: 'ORD123456'
-    },
-    successUrl: 'https://yoursite.com/success',
-    cancelUrl: 'https://yoursite.com/cancel'
+      orderRef: 'SUB789012'
+    }
   })
 });
 
@@ -155,26 +149,24 @@ const data = await response.json();
 import requests
 
 response = requests.post(
-    'https://api.waypay.com/Gateway/v1/Payment/initiate-checkout',
+    'https://api.waypay.com/Gateway/v1/Payment/initiate-token',
     headers={
         'Authorization': 'Bearer <token>',
         'Content-Type': 'application/json'
     },
     json={
-        'amount': 1000,
+        'amount': 1500,
         'currency': 'PKR',
-        'description': 'Product Purchase',
+        'description': 'Subscription Payment',
         'customerRef': {
-            'name': 'John Doe',
-            'email': 'john@example.com',
-            'cnic': '1234567890123',
-            'phone': '+923001234567'
+            'name': 'Jane Smith',
+            'email': 'jane@example.com',
+            'cnic': '9876543210987',
+            'phone': '+923009876543'
         },
         'orderRef': {
-            'orderRef': 'ORD123456'
-        },
-        'successUrl': 'https://yoursite.com/success',
-        'cancelUrl': 'https://yoursite.com/cancel'
+            'orderRef': 'SUB789012'
+        }
     }
 )
 ```
@@ -183,9 +175,9 @@ response = requests.post(
 <ResponseExample>
 ```json 200 Success
 {
-  "paymentIntentId": "550e8400-e29b-41d4-a716-446655440000",
-  "checkoutUrl": "https://checkout.waypay.com/pay/abc123xyz",
-  "expiresAt": "2025-12-12T12:00:00Z"
+  "paymentIntentId": "770e8400-e29b-41d4-a716-446655440000",
+  "token": "tok_1a2b3c4d5e6f7g8h9i0j",
+  "expiresAt": "2025-12-12T13:00:00Z"
 }
 ```
 
@@ -216,3 +208,10 @@ response = requests.post(
 }
 ```
 </ResponseExample>
+
+## Next Steps
+
+Once you have the token, you can:
+- Use it to [charge a mobile wallet](/api-reference/endpoints/charge-mobile-wallet)
+- Process a [payout](/api-reference/endpoints/payment-payout)
+- Get [token information](/api-reference/endpoints/payment-token-info)

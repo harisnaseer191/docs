@@ -30,12 +30,32 @@
             "pages": ["api-reference/authentication"]
           },
           {
-            "group": "Endpoints",
+            "group": "Payment Endpoints",
             "pages": [
               "api-reference/endpoints/payment-initiate",
+              "api-reference/endpoints/payment-initiate-token",
               "api-reference/endpoints/charge-mobile-wallet",
+              "api-reference/endpoints/payment-payout"
+            ]
+          },
+          {
+            "group": "Transaction Endpoints",
+            "pages": [
+              "api-reference/endpoints/transaction-get-by-ref"
+            ]
+          },
+          {
+            "group": "Refund Endpoints",
+            "pages": [
               "api-reference/endpoints/refund-create",
               "api-reference/endpoints/refund-cancel"
+            ]
+          },
+          {
+            "group": "Settlement Endpoints",
+            "pages": [
+              "api-reference/endpoints/settlement-create",
+              "api-reference/endpoints/settlement-get"
             ]
           },
           {
@@ -47,11 +67,6 @@
     ],
     "global": {
       "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        }
       ]
     }
   },
