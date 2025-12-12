@@ -33,10 +33,10 @@ Waypay provides two types of API keys:
 
 ## Authentication Method
 
-Include your API key in the `Authorization` header using the Bearer authentication scheme:
+Include your API key in the `SWICH-API-Key` header:
 
 ```
-Authorization: Bearer YOUR_API_KEY
+SWICH-API-Key: YOUR_API_KEY
 ```
 
 ### Example Request
@@ -45,7 +45,7 @@ Authorization: Bearer YOUR_API_KEY
 ```bash cURL
 curl --request GET \
   --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Transaction/by-ref/TXN123456 \
-  --header 'Authorization: Bearer sk_live_xxxxxxxxxxxxx'
+  --header 'SWICH-API-Key: sk_test_xxxxxxxxxxxxx'
 ```
 
 ```javascript Node.js
@@ -56,7 +56,7 @@ const response = await fetch(
   {
     method: 'GET',
     headers: {
-      'Authorization': `Bearer ${process.env.WAYPAY_API_KEY}`
+      'SWICH-API-Key': process.env.WAYPAY_API_KEY
     }
   }
 );
@@ -73,7 +73,7 @@ api_key = os.environ.get('WAYPAY_API_KEY')
 response = requests.get(
     'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Transaction/by-ref/TXN123456',
     headers={
-        'Authorization': f'Bearer {api_key}'
+        'SWICH-API-Key': api_key
     }
 )
 
@@ -90,7 +90,7 @@ curl_setopt_array($curl, [
   CURLOPT_URL => "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Transaction/by-ref/TXN123456",
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_HTTPHEADER => [
-    "Authorization: Bearer " . $api_key
+    "SWICH-API-Key: " . $api_key
   ],
 ]);
 
@@ -152,7 +152,7 @@ WAYPAY_API_KEY=sk_live_xxxxxxxxxxxxx
 
 This error occurs when:
 
-- No `Authorization` header is provided
+- No `SWICH-API-Key` header is provided
 - The API key is invalid or has been revoked
 - The API key format is incorrect
 
@@ -170,7 +170,7 @@ This error occurs when:
 **Solutions:**
 
 1. Verify your API key is correct and active
-2. Ensure the header format is exactly: `Authorization: Bearer YOUR_API_KEY`
+2. Ensure the header format is exactly: `SWICH-API-Key: YOUR_API_KEY`
 3. Check that you're using the correct key for the environment (test vs live)
 4. Confirm the key hasn't been revoked in the dashboard
 
@@ -225,7 +225,7 @@ Test your authentication setup with a simple API call:
 ```bash cURL
 curl --request GET \
   --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Settlements/schedule \
-  --header 'Authorization: Bearer YOUR_API_KEY'
+  --header 'SWICH-API-Key: YOUR_API_KEY'
 ```
 
 ```javascript Node.js
@@ -235,7 +235,7 @@ const testAuth = async () => {
       'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Settlements/schedule',
       {
         headers: {
-          'Authorization': `Bearer ${process.env.WAYPAY_API_KEY}`
+          'SWICH-API-Key': process.env.WAYPAY_API_KEY
         }
       }
     );
@@ -262,7 +262,7 @@ def test_auth():
     
     response = requests.get(
         'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Settlements/schedule',
-        headers={'Authorization': f'Bearer {api_key}'}
+        headers={'SWICH-API-Key': api_key}
     )
     
     if response.status_code == 200:
@@ -300,7 +300,7 @@ test_auth()
 
 ## Additional Headers
 
-While the `Authorization` header is required, you may also include optional headers:
+While the `SWICH-API-Key` header is required, you may also include optional headers:
 
 ### Content-Type
 

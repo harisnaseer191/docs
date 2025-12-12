@@ -48,20 +48,25 @@ https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Ga
 - **Generate Token** - Create tokens for custom checkout flows
 - **Charge Mobile Wallet** - Process direct mobile wallet charges
 - **Process Payout** - Send money to bank accounts
+- **Get Token Info** - Retrieve payment token details
 
 ### Transaction Endpoints
 
 - **Get by Reference** - Retrieve transaction by reference number
+- **Get by ID** - Retrieve transaction by unique identifier
 
 ### Refund Endpoints
 
 - **Create Refund** - Initiate full or partial refunds
+- **Get Refund** - Retrieve refund details
 - **Cancel Refund** - Cancel pending refunds
 
 ### Settlement Endpoints
 
 - **Create Settlement** - Request fund withdrawal
+- **List Settlements** - Get paginated settlement history
 - **Get Settlement** - Retrieve specific settlement details
+- **Configure Schedule** - Set up automatic settlements
 
 ## Quick Start
 
@@ -71,7 +76,7 @@ Here's how to create your first payment:
 ```bash cURL
 curl --request POST \
   --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate-checkout \
-  --header 'Authorization: Bearer sk_live_xxxxx' \
+  --header 'SWICH-API-Key: sk_test_xxxxxxxxxxxxx' \
   --header 'Content-Type: application/json' \
   --data '{
     "amount": 1000,
@@ -92,41 +97,47 @@ curl --request POST \
 ```
 
 ```javascript Node.js
-const response = await fetch('https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate-checkout', {
-  method: 'POST',
-  headers: {
-    'Authorization': 'Bearer sk_live_xxxxx',
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    amount: 1000,
-    currency: 'PKR',
-    description: 'Product Purchase',
-    customerRef: {
-      name: 'John Doe',
-      email: 'john@example.com',
-      cnic: '1234567890123',
-      phone: '+923001234567'
+const response = await fetch(
+  'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate-checkout',
+  {
+    method: 'POST',
+    headers: {
+      'SWICH-API-Key': process.env.WAYPAY_API_KEY,
+      'Content-Type': 'application/json'
     },
-    orderRef: {
-      orderRef: 'ORD123456'
-    },
-    successUrl: 'https://yoursite.com/success',
-    cancelUrl: 'https://yoursite.com/cancel'
-  })
-});
+    body: JSON.stringify({
+      amount: 1000,
+      currency: 'PKR',
+      description: 'Product Purchase',
+      customerRef: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        cnic: '1234567890123',
+        phone: '+923001234567'
+      },
+      orderRef: {
+        orderRef: 'ORD123456'
+      },
+      successUrl: 'https://yoursite.com/success',
+      cancelUrl: 'https://yoursite.com/cancel'
+    })
+  }
+);
 
 const data = await response.json();
 // Redirect customer to data.checkoutUrl
 ```
 
 ```python Python
+import os
 import requests
+
+api_key = os.environ.get('WAYPAY_API_KEY')
 
 response = requests.post(
     'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate-checkout',
     headers={
-        'Authorization': 'Bearer sk_live_xxxxx',
+        'SWICH-API-Key': api_key,
         'Content-Type': 'application/json'
     },
     json={
@@ -240,7 +251,24 @@ Waypay uses conventional HTTP response codes:
 
 See [Error Codes](/api-reference/endpoints/errors) for detailed information.
 
+## Idempotency
 
+To safely retry requests without performing the same operation twice, include an idempotency key:
+
+```
+Idempotency-Key: unique-key-123
+```
+
+Waypay stores the result of the first request and returns it for subsequent requests with the same key (valid for 24 hours).
+
+## Webhooks
+
+Receive real-time notifications when events occur in your Waypay account:
+
+- Payment completed
+- Payment failed
+- Refund processed
+- Settlement completed
 
 Configure webhook endpoints in your dashboard.
 

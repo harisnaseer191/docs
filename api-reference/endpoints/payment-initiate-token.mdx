@@ -76,7 +76,7 @@ This endpoint creates a payment intent and returns a token that can be used to i
 </ParamField>
 
 <ParamField body="intentType" type="string">
-  Payment intent type
+  Payment intent type. Allowed values: `checkout`, `deposit`, `withdrawal`, `refund`, `settlement`
 </ParamField>
 
 <ParamField body="metadataJson" type="string">
@@ -115,7 +115,8 @@ curl --request POST \
     },
     "orderRef": {
       "orderRef": "SUB789012"
-    }
+    },
+    "intentType": "deposit"
   }'
 ```
 
@@ -138,7 +139,8 @@ const response = await fetch('https://waypay-merchant-api.icydesert-41d42f7e.uae
     },
     orderRef: {
       orderRef: 'SUB789012'
-    }
+    },
+    intentType: 'deposit'
   })
 });
 
@@ -166,7 +168,8 @@ response = requests.post(
         },
         'orderRef': {
             'orderRef': 'SUB789012'
-        }
+        },
+        'intentType': 'deposit'
     }
 )
 ```

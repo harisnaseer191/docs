@@ -11,7 +11,7 @@ To use the WayPay Merchant APIs, first create an account:
 - Click Sign Up and complete the registration form (business name, contact, email, phone).
 - Verify your email address via the link sent to your inbox.
 - Provide required business details and documents for compliance (KYC/KYB).
-- Submit for review and wait for approval. You’ll be notified once your account is active.
+- Submit for review and wait for approval. You'll be notified once your account is active.
 
 <Note>
   Your API access becomes available only after your account is approved and
@@ -29,7 +29,9 @@ Once approved:
 
 All API requests must include this header:
 
-- Swich-API-Key: YOUR_API_KEY
+```
+SWICH-API-Key: YOUR_API_KEY
+```
 
 <Warning>
   Treat your API key like a password. Rotate it immediately if exposed.
@@ -40,74 +42,119 @@ All API requests must include this header:
 Set your key in the terminal:
 
 ```bash
-export SWICH_API_KEY="sk_live_XXXX"
+export SWICH_API_KEY="sk_test_xxxxxxxxxxxxx"
 ```
 
 Create a hosted checkout payment intent:
 
 ```bash
-curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate" \
+curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate-checkout" \
   -H "Content-Type: application/json" \
-  -H "Swich-API-Key: $SWICH_API_KEY" \
+  -H "SWICH-API-Key: $SWICH_API_KEY" \
   -d '{
     "amount": 50000,
     "currency": "PKR",
     "description": "Order 12345",
     "customerRef": {
-    "name": "Ayesha Khan",
-    "email": "ayesha@example.com",
-    "phone": "+923001234567"
-  },
-    "orderRef": { "orderRef": "ORD12345" },
+      "name": "Ayesha Khan",
+      "email": "ayesha@example.com",
+      "cnic": "1234567890123",
+      "phone": "+923001234567"
+    },
+    "orderRef": { 
+      "orderRef": "ORD12345" 
+    },
     "successUrl": "https://merchant.example.com/checkout/success",
     "cancelUrl": "https://merchant.example.com/checkout/cancel"
   }'
 ```
 
-You should receive a response with `paymentIntentId` and `checkoutUrl`.
+You should receive a response with `paymentIntentId` and `checkoutUrl`:
 
-### Charge a tokenized mobile wallet (optional)
+```json
+{
+  "paymentIntentId": "550e8400-e29b-41d4-a716-446655440000",
+  "checkoutUrl": "https://checkout.waypay.com/pay/abc123xyz",
+  "expiresAt": "2025-12-12T12:00:00Z"
+}
+```
+
+Redirect your customer to the `checkoutUrl` to complete payment.
+
+## Additional Examples
+
+### Charge a tokenized mobile wallet
 
 ```bash
 curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/charge-mobile-wallet" \
   -H "Content-Type: application/json" \
-  -H "Swich-API-Key: $SWICH_API_KEY" \
+  -H "SWICH-API-Key: $SWICH_API_KEY" \
   -d '{
     "token": "tok_mwallet_9xK3PQrA",
-    "mobileNumber": "+923001234567",
+    "mobileNumber": "03001234567",
     "amount": 1500.0,
+    "walletProvider": 1,
+    "last6CNICDigits": "123456",
     "billReference": "INV-98127",
-    "description": "Wallet charge for order ORD-98127",
-    "last6CNICDigits": "123456"
+    "description": "Wallet charge for order ORD-98127"
   }'
 ```
 
-### Issue a refund (optional)
+### Issue a refund
 
 ```bash
 curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Refunds" \
   -H "Content-Type: application/json" \
-  -H "Swich-API-Key: $SWICH_API_KEY" \
+  -H "SWICH-API-Key: $SWICH_API_KEY" \
   -d '{
-    "trxnRef": "trx_7ZP8X2",
+    "trxnRef": "TXN20251212123456",
     "amount": 500.0,
     "reason": "Customer returned the item"
   }'
 ```
 
+### Get transaction details
+
+```bash
+curl -X GET "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Transaction/by-ref/TXN20251212123456" \
+  -H "SWICH-API-Key: $SWICH_API_KEY"
+```
+
 ## Troubleshooting
 
-- 401 Unauthorized  
-  Ensure the header is present and correct:
-  -H "Swich-API-Key: $SWICH_API_KEY"
+### 401 Unauthorized
 
-- 400 Validation error  
-  Check your payload fields and formats (e.g., description length and characters).
+Ensure the header is present and correct:
+
+```bash
+-H "SWICH-API-Key: $SWICH_API_KEY"
+```
+
+**Common issues:**
+- Missing `SWICH-API-Key` header
+- Incorrect API key
+- Using test key in production or vice versa
+- API key has been revoked
+
+### 400 Bad Request
+
+Check your payload fields and formats:
+
+- `description` must be 1-200 alphanumeric characters and spaces
+- `amount` must be greater than 0.01
+- Required fields are present (name, email, cnic, phone)
+
+### 422 Validation Error
+
+Your request passed basic validation but failed business logic:
+
+- Insufficient balance
+- Invalid mobile number format
+- Transaction already refunded
+- CNIC format incorrect
 
 <Note>
-  See the full API reference and schema at{" "}
-  <code>/docs/api-reference/openapi.json</code>, and endpoint examples under API
-  Reference → Endpoints.
+  See the full API reference and schema at the [API Reference](/api-reference/introduction), and detailed endpoint examples under API Reference → Endpoints.
 </Note>
 
 ## Next steps
@@ -118,18 +165,18 @@ curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azureconta
   Explore endpoints, payloads, and examples powered by OpenAPI.
 </Card>
 
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
+<Card title="Authentication" icon="key" href="/api-reference/authentication">
+  Learn about API key management and security best practices.
 </Card>
 
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
+<Card title="Payment Endpoints" icon="credit-card" href="/api-reference/endpoints/payment-initiate">
+  Deep dive into payment processing options.
 </Card>
 
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
+<Card title="Webhooks" icon="webhook" href="/guides/webhooks">
+  Set up real-time event notifications.
 </Card>
 
 </CardGroup>
 
-<Note>Need help? See the Mintlify docs or join the community.</Note>
+<Note>Need help? Contact support@waypay.live or check our documentation.</Note>
