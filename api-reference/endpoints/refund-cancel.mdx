@@ -28,7 +28,7 @@ Cancel a refund that is in pending status. Once a refund is approved or processe
 ```bash cURL
 curl --request POST \
   --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Refunds/550e8400-e29b-41d4-a716-446655440000/cancel \
-  --header 'Authorization: Bearer <token>'
+  --header 'SWICH-API-Key: sk_test_xxxxxxxx'
 ```
 
 ```javascript Node.js
@@ -37,7 +37,7 @@ const response = await fetch(
   {
     method: 'POST',
     headers: {
-      'Authorization': 'Bearer <token>'
+      'SWICH-API-Key': 'sk_test_xxxxxxxx'
     }
   }
 );
@@ -51,7 +51,7 @@ import requests
 response = requests.post(
     'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Refunds/550e8400-e29b-41d4-a716-446655440000/cancel',
     headers={
-        'Authorization': 'Bearer <token>'
+        'SWICH-API-Key': 'sk_test_xxxxxxxx'
     }
 )
 ```
