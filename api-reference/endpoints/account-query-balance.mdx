@@ -1,0 +1,131 @@
+---
+title: "Query Wallet Balance"
+api: "POST /Gateway/v{version}/Account/query-balance"
+description: "Retrieve your merchant wallet balance and pending transaction information"
+---
+
+## Overview
+
+This endpoint allows you to query your merchant wallet balance, including current balance, pending balance, and available balance for withdrawals.
+
+## Path Parameters
+
+<ParamField path="version" type="string" required>
+  API version (e.g., "1")
+</ParamField>
+
+## Response
+
+<ResponseField name="userId" type="uuid">
+  Merchant user ID
+</ResponseField>
+
+<ResponseField name="walletId" type="uuid">
+  Unique wallet identifier
+</ResponseField>
+
+<ResponseField name="currentBalance" type="number">
+  Current total balance in the wallet
+</ResponseField>
+
+<ResponseField name="pendingBalance" type="number">
+  Total amount in pending transactions
+</ResponseField>
+
+<ResponseField name="availableBalance" type="number">
+  Balance available for withdrawal or settlements
+</ResponseField>
+
+<ResponseField name="currency" type="string">
+  Wallet currency code (e.g., "PKR", "USD")
+</ResponseField>
+
+<ResponseField name="pendingTransactionCount" type="integer">
+  Number of transactions currently pending
+</ResponseField>
+
+<ResponseField name="pendingByTransactionType" type="object">
+  Breakdown of pending amounts by transaction type
+</ResponseField>
+
+<ResponseField name="retrievedAt" type="datetime">
+  Timestamp when balance was retrieved
+</ResponseField>
+
+<RequestExample>
+```bash cURL
+curl --request POST \
+  --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Account/query-balance \
+  --header 'SWICH-API-Key: sk_test_xxxxxxxx'
+```
+
+```javascript Node.js
+const response = await fetch('https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Account/query-balance', {
+  method: 'POST',
+  headers: {
+    'SWICH-API-Key': 'sk_test_xxxxxxxx',
+  }
+});
+
+const data = await response.json();
+console.log('Available Balance:', data.availableBalance);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Account/query-balance',
+    headers={
+        'SWICH-API-Key': 'sk_test_xxxxxxxx',
+    }
+)
+
+data = response.json()
+print(f"Available Balance: {data['availableBalance']}")
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "userId": "550e8400-e29b-41d4-a716-446655440000",
+  "walletId": "660e8400-e29b-41d4-a716-446655440000",
+  "currentBalance": 125000.50,
+  "pendingBalance": 15000.00,
+  "availableBalance": 110000.50,
+  "currency": "PKR",
+  "pendingTransactionCount": 5,
+  "pendingByTransactionType": {
+    "Deposit": 10000.00,
+    "Withdrawal": 5000.00
+  },
+  "retrievedAt": "2025-12-13T10:30:00Z"
+}
+```
+
+```json 401 Unauthorized
+{
+  "type": "https://tools.ietf.org/html/rfc7235#section-3.1",
+  "title": "Unauthorized",
+  "status": 401,
+  "detail": "Invalid or missing API key"
+}
+```
+
+```json 500 Internal Server Error
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.6.1",
+  "title": "Internal Server Error",
+  "status": 500,
+  "detail": "An error occurred while retrieving balance"
+}
+```
+</ResponseExample>
+
+## Best Practices
+
+- Check your balance before initiating settlements or payouts
+- Monitor `pendingBalance` to understand funds in transit
+- Use `availableBalance` to determine withdrawal capacity
+- Implement regular balance checks in your integration for financial reconciliation

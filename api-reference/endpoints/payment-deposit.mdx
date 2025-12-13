@@ -1,0 +1,288 @@
+---
+title: "Create Deposit Order"
+api: "POST /Gateway/v{version}/Payment/deposit"
+description: "Create a deposit order to collect payment from customer's mobile wallet"
+---
+
+## Overview
+
+This endpoint creates a deposit order that initiates a mobile wallet charge from your customer. Use this for collecting payments directly from mobile wallets like JazzCash, Easypaisa, or NayaPay.
+
+## Path Parameters
+
+<ParamField path="version" type="string" required>
+  API version (e.g., "1")
+</ParamField>
+
+## Request Body
+
+<ParamField body="mobileNumber" type="string" required>
+  Customer's mobile wallet number
+</ParamField>
+
+<ParamField body="amount" type="number" required>
+  Deposit amount (must be greater than 0.01)
+</ParamField>
+
+<ParamField body="walletProvider" type="integer">
+  Mobile wallet provider code:
+  - 1: JazzCash
+  - 2: Easypaisa
+  - 3: NayaPay
+  - 4: SadaPay
+</ParamField>
+
+<ParamField body="billReference" type="string">
+  Optional bill or invoice reference
+</ParamField>
+
+<ParamField body="last6CNICDigits" type="string" required>
+  Last 6 digits of customer's CNIC (exactly 6 numeric digits)
+</ParamField>
+
+<ParamField body="currency" type="string">
+  Payment currency (e.g., "PKR")
+</ParamField>
+
+<ParamField body="description" type="string" required>
+  Payment description (1-200 alphanumeric characters and spaces only)
+</ParamField>
+
+<ParamField body="successUrl" type="string">
+  URL to redirect after successful payment
+</ParamField>
+
+<ParamField body="cancelUrl" type="string">
+  URL to redirect after cancelled payment
+</ParamField>
+
+<ParamField body="intentType" type="string">
+  Payment intent type (e.g., "deposit")
+</ParamField>
+
+<ParamField body="customerRef" type="object">
+  Customer information
+  <Expandable title="properties">
+    <ParamField body="name" type="string" required>
+      Customer full name
+    </ParamField>
+    <ParamField body="email" type="string" required>
+      Customer email address
+    </ParamField>
+    <ParamField body="cnic" type="string" required>
+      Customer CNIC number
+    </ParamField>
+    <ParamField body="phone" type="string" required>
+      Customer phone number
+    </ParamField>
+    <ParamField body="shippingAddress" type="string">
+      Shipping address
+    </ParamField>
+    <ParamField body="estimatedDays" type="string">
+      Estimated delivery days
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="orderRef" type="object">
+  Order information
+  <Expandable title="properties">
+    <ParamField body="orderRef" type="string" required>
+      Order reference (1-20 alphanumeric characters)
+    </ParamField>
+    <ParamField body="discount" type="string">
+      Discount amount or percentage
+    </ParamField>
+    <ParamField body="tax" type="string">
+      Tax amount or percentage
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Response
+
+<ResponseField name="paymentIntentId" type="uuid">
+  Unique identifier for the payment intent
+</ResponseField>
+
+<ResponseField name="amount" type="number">
+  Deposit amount
+</ResponseField>
+
+<ResponseField name="currency" type="string">
+  Payment currency
+</ResponseField>
+
+<ResponseField name="merchantReference" type="string">
+  Your merchant reference for this transaction
+</ResponseField>
+
+<ResponseField name="walletChargeInfo" type="object">
+  Information about the wallet charge attempt
+  <Expandable title="properties">
+    <ResponseField name="provider" type="string">
+      Wallet provider name
+    </ResponseField>
+    <ResponseField name="status" type="string">
+      Charge status
+    </ResponseField>
+    <ResponseField name="transactionReference" type="string">
+      Provider's transaction reference
+    </ResponseField>
+    <ResponseField name="message" type="string">
+      Status message
+    </ResponseField>
+    <ResponseField name="isSuccess" type="boolean">
+      Whether the charge was successful
+    </ResponseField>
+    <ResponseField name="errorDetails" type="string">
+      Error details if charge failed
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+```bash cURL
+curl --request POST \
+  --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/deposit \
+  --header 'SWICH-API-Key: sk_test_xxxxxxxx' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "mobileNumber": "03001234567",
+    "amount": 1500,
+    "walletProvider": 1,
+    "last6CNICDigits": "123456",
+    "currency": "PKR",
+    "description": "Product Purchase",
+    "customerRef": {
+      "name": "Ali Ahmed",
+      "email": "ali@example.com",
+      "cnic": "4210112345678",
+      "phone": "03001234567"
+    },
+    "orderRef": {
+      "orderRef": "ORD123456"
+    }
+  }'
+```
+
+```javascript Node.js
+const response = await fetch('https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/deposit', {
+  method: 'POST',
+  headers: {
+    'SWICH-API-Key': 'sk_test_xxxxxxxx',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    mobileNumber: '03001234567',
+    amount: 1500,
+    walletProvider: 1,
+    last6CNICDigits: '123456',
+    currency: 'PKR',
+    description: 'Product Purchase',
+    customerRef: {
+      name: 'Ali Ahmed',
+      email: 'ali@example.com',
+      cnic: '4210112345678',
+      phone: '03001234567'
+    },
+    orderRef: {
+      orderRef: 'ORD123456'
+    }
+  })
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/deposit',
+    headers={
+        'SWICH-API-Key': 'sk_test_xxxxxxxx',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'mobileNumber': '03001234567',
+        'amount': 1500,
+        'walletProvider': 1,
+        'last6CNICDigits': '123456',
+        'currency': 'PKR',
+        'description': 'Product Purchase',
+        'customerRef': {
+            'name': 'Ali Ahmed',
+            'email': 'ali@example.com',
+            'cnic': '4210112345678',
+            'phone': '03001234567'
+        },
+        'orderRef': {
+            'orderRef': 'ORD123456'
+        }
+    }
+)
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "paymentIntentId": "770e8400-e29b-41d4-a716-446655440000",
+  "amount": 1500,
+  "currency": "PKR",
+  "merchantReference": "ORD123456",
+  "walletChargeInfo": {
+    "provider": "JazzCash",
+    "status": "Pending",
+    "transactionReference": "JC20251213123456",
+    "message": "OTP sent to customer",
+    "isSuccess": true,
+    "errorDetails": null
+  }
+}
+```
+
+```json 400 Bad Request
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "Invalid mobile number format"
+}
+```
+
+```json 401 Unauthorized
+{
+  "type": "https://tools.ietf.org/html/rfc7235#section-3.1",
+  "title": "Unauthorized",
+  "status": 401,
+  "detail": "Invalid or missing API key"
+}
+```
+
+```json 422 Unprocessable Content
+{
+  "type": "https://tools.ietf.org/html/rfc4918#section-11.2",
+  "title": "Unprocessable Content",
+  "status": 422,
+  "detail": "Wallet provider not available"
+}
+```
+</ResponseExample>
+
+## Wallet Provider Codes
+
+| Provider | Code | Description |
+|----------|------|-------------|
+| JazzCash | 1 | Pakistan's leading mobile wallet |
+| Easypaisa | 2 | Popular mobile wallet service |
+| NayaPay | 3 | Digital wallet platform |
+| SadaPay | 4 | Modern digital wallet |
+
+## Best Practices
+
+- Always validate the mobile number format before making the request
+- Ensure the last 6 CNIC digits match the wallet account holder
+- Handle OTP verification flow for successful wallet charges
+- Monitor the `walletChargeInfo.status

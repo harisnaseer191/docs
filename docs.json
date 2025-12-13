@@ -37,16 +37,30 @@
             "pages": ["api-reference/authentication"]
           },
           {
-            "group": "Payment Endpoints",
+            "group": "Account Balance",
+            "pages": ["api-reference/endpoints/account-query-balance"]
+          },
+          {
+            "group": "Hosted Page Checkout",
             "pages": [
-              "api-reference/endpoints/payment-initiate",
-              "api-reference/endpoints/payment-initiate-token",
-              "api-reference/endpoints/charge-mobile-wallet",
-              "api-reference/endpoints/payment-payout"
+              "api-reference/endpoints/payment-initiate"
             ]
           },
           {
-            "group": "Transaction Endpoints",
+            "group": "Deposit",
+            "pages": [
+              "api-reference/endpoints/payment-deposit"
+            ]
+          },
+          {
+            "group": "Withdrawal",
+            "pages": [
+              "api-reference/endpoints/payment-withdraw"
+            ]
+          },
+
+          {
+            "group": "Order Status",
             "pages": [
               "api-reference/endpoints/transaction-get-by-ref"
             ]
