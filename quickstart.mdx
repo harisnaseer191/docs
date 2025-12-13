@@ -37,32 +37,90 @@ SWICH-API-Key: YOUR_API_KEY
   Treat your API key like a password. Rotate it immediately if exposed.
 </Warning>
 
-## Make your first API call
+## Understanding Test Mode
 
-Set your key in the terminal:
+<Info>
+  **Test Mode vs Production Mode**
+  
+  WayPay provides two environments to help you develop and test your integration safely:
+</Info>
+
+### Test Mode (Sandbox)
+
+When using API keys that start with `sk_test_`, you are in **test mode**:
+
+- ✅ **No real money is processed** - All transactions are simulated
+- ✅ **Free unlimited testing** - Test as many transactions as you need
+- ✅ **Instant processing** - No waiting for real bank confirmations
+- ✅ **Same API behavior** - Test mode mirrors production functionality
+- ✅ **Separate data** - Test transactions never affect production data
+
+### Test Credentials
+
+**Always use these standardized test credentials in sandbox mode:**
+
+<CardGroup cols={2}>
+  <Card title="Test Phone Number" icon="mobile">
+    `03123456789`
+    
+    Use for all mobile wallet and customer phone fields
+  </Card>
+  <Card title="Test CNIC" icon="id-card">
+    Full: `3520108345678`
+    
+    Last 6 digits: `345678`
+  </Card>
+  <Card title="Test OTP" icon="lock">
+    `123456`
+    
+    Use when completing mobile wallet verification
+  </Card>
+  <Card title="Test Bank Account" icon="building-columns">
+    IBAN: `PK36SCBL0000001123456702`
+    
+    Bank: Standard Chartered Bank
+  </Card>
+</CardGroup>
+
+### Production Mode
+
+When using API keys that start with `sk_live_`:
+
+- ⚠️ **Real money is processed** - Actual charges and transfers occur
+- 💳 **Real customer data required** - Use actual phone numbers, CNICs, bank accounts
+- 🏦 **Real banking delays** - Transactions follow actual bank processing times
+- 📊 **Affects live balances** - All transactions update production wallet balances
+
+<Warning>
+  **Never use test credentials (03123456789, 3520108345678) in production!** Always use real customer information when processing live transactions.
+</Warning>
+
+## Make your first test API call
+
+Set your test API key in the terminal:
 
 ```bash
 export SWICH_API_KEY="sk_test_xxxxxxxxxxxxx"
 ```
 
-Create a hosted checkout payment intent:
+### Example 1: Create a test checkout session
 
 ```bash
 curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate-checkout" \
   -H "Content-Type: application/json" \
   -H "SWICH-API-Key: $SWICH_API_KEY" \
   -d '{
-    "amount": 50000,
+    "amount": 1000,
     "currency": "PKR",
-    "description": "Order 12345",
+    "description": "Test Order 12345",
     "customerRef": {
-      "name": "Ayesha Khan",
-      "email": "ayesha@example.com",
-      "cnic": "1234567890123",
-      "phone": "+923001234567"
+      "name": "Test User",
+      "email": "test@example.com",
+      "cnic": "3520108345678",
+      "phone": "03123456789"
     },
     "orderRef": { 
-      "orderRef": "ORD12345" 
+      "orderRef": "TEST-ORD-12345" 
     },
     "successUrl": "https://merchant.example.com/checkout/success",
     "cancelUrl": "https://merchant.example.com/checkout/cancel"
@@ -79,28 +137,101 @@ You should receive a response with `paymentIntentId` and `checkoutUrl`:
 }
 ```
 
-Redirect your customer to the `checkoutUrl` to complete payment.
+Redirect your customer to the `checkoutUrl` to complete the test payment.
 
-## Additional Examples
-
-### Charge a tokenized mobile wallet
+### Example 2: Test mobile wallet deposit
 
 ```bash
-curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/charge-mobile-wallet" \
+curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/deposit" \
   -H "Content-Type: application/json" \
   -H "SWICH-API-Key: $SWICH_API_KEY" \
   -d '{
-    "token": "tok_mwallet_9xK3PQrA",
-    "mobileNumber": "03001234567",
-    "amount": 1500.0,
+    "mobileNumber": "03123456789",
+    "amount": 1500,
     "walletProvider": 1,
-    "last6CNICDigits": "123456",
-    "billReference": "INV-98127",
-    "description": "Wallet charge for order ORD-98127"
+    "last6CNICDigits": "345678",
+    "currency": "PKR",
+    "description": "Test Deposit",
+    "intentType": "deposit",
+    "customerRef": {
+      "name": "Test User",
+      "email": "test@example.com",
+      "cnic": "3520108345678",
+      "phone": "03123456789"
+    },
+    "orderRef": {
+      "orderRef": "TEST-DEP-456"
+    }
   }'
 ```
 
-### Issue a refund
+**Expected Response:**
+```json
+{
+  "paymentIntentId": "770e8400-e29b-41d4-a716-446655440000",
+  "amount": 1500,
+  "currency": "PKR",
+  "merchantReference": "TEST-DEP-456",
+  "walletChargeInfo": {
+    "provider": "JazzCash",
+    "status": "Pending",
+    "transactionReference": "JC20251213123456",
+    "message": "OTP sent to customer",
+    "isSuccess": true
+  }
+}
+```
+
+<Info>
+  In test mode, use OTP `123456` to complete the mobile wallet verification.
+</Info>
+
+### Example 3: Test bank withdrawal/payout
+
+```bash
+curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/withdraw" \
+  -H "Content-Type: application/json" \
+  -H "SWICH-API-Key: $SWICH_API_KEY" \
+  -d '{
+    "amount": 5000,
+    "description": "Test Payout",
+    "cnic": "3520108345678",
+    "customerAccountNumber": "PK36SCBL0000001123456702",
+    "customerBankName": "Standard Chartered Bank",
+    "customerFullName": "Test User",
+    "customerEmail": "test@example.com",
+    "autoProcessPayout": true,
+    "currency": "PKR",
+    "intentType": "withdrawal",
+    "customerRef": {
+      "name": "Test User",
+      "email": "test@example.com",
+      "cnic": "3520108345678",
+      "phone": "03123456789"
+    },
+    "orderRef": {
+      "orderRef": "TEST-WD-789"
+    }
+  }'
+```
+
+## Additional Test Examples
+
+### Check test wallet balance
+
+```bash
+curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Account/query-balance" \
+  -H "SWICH-API-Key: $SWICH_API_KEY"
+```
+
+### Get test transaction details
+
+```bash
+curl -X GET "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Transaction/by-ref/TEST-ORD-12345" \
+  -H "SWICH-API-Key: $SWICH_API_KEY"
+```
+
+### Issue a test refund
 
 ```bash
 curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Refunds" \
@@ -109,16 +240,36 @@ curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azureconta
   -d '{
     "trxnRef": "TXN20251212123456",
     "amount": 500.0,
-    "reason": "Customer returned the item"
+    "reason": "Test refund - customer return"
   }'
 ```
 
-### Get transaction details
+## Going Live Checklist
 
-```bash
-curl -X GET "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Transaction/by-ref/TXN20251212123456" \
-  -H "SWICH-API-Key: $SWICH_API_KEY"
-```
+Before switching to production mode:
+
+- ✅ Test all payment flows thoroughly in sandbox
+- ✅ Implement proper error handling for all endpoints
+- ✅ Set up and test webhook endpoints
+- ✅ Test transaction status polling/verification
+- ✅ Implement idempotency for all payment requests
+- ✅ Set up proper logging and monitoring
+- ✅ Review and implement security best practices
+- ✅ Complete KYC/KYB verification
+- ✅ Obtain production API key (`sk_live_`)
+- ✅ Update environment variables with production key
+- ✅ **Switch to using real customer data** (phone, CNIC, bank accounts)
+- ✅ Test a small transaction in production
+- ✅ Monitor first few production transactions closely
+
+<Warning>
+  **Critical Reminders for Production:**
+  - Real money will be processed
+  - Use actual customer phone numbers and CNICs
+  - Validate bank account details before withdrawals
+  - Never use test credentials (03123456789, 3520108345678)
+  - Keep production API keys secure
+</Warning>
 
 ## Troubleshooting
 
@@ -143,15 +294,16 @@ Check your payload fields and formats:
 - `description` must be 1-200 alphanumeric characters and spaces
 - `amount` must be greater than 0.01
 - Required fields are present (name, email, cnic, phone)
+- In test mode, use correct test credentials
 
 ### 422 Validation Error
 
 Your request passed basic validation but failed business logic:
 
 - Insufficient balance
-- Invalid mobile number format
+- Invalid mobile number format (must be `03123456789` in test mode)
 - Transaction already refunded
-- CNIC format incorrect
+- CNIC format incorrect (must be `3520108345678` in test mode)
 
 <Note>
   See the full API reference and schema at the [API Reference](/api-reference/introduction), and detailed endpoint examples under API Reference → Endpoints.

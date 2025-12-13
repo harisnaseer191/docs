@@ -72,9 +72,125 @@ https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Ga
 - **Configure Schedule** - Set up automatic settlements with customizable parameters
 - **Get Schedule** - Retrieve current settlement schedule configuration
 
+## Environments
+
+Waypay provides separate environments for testing and production:
+
+| Environment | Base URL | API Key Prefix |
+|-------------|----------|----------------|
+| Test | `https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1` | `sk_test_` |
+| Production | `https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1` | `sk_live_` |
+
+<Tip>
+  Use test mode to integrate and test your application without processing real transactions.
+</Tip>
+
+## Test Mode / Sandbox
+
+<Warning>
+  **Important: Test Mode Information**
+  
+  When using test API keys (those starting with `sk_test_`), you are in **sandbox mode**. No real money is processed in test mode.
+</Warning>
+
+### Test Mode Features
+
+- ✅ **No real money charged** - All transactions are simulated
+- ✅ **Free to test** - Test as many transactions as you need
+- ✅ **Same API behavior** - Test mode mirrors production functionality
+- ✅ **Separate data** - Test data never affects production
+- ✅ **Instant processing** - No waiting for bank confirmations
+
+### Test Credentials
+
+Use these standardized test credentials when testing in sandbox mode:
+
+<AccordionGroup>
+  <Accordion title="Test Mobile Number">
+    **Phone Number:** `03123456789`
+    
+    Use this mobile number for:
+    - Deposit orders
+    - Mobile wallet charging
+    - Customer phone field
+    - Any mobile wallet transactions
+  </Accordion>
+
+  <Accordion title="Test CNIC">
+    **CNIC:** `3520108345678`
+    
+    **Last 6 digits:** `345678`
+    
+    Use this CNIC for:
+    - Customer CNIC field
+    - Last 6 CNIC digits verification
+    - Bank account validation
+    - Withdrawal requests
+  </Accordion>
+
+  <Accordion title="Test OTP">
+    **OTP Code:** `123456`
+    
+    When testing mobile wallet transactions, use this OTP to complete verification.
+  </Accordion>
+
+  <Accordion title="Test Bank Account">
+    **Account Number:** `PK36SCBL0000001123456702`
+    
+    **Bank Name:** `Standard Chartered Bank`
+    
+    **Account Holder:** `Ahmed Ali`
+    
+    Use these for testing withdrawal/payout flows.
+  </Accordion>
+</AccordionGroup>
+
+### Example Test Request
+
+```bash
+curl --request POST \
+  --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/deposit \
+  --header 'SWICH-API-Key: sk_test_xxxxxxxxxxxxx' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "mobileNumber": "03123456789",
+    "amount": 1500,
+    "walletProvider": 1,
+    "last6CNICDigits": "345678",
+    "currency": "PKR",
+    "description": "Test Payment",
+    "intentType": "deposit",
+    "customerRef": {
+      "name": "Test User",
+      "email": "test@example.com",
+      "cnic": "3520108345678",
+      "phone": "03123456789"
+    },
+    "orderRef": {
+      "orderRef": "TEST123456"
+    }
+  }'
+```
+
+### Switching to Production
+
+When you're ready to go live:
+
+1. ✅ Complete all testing in sandbox mode
+2. ✅ Implement proper error handling
+3. ✅ Set up webhook endpoints
+4. ✅ Test all payment flows end-to-end
+5. 🔄 **Switch to production API key** (starts with `sk_live_`)
+6. 🔄 **Use real customer data** instead of test credentials
+7. 🔄 **Real money will be processed**
+
+<Warning>
+  **Never use test credentials in production!** Always use real customer phone numbers, CNICs, and bank details when processing live transactions.
+</Warning>
+
 ## Quick Start
 
-Here's how to create your first payment:
+Here's how to create your first test payment:
 
 <CodeGroup>
 ```bash cURL
@@ -87,10 +203,10 @@ curl --request POST \
     "currency": "PKR",
     "description": "Product Purchase",
     "customerRef": {
-      "name": "John Doe",
-      "email": "john@example.com",
-      "cnic": "1234567890123",
-      "phone": "+923001234567"
+      "name": "Test User",
+      "email": "test@example.com",
+      "cnic": "3520108345678",
+      "phone": "03123456789"
     },
     "orderRef": {
       "orderRef": "ORD123456"
@@ -106,7 +222,7 @@ const response = await fetch(
   {
     method: 'POST',
     headers: {
-      'SWICH-API-Key': process.env.WAYPAY_API_KEY,
+      'SWICH-API-Key': process.env.WAYPAY_API_KEY, // sk_test_ for testing
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
@@ -114,10 +230,10 @@ const response = await fetch(
       currency: 'PKR',
       description: 'Product Purchase',
       customerRef: {
-        name: 'John Doe',
-        email: 'john@example.com',
-        cnic: '1234567890123',
-        phone: '+923001234567'
+        name: 'Test User',
+        email: 'test@example.com',
+        cnic: '3520108345678',
+        phone: '03123456789'
       },
       orderRef: {
         orderRef: 'ORD123456'
@@ -136,7 +252,7 @@ const data = await response.json();
 import os
 import requests
 
-api_key = os.environ.get('WAYPAY_API_KEY')
+api_key = os.environ.get('WAYPAY_API_KEY')  # sk_test_ for testing
 
 response = requests.post(
     'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate-checkout',
@@ -149,10 +265,10 @@ response = requests.post(
         'currency': 'PKR',
         'description': 'Product Purchase',
         'customerRef': {
-            'name': 'John Doe',
-            'email': 'john@example.com',
-            'cnic': '1234567890123',
-            'phone': '+923001234567'
+            'name': 'Test User',
+            'email': 'test@example.com',
+            'cnic': '3520108345678',
+            'phone': '03123456789'
         },
         'orderRef': {
             'orderRef': 'ORD123456'
@@ -188,19 +304,6 @@ SWICH-API-Key: sk_live_your_api_key
 <Warning>
   Never share your API key or commit it to version control. Use environment variables to store your keys securely.
 </Warning>
-
-## Environments
-
-Waypay provides separate environments for testing and production:
-
-| Environment | Base URL | API Key Prefix |
-|-------------|----------|----------------|
-| Test | `https://api-test.waypay.com/Gateway/v1` | `sk_test_` |
-| Production | `https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1` | `sk_live_` |
-
-<Tip>
-  Use test mode to integrate and test your application without processing real transactions.
-</Tip>
 
 ## Versioning
 

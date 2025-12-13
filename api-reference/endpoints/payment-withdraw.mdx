@@ -164,7 +164,7 @@ curl --request POST \
   --data '{
     "amount": 5000,
     "description": "Freelancer Payment",
-    "cnic": "4210112345678",
+    "cnic": "3520108345678",
     "customerAccountNumber": "PK36SCBL0000001123456702",
     "customerBankName": "Standard Chartered Bank",
     "customerFullName": "Ahmed Ali",
@@ -172,11 +172,12 @@ curl --request POST \
     "billReference": "INV-2025-001",
     "autoProcessPayout": true,
     "currency": "PKR",
+    "intentType": "withdrawal",
     "customerRef": {
       "name": "Ahmed Ali",
       "email": "ahmed@example.com",
-      "cnic": "4210112345678",
-      "phone": "03001234567"
+      "cnic": "3520108345678",
+      "phone": "03123456789"
     },
     "orderRef": {
       "orderRef": "WD123456"
@@ -194,7 +195,7 @@ const response = await fetch('https://waypay-merchant-api.icydesert-41d42f7e.uae
   body: JSON.stringify({
     amount: 5000,
     description: 'Freelancer Payment',
-    cnic: '4210112345678',
+    cnic: '3520108345678',
     customerAccountNumber: 'PK36SCBL0000001123456702',
     customerBankName: 'Standard Chartered Bank',
     customerFullName: 'Ahmed Ali',
@@ -202,11 +203,12 @@ const response = await fetch('https://waypay-merchant-api.icydesert-41d42f7e.uae
     billReference: 'INV-2025-001',
     autoProcessPayout: true,
     currency: 'PKR',
+    intentType: 'withdrawal',
     customerRef: {
       name: 'Ahmed Ali',
       email: 'ahmed@example.com',
-      cnic: '4210112345678',
-      phone: '03001234567'
+      cnic: '3520108345678',
+      phone: '03123456789'
     },
     orderRef: {
       orderRef: 'WD123456'
@@ -230,7 +232,7 @@ response = requests.post(
     json={
         'amount': 5000,
         'description': 'Freelancer Payment',
-        'cnic': '4210112345678',
+        'cnic': '3520108345678',
         'customerAccountNumber': 'PK36SCBL0000001123456702',
         'customerBankName': 'Standard Chartered Bank',
         'customerFullName': 'Ahmed Ali',
@@ -238,11 +240,12 @@ response = requests.post(
         'billReference': 'INV-2025-001',
         'autoProcessPayout': True,
         'currency': 'PKR',
+        'intentType': 'withdrawal',
         'customerRef': {
             'name': 'Ahmed Ali',
             'email': 'ahmed@example.com',
-            'cnic': '4210112345678',
-            'phone': '03001234567'
+            'cnic': '3520108345678',
+            'phone': '03123456789'
         },
         'orderRef': {
             'orderRef': 'WD123456'
@@ -316,7 +319,7 @@ When set to `false` (default), the withdrawal will be created but require manual
 ## Best Practices
 
 - Always verify the customer's bank account details before processing
-- Ensure sufficient balance in your merchant wallet
+- Ensure sufficient balance in your merchant wallet (including transaction fees)
 - Use `autoProcessPayout: false` for high-value transactions that need review
 - Monitor the `payoutInfo.status` to track withdrawal completion
 - Store the `paymentIntentId` for future reference and reconciliation
@@ -329,4 +332,4 @@ Withdrawal processing times vary by bank and amount:
 - **Same Day**: Most local banks (2-4 hours)
 - **Next Day**: For high-value transactions or certain banks
 
-The `estimatedCompletionTime` field provides
+The `estimatedCompletionTime` field provides the expected completion timestamp.
