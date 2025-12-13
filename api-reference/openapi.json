@@ -2,169 +2,405 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Swich.Merchant.API",
-    "version": "1.0",
-    "description": "The Swich Gateway enables merchants to initiate and manage payments, charge mobile wallets, and process refunds. Use your Swich-API-Key to authenticate every request. Typical flow: initiate a payment to receive a checkoutUrl, redirect the customer, then optionally manage refunds. Wallet charges allow tokenized wallet payments."
+    "version": "1.0"
   },
-  "tags": [
-    {
-      "name": "Payments",
-      "description": "Create and manage payments and payment intents."
-    },
-    {
-      "name": "Wallet",
-      "description": "Charge and manage mobile wallet payments."
-    },
-    {
-      "name": "Refunds",
-      "description": "Create and manage refunds."
-    },
-    {
-      "name": "Webhooks",
-      "description": "Webhook event types and delivery (placeholder for future expansion)."
-    },
-    {
-      "name": "Authentication",
-      "description": "API authentication using Swich-API-Key."
-    }
-  ],
-  "security": [
-    {
-      "SwichApiKey": []
-    }
-  ],
   "paths": {
-    "/Gateway/v{version}/Payment/initiate": {
+    "/Gateway/v{version}/Account/query-balance": {
       "post": {
         "tags": [
-          "Payments"
+          "Account"
         ],
-        "summary": "Initiate a payment",
-        "description": "Creates a payment intent and returns a checkoutUrl where the customer can complete payment. Use the returned paymentIntentId to track status.",
         "parameters": [
           {
             "name": "version",
             "in": "path",
             "required": true,
-            "description": "API version segment (e.g., 1 or 1.0).",
             "schema": {
-              "type": "string",
-              "example": "1"
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletBalanceDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletBalanceDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletBalanceDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Gateway/v{version}/Payment/initiate-checkout": {
+      "post": {
+        "tags": [
+          "Payment"
+        ],
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
         ],
         "requestBody": {
-          "description": "Payment details used to create the payment intent.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PaymentRequest"
-              },
-              "example": {
-                "amount": 50000,
-                "currency": "PKR",
-                "description": "Order 12345",
-                "customerRef": {
-                  "name": "Ayesha Khan",
-                  "email": "ayesha@example.com",
-                  "phone": "+923001234567",
-                  "shippingAddress": "House 10, Street 2, DHA Phase 5, Karachi",
-                  "estimatedDays": "3-5"
-                },
-                "orderRef": {
-                  "orderRef": "ORD12345",
-                  "discount": "0",
-                  "tax": "0"
-                },
-                "successUrl": "https://merchant.example.com/checkout/success",
-                "cancelUrl": "https://merchant.example.com/checkout/cancel",
-                "metadataJson": "{\"cartId\":\"c_abc123\"}"
+                "$ref": "#/components/schemas/InitiatePaymentRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Payment intent created successfully.",
+            "description": "OK",
             "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/InitiatePaymentResponse"
+                }
+              },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PaymentResponse"
-                },
-                "example": {
-                  "paymentIntentId": "2c4b7c5a-f7a6-4f2d-a8b9-9b1b2c3d4e5f",
-                  "checkoutUrl": "https://pay.swich.com/checkout/2c4b7c5a-f7a6-4f2d-a8b9-9b1b2c3d4e5f",
-                  "expiresAt": "2025-11-15T12:00:00Z"
+                  "$ref": "#/components/schemas/InitiatePaymentResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InitiatePaymentResponse"
                 }
               }
             }
           },
           "400": {
-            "description": "Bad Request – validation or formatting error.",
+            "description": "Bad Request",
             "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
               "application/json": {
                 "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ProblemDetails"
-                    }
-                  ]
-                },
-                "example": {
-                  "code": "validation_error",
-                  "message": "description must match ^[A-Za-z0-9 ]{1,200}$",
-                  "details": {
-                    "field": "description",
-                    "issue": "invalid_format"
-                  }
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized – missing or invalid API key.",
+            "description": "Unauthorized",
             "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
               "application/json": {
                 "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ProblemDetails"
-                    }
-                  ]
-                },
-                "example": {
-                  "code": "unauthorized",
-                  "message": "Invalid or missing Swich-API-Key",
-                  "details": null
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
           },
           "422": {
-            "description": "Unprocessable Content – business rule violation.",
+            "description": "Unprocessable Content",
             "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
               "application/json": {
                 "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ProblemDetails"
-                    }
-                  ]
-                },
-                "example": {
-                  "code": "amount_out_of_range",
-                  "message": "amount must be at least 0.01",
-                  "details": {
-                    "minimum": 1
-                  }
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Gateway/v{version}/Payment/deposit": {
+      "post": {
+        "tags": [
+          "Payment"
+        ],
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDepositOrderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateDepositOrderResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateDepositOrderResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateDepositOrderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Gateway/v{version}/Payment/withdraw": {
+      "post": {
+        "tags": [
+          "Payment"
+        ],
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWithdrawOrderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateWithdrawOrderResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateWithdrawOrderResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateWithdrawOrderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -175,120 +411,150 @@
     "/Gateway/v{version}/Payment/charge-mobile-wallet": {
       "post": {
         "tags": [
-          "Wallet"
+          "Payment"
         ],
-        "summary": "Charge a mobile wallet",
-        "description": "Initiates a charge against a tokenized mobile wallet. The response includes a transaction reference and status which may be pending if an OTP/approval is required by the wallet provider.",
         "parameters": [
           {
             "name": "version",
             "in": "path",
             "required": true,
-            "description": "API version segment (e.g., 1 or 1.0).",
             "schema": {
-              "type": "string",
-              "example": "1"
+              "type": "string"
             }
           }
         ],
         "requestBody": {
-          "description": "Mobile wallet charge request including token and payer verification details.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ChargeMobileWalletRequest"
-              },
-              "example": {
-                "token": "tok_mwallet_9xK3PQrA",
-                "mobileNumber": "+923001234567",
-                "amount": 1500.0,
-                "billReference": "INV-98127",
-                "description": "Wallet charge for order ORD-98127",
-                "last6CNICDigits": "123456"
+                "$ref": "#/components/schemas/ChargeMobileWalletWithTokenRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Charge request accepted.",
+            "description": "OK",
             "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChargeMWalletResponse"
+                }
+              },
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ChargeMWalletResponse"
-                },
-                "example": {
-                  "trxnRef": "trx_7ZP8X2",
-                  "status": "PENDING",
-                  "message": "Awaiting wallet OTP confirmation"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChargeMWalletResponse"
                 }
               }
             }
           },
           "400": {
-            "description": "Bad Request – validation or formatting error.",
+            "description": "Bad Request",
             "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
               "application/json": {
                 "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ProblemDetails"
-                    }
-                  ]
-                },
-                "example": {
-                  "code": "invalid_mobile",
-                  "message": "mobileNumber must include country code",
-                  "details": {
-                    "expectedFormat": "+92XXXXXXXXXX"
-                  }
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized – missing or invalid API key.",
+            "description": "Unauthorized",
             "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
               "application/json": {
                 "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ProblemDetails"
-                    }
-                  ]
-                },
-                "example": {
-                  "code": "unauthorized",
-                  "message": "Invalid or missing Swich-API-Key",
-                  "details": null
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
           },
           "422": {
-            "description": "Unprocessable Content – business rule violation.",
+            "description": "Unprocessable Content",
             "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
               "application/json": {
                 "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ProblemDetails"
-                    }
-                  ]
-                },
-                "example": {
-                  "code": "insufficient_funds",
-                  "message": "Wallet has insufficient balance",
-                  "details": null
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Gateway/v{version}/Payment/get-token-info": {
+      "get": {
+        "tags": [
+          "Payment"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenInfoResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenInfoResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenInfoResponse"
                 }
               }
             }
@@ -301,129 +567,52 @@
         "tags": [
           "Refunds"
         ],
-        "summary": "Create a refund",
-        "description": "Creates a refund for a previous transaction. If amount is omitted, a full refund is attempted.",
         "parameters": [
           {
             "name": "version",
             "in": "path",
             "required": true,
-            "description": "API version segment (e.g., 1 or 1.0).",
             "schema": {
-              "type": "string",
-              "example": "1"
+              "type": "string"
             }
           }
         ],
         "requestBody": {
-          "description": "Refund details including original transaction reference.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RefundRequest"
-              },
-              "example": {
-                "trxnRef": "trx_7ZP8X2",
-                "amount": 500.0,
-                "reason": "Customer returned the item"
+                "$ref": "#/components/schemas/CreateRefundRequestGateway"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/RefundRequest"
+                "$ref": "#/components/schemas/CreateRefundRequestGateway"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/RefundRequest"
+                "$ref": "#/components/schemas/CreateRefundRequestGateway"
               }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "Refund created successfully.",
+          "201": {
+            "description": "Created",
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/RefundResponse"
-                },
-                "example": {
-                  "id": "9f2a0a7c-0d4e-4d1e-bb0c-2b7f1c9f0a12",
-                  "trxnRef": "trx_7ZP8X2",
-                  "amount": 500.0,
-                  "status": 1,
-                  "reason": "Customer returned the item",
-                  "createdAt": "2025-11-15T10:05:00Z",
-                  "updatedAt": "2025-11-15T10:05:00Z"
+                  "$ref": "#/components/schemas/MerchantRefundDTO"
                 }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request – validation or formatting error.",
-            "content": {
+              },
               "application/json": {
                 "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ProblemDetails"
-                    }
-                  ]
-                },
-                "example": {
-                  "code": "invalid_amount",
-                  "message": "amount must be at least 0.01",
-                  "details": {
-                    "minimum": 0.01
-                  }
+                  "$ref": "#/components/schemas/MerchantRefundDTO"
                 }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized – missing or invalid API key.",
-            "content": {
-              "application/json": {
+              },
+              "text/json": {
                 "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ProblemDetails"
-                    }
-                  ]
-                },
-                "example": {
-                  "code": "unauthorized",
-                  "message": "Invalid or missing Swich-API-Key",
-                  "details": null
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Unprocessable Content – business rule violation.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ProblemDetails"
-                    }
-                  ]
-                },
-                "example": {
-                  "code": "refund_not_allowed",
-                  "message": "Refund window has expired",
-                  "details": null
+                  "$ref": "#/components/schemas/MerchantRefundDTO"
                 }
               }
             }
@@ -436,53 +625,486 @@
         "tags": [
           "Refunds"
         ],
-        "summary": "Cancel a refund",
-        "description": "Attempts to cancel a pending refund. Cancellation may fail if the refund is already processed.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "Unique refund identifier (UUID).",
             "schema": {
               "type": "string",
-              "format": "uuid",
-              "example": "9f2a0a7c-0d4e-4d1e-bb0c-2b7f1c9f0a12"
+              "format": "uuid"
             }
           },
           {
             "name": "version",
             "in": "path",
             "required": true,
-            "description": "API version segment (e.g., 1 or 1.0).",
             "schema": {
-              "type": "string",
-              "example": "1"
+              "type": "string"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Cancellation request accepted (final status may still be pending)."
-          },
-          "401": {
-            "description": "Unauthorized – missing or invalid API key.",
+            "description": "OK",
             "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
               "application/json": {
                 "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/ErrorResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ProblemDetails"
-                    }
-                  ]
-                },
-                "example": {
-                  "code": "unauthorized",
-                  "message": "Invalid or missing Swich-API-Key",
-                  "details": null
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Gateway/v{version}/Refunds/{id}": {
+      "get": {
+        "tags": [
+          "Refunds"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantRefundDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantRefundDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantRefundDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Gateway/v{version}/Settlements": {
+      "post": {
+        "tags": [
+          "Settlements"
+        ],
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSettlementRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSettlementRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSettlementRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantSettlementDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantSettlementDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantSettlementDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Gateway/v{version}/Settlements/{id}": {
+      "get": {
+        "tags": [
+          "Settlements"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantSettlementDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantSettlementDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantSettlementDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Gateway/v{version}/Settlements/schedule": {
+      "put": {
+        "tags": [
+          "Settlements"
+        ],
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertSettlementScheduleRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertSettlementScheduleRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertSettlementScheduleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettlementScheduleDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettlementScheduleDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettlementScheduleDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Settlements"
+        ],
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettlementScheduleDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettlementScheduleDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettlementScheduleDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Gateway/v{version}/Transaction/by-ref/{txnRef}": {
+      "get": {
+        "tags": [
+          "Transaction"
+        ],
+        "parameters": [
+          {
+            "name": "txnRef",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantTransactionDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantTransactionDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantTransactionDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Gateway/v{version}/Transaction/{id}": {
+      "get": {
+        "tags": [
+          "Transaction"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantTransactionDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantTransactionDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantTransactionDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -492,222 +1114,131 @@
     }
   },
   "components": {
-    "securitySchemes": {
-      "SwichApiKey": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "Swich-API-Key",
-        "description": "Your Swich API key. Send this header with every request. Example: Swich-API-Key: sk_live_xxx"
-      }
-    },
     "schemas": {
-      "PaymentRequest": {
-        "description": "Payment request payload (alias of InitiatePaymentRequest).",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/InitiatePaymentRequest"
-          }
-        ]
-      },
-      "PaymentResponse": {
-        "description": "Payment response payload (alias of InitiatePaymentResponse).",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/InitiatePaymentResponse"
-          }
-        ]
-      },
-      "RefundRequest": {
-        "description": "Refund request payload (alias of CreateRefundRequestGateway).",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/CreateRefundRequestGateway"
-          }
-        ]
-      },
-      "RefundResponse": {
-        "description": "Refund response payload (alias of RefundDto).",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/RefundDto"
-          }
-        ]
-      },
-      "ErrorResponse": {
+      "ChargeInfo": {
         "type": "object",
-        "description": "Standard error envelope returned on failures.",
         "properties": {
-          "code": {
+          "provider": {
             "type": "string",
-            "description": "Machine-readable error code."
-          },
-          "message": {
-            "type": "string",
-            "description": "Human-readable summary of the error."
-          },
-          "details": {
-            "description": "Optional structured details to help diagnose the error.",
             "nullable": true
-          }
-        },
-        "required": [
-          "code",
-          "message"
-        ],
-        "additionalProperties": false,
-        "example": {
-          "code": "validation_error",
-          "message": "One or more validation errors occurred.",
-          "details": {
-            "field": "amount",
-            "issue": "required"
-          }
-        }
-      },
-
-      "ChargeMWalletResponse": {
-        "type": "object",
-        "description": "Response of a mobile wallet charge request.",
-        "properties": {
-          "trxnRef": {
-            "type": "string",
-            "nullable": true,
-            "description": "Transaction reference assigned to the wallet charge."
           },
           "status": {
             "type": "string",
-            "nullable": true,
-            "description": "Processing status, e.g., PENDING, SUCCESS, FAILED."
+            "nullable": true
+          },
+          "transactionReference": {
+            "type": "string",
+            "nullable": true
           },
           "message": {
             "type": "string",
-            "nullable": true,
-            "description": "Optional provider or gateway message."
+            "nullable": true
+          },
+          "isSuccess": {
+            "type": "boolean"
+          },
+          "errorDetails": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "ChargeMobileWalletRequest": {
+      "ChargeMWalletResponse": {
+        "type": "object",
+        "properties": {
+          "trxnRef": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChargeMobileWalletWithTokenRequest": {
         "required": [
           "amount",
           "last6CNICDigits",
           "mobileNumber",
-          "token"
+          "token",
+          "walletProvider"
         ],
         "type": "object",
-        "description": "Request to charge a mobile wallet using a previously created token.",
         "properties": {
           "token": {
             "minLength": 1,
-            "type": "string",
-            "description": "Token representing a vaulted or authorized wallet."
+            "type": "string"
           },
           "mobileNumber": {
             "minLength": 1,
-            "type": "string",
-            "description": "Customer mobile number including country code, e.g., +92XXXXXXXXXX."
-          },
-          "amount": {
-            "type": "number",
-            "format": "double",
-            "description": "Amount to charge in major currency units (e.g., 1500.00)."
-          },
-          "billReference": {
-            "type": "string",
-            "nullable": true,
-            "description": "Optional bill or invoice reference for reconciliation."
-          },
-          "description": {
-            "type": "string",
-            "nullable": true,
-            "description": "Optional human-readable description of the charge."
-          },
-          "last6CNICDigits": {
-            "minLength": 1,
-            "type": "string",
-            "description": "Regulatory verification: last 6 digits of CNIC."
-          }
-        },
-        "additionalProperties": false
-      },
-      "CreateRefundRequestGateway": {
-        "required": [
-          "trxnRef"
-        ],
-        "type": "object",
-        "description": "Request to create a refund against a previous transaction.",
-        "properties": {
-          "trxnRef": {
-            "minLength": 1,
-            "type": "string",
-            "description": "Original transaction reference to be refunded."
+            "type": "string"
           },
           "amount": {
             "minimum": 0.01,
             "type": "number",
-            "format": "double",
-            "description": "Amount to refund. If omitted, a full refund is attempted."
+            "format": "double"
           },
-          "reason": {
-            "maxLength": 500,
+          "walletProvider": {
+            "$ref": "#/components/schemas/MobileWalletProvider"
+          },
+          "billReference": {
             "type": "string",
-            "nullable": true,
-            "description": "Optional reason for the refund."
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "last6CNICDigits": {
+            "maxLength": 6,
+            "minLength": 6,
+            "pattern": "^\\d{6}$",
+            "type": "string"
           }
         },
         "additionalProperties": false
       },
-      "CustomerRefDto": {
+      "CreateDepositOrderRequest": {
         "required": [
-          "name"
+          "amount",
+          "description",
+          "last6CNICDigits",
+          "mobileNumber"
         ],
         "type": "object",
-        "description": "Optional customer context to display on checkout and in records.",
         "properties": {
-          "name": {
+          "mobileNumber": {
             "minLength": 1,
-            "type": "string",
-            "description": "Customer full name."
+            "type": "string"
           },
-          "email": {
-            "type": "string",
-            "nullable": true,
-            "description": "Customer email address."
-          },
-          "phone": {
-            "type": "string",
-            "nullable": true,
-            "description": "Customer phone number including country code."
-          },
-          "shippingAddress": {
-            "type": "string",
-            "nullable": true,
-            "description": "Shipping address if applicable."
-          },
-          "estimatedDays": {
-            "type": "string",
-            "nullable": true,
-            "description": "Estimated delivery window for goods/services."
-          }
-        },
-        "additionalProperties": {}
-      },
-      "InitiatePaymentRequest": {
-        "required": [
-          "description"
-        ],
-        "type": "object",
-        "description": "Payload to initiate a payment intent.",
-        "properties": {
           "amount": {
+            "minimum": 0.01,
             "type": "number",
-            "format": "double",
-            "description": "Payment amount in decimal units (e.g., cents/paisa)."
+            "format": "double"
+          },
+          "walletProvider": {
+            "$ref": "#/components/schemas/MobileWalletProvider"
+          },
+          "billReference": {
+            "type": "string",
+            "nullable": true
+          },
+          "last6CNICDigits": {
+            "maxLength": 6,
+            "minLength": 6,
+            "pattern": "^\\d{6}$",
+            "type": "string"
           },
           "currency": {
             "type": "string",
-            "nullable": true,
-            "description": "ISO currency code (e.g., PKR, USD)."
+            "nullable": true
           },
           "customerRef": {
             "$ref": "#/components/schemas/CustomerRefDto"
@@ -719,79 +1250,572 @@
             "maxLength": 200,
             "minLength": 1,
             "pattern": "^[A-Za-z0-9 ]{1,200}$",
-            "type": "string",
-            "description": "Short description shown to the customer (alphanumeric and spaces only)."
+            "type": "string"
           },
           "successUrl": {
             "type": "string",
-            "nullable": true,
-            "description": "Redirect URL after successful payment."
+            "nullable": true
           },
           "cancelUrl": {
             "type": "string",
-            "nullable": true,
-            "description": "Redirect URL if the customer cancels."
+            "nullable": true
+          },
+          "intentType": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateDepositOrderResponse": {
+        "type": "object",
+        "properties": {
+          "paymentIntentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "merchantReference": {
+            "type": "string",
+            "nullable": true
+          },
+          "walletChargeInfo": {
+            "$ref": "#/components/schemas/ChargeInfo"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateRefundRequestGateway": {
+        "required": [
+          "trxnRef"
+        ],
+        "type": "object",
+        "properties": {
+          "trxnRef": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "amount": {
+            "minimum": 0.01,
+            "type": "number",
+            "format": "double"
+          },
+          "reason": {
+            "maxLength": 500,
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateSettlementRequest": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "payoutCurrency": {
+            "type": "string",
+            "nullable": true
+          },
+          "bankName": {
+            "type": "string",
+            "nullable": true
+          },
+          "iban": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "usdtAddress": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateWithdrawOrderRequest": {
+        "required": [
+          "amount",
+          "description"
+        ],
+        "type": "object",
+        "properties": {
+          "cnic": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerAccountNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerBankName": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerFullName": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "billReference": {
+            "type": "string",
+            "nullable": true
+          },
+          "autoProcessPayout": {
+            "type": "boolean"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerRef": {
+            "$ref": "#/components/schemas/CustomerRefDto"
+          },
+          "orderRef": {
+            "$ref": "#/components/schemas/OrderRefDto"
+          },
+          "description": {
+            "maxLength": 200,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9 ]{1,200}$",
+            "type": "string"
+          },
+          "successUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "cancelUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "intentType": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateWithdrawOrderResponse": {
+        "type": "object",
+        "properties": {
+          "paymentIntentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "merchantReference": {
+            "type": "string",
+            "nullable": true
+          },
+          "payoutInfo": {
+            "$ref": "#/components/schemas/PayoutInfo"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CustomerRefDto": {
+        "required": [
+          "cnic",
+          "email",
+          "name",
+          "phone"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "email": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "cnic": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "phone": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "shippingAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "estimatedDays": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "InitiatePaymentRequest": {
+        "required": [
+          "amount",
+          "description"
+        ],
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerRef": {
+            "$ref": "#/components/schemas/CustomerRefDto"
+          },
+          "orderRef": {
+            "$ref": "#/components/schemas/OrderRefDto"
+          },
+          "description": {
+            "maxLength": 200,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9 ]{1,200}$",
+            "type": "string"
+          },
+          "successUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "cancelUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "intentType": {
+            "type": "string",
+            "nullable": true
           },
           "metadataJson": {
             "type": "string",
-            "nullable": true,
-            "description": "JSON string of additional metadata for your internal use."
+            "nullable": true
           }
         },
         "additionalProperties": false
       },
       "InitiatePaymentResponse": {
         "type": "object",
-        "description": "Response from initiating a payment intent.",
         "properties": {
           "paymentIntentId": {
             "type": "string",
-            "format": "uuid",
-            "description": "Unique identifier of the payment intent."
+            "format": "uuid"
           },
           "checkoutUrl": {
             "type": "string",
-            "nullable": true,
-            "description": "URL to redirect the customer to complete payment."
+            "nullable": true
           },
           "expiresAt": {
             "type": "string",
-            "format": "date-time",
-            "description": "ISO 8601 timestamp when the checkout link expires."
+            "format": "date-time"
           }
         },
         "additionalProperties": false
+      },
+      "MerchantRefundDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "paymentIntentId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/RefundStatus"
+          },
+          "isLive": {
+            "type": "boolean"
+          },
+          "requestedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "approvedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "processedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "attemptCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MerchantSettlementDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "merchantId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "payoutCurrency": {
+            "type": "string",
+            "nullable": true
+          },
+          "payoutAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "fee": {
+            "type": "number",
+            "format": "double"
+          },
+          "netAmount": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "fxRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "fxRateTimestamp": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "bankName": {
+            "type": "string",
+            "nullable": true
+          },
+          "iban": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "usdtAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/SettlementStatus"
+          },
+          "requestedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "approvedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "processedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "failureReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "isAuto": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MerchantTransactionDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "fee": {
+            "type": "number",
+            "format": "double"
+          },
+          "netAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "txType": {
+            "$ref": "#/components/schemas/TXType"
+          },
+          "txnType": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactionNotes": {
+            "type": "string",
+            "nullable": true
+          },
+          "txnprovider": {
+            "type": "string",
+            "nullable": true
+          },
+          "txnRef": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/TransactionStatus"
+          },
+          "statusText": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAtUtc": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MobileWalletProvider": {
+        "enum": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "type": "integer",
+        "format": "int32"
       },
       "OrderRefDto": {
         "required": [
           "orderRef"
         ],
         "type": "object",
-        "description": "Order reference and optional pricing breakdown.",
         "properties": {
           "orderRef": {
             "maxLength": 20,
             "minLength": 1,
             "pattern": "^[A-Za-z0-9]{1,20}$",
-            "type": "string",
-            "description": "Your internal order reference."
+            "type": "string"
           },
           "discount": {
             "type": "string",
-            "nullable": true,
-            "description": "Optional discount applied (free-form)."
+            "nullable": true
           },
           "tax": {
             "type": "string",
-            "nullable": true,
-            "description": "Optional tax amount (free-form)."
+            "nullable": true
           }
         },
-        "additionalProperties": {}
+        "additionalProperties": { }
+      },
+      "PayoutInfo": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactionReference": {
+            "type": "string",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "isSuccess": {
+            "type": "boolean"
+          },
+          "errorDetails": {
+            "type": "string",
+            "nullable": true
+          },
+          "estimatedCompletionTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "customerBankName": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerAccountNumber": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       },
       "ProblemDetails": {
         "type": "object",
-        "description": "RFC 7807 Problem Details envelope (legacy in some responses).",
         "properties": {
           "type": {
             "type": "string",
@@ -815,52 +1839,253 @@
             "nullable": true
           }
         },
-        "additionalProperties": {}
+        "additionalProperties": { }
       },
-      "RefundDto": {
+      "RefundStatus": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "SettlementScheduleDto": {
         "type": "object",
-        "description": "Refund object representing a refund request and its status.",
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid",
-            "description": "Unique refund identifier."
+            "format": "uuid"
           },
-          "trxnRef": {
+          "merchantId": {
             "type": "string",
-            "description": "Original transaction reference being refunded."
+            "format": "uuid"
           },
-          "amount": {
+          "walletId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "autoApprove": {
+            "type": "boolean"
+          },
+          "runHourUtc": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "minimumPayout": {
             "type": "number",
-            "format": "double",
-            "description": "Refund amount in major currency units."
+            "format": "double"
           },
-          "status": {
-            "$ref": "#/components/schemas/RefundStatus"
+          "reserveBalance": {
+            "type": "number",
+            "format": "double"
           },
-          "reason": {
+          "bankName": {
             "type": "string",
-            "nullable": true,
-            "description": "Optional reason provided when creating the refund."
+            "nullable": true
           },
-          "createdAt": {
+          "iban": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "usdtAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "payoutCurrency": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastRunAt": {
             "type": "string",
             "format": "date-time",
-            "description": "Timestamp when the refund was created."
+            "nullable": true
           },
-          "updatedAt": {
+          "nextRunAt": {
             "type": "string",
             "format": "date-time",
-            "description": "Timestamp when the refund was last updated."
+            "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "RefundStatus": {
-        "enum": [0, 1, 2, 3, 4, 5, 6, 7],
+      "SettlementStatus": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
         "type": "integer",
-        "format": "int32",
-        "description": "Numeric status code of the refund lifecycle."
+        "format": "int32"
+      },
+      "TXType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "TokenInfoResponse": {
+        "type": "object",
+        "properties": {
+          "paymentIntentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "merchantId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "isLiveToken": {
+            "type": "boolean"
+          },
+          "apiKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "customerRef": {
+            "$ref": "#/components/schemas/CustomerRefDto"
+          },
+          "orderRef": {
+            "$ref": "#/components/schemas/OrderRefDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TransactionStatus": {
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "UpsertSettlementScheduleRequest": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "autoApprove": {
+            "type": "boolean"
+          },
+          "runHourUtc": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "minimumPayout": {
+            "type": "number",
+            "format": "double"
+          },
+          "reserveBalance": {
+            "type": "number",
+            "format": "double"
+          },
+          "bankName": {
+            "type": "string",
+            "nullable": true
+          },
+          "iban": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "usdtAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "payoutCurrency": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "WalletBalanceDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "walletId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "currentBalance": {
+            "type": "number",
+            "format": "double"
+          },
+          "pendingBalance": {
+            "type": "number",
+            "format": "double"
+          },
+          "availableBalance": {
+            "type": "number",
+            "format": "double"
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "pendingTransactionCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pendingByTransactionType": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "retrievedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
       }
     }
   }

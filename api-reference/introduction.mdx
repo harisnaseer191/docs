@@ -24,10 +24,10 @@ https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Ga
     Accept payments via hosted checkout or custom integrations with support for cards and mobile wallets
   </Card>
   <Card title="Mobile Wallet Charging" icon="mobile">
-    Directly charge JazzCash, Easypaisa, and other Pakistani mobile wallets
+    Directly charge JazzCash, Easypaisa mobile wallets
   </Card>
-  <Card title="Payouts & Disbursements" icon="money-bill-transfer">
-    Send money to bank accounts with automatic reconciliation
+  <Card title="Deposits & Withdrawals" icon="money-bill-transfer">
+    Create deposit orders to collect funds and withdrawal orders to disburse payments
   </Card>
   <Card title="Refund Management" icon="rotate-left">
     Process full or partial refunds with automated tracking
@@ -42,12 +42,16 @@ https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Ga
 
 ## API Capabilities
 
+### Account Endpoints
+
+- **Query Balance** - Retrieve wallet balance, pending amounts, and transaction counts
+
 ### Payment Endpoints
 
 - **Initiate Checkout** - Create hosted payment sessions
-- **Generate Token** - Create tokens for custom checkout flows
-- **Charge Mobile Wallet** - Process direct mobile wallet charges
-- **Process Payout** - Send money to bank accounts
+- **Create Deposit** - Initiate mobile wallet charges for payment collection
+- **Create Withdrawal** - Process payouts to customer bank accounts
+- **Charge Mobile Wallet** - Direct mobile wallet charging with tokens
 - **Get Token Info** - Retrieve payment token details
 
 ### Transaction Endpoints
@@ -63,10 +67,10 @@ https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Ga
 
 ### Settlement Endpoints
 
-- **Create Settlement** - Request fund withdrawal
-- **List Settlements** - Get paginated settlement history
+- **Create Settlement** - Request fund withdrawal to bank or USDT
 - **Get Settlement** - Retrieve specific settlement details
-- **Configure Schedule** - Set up automatic settlements
+- **Configure Schedule** - Set up automatic settlements with customizable parameters
+- **Get Schedule** - Retrieve current settlement schedule configuration
 
 ## Quick Start
 
@@ -251,6 +255,40 @@ Waypay uses conventional HTTP response codes:
 
 See [Error Codes](/api-reference/endpoints/errors) for detailed information.
 
+## Supported Mobile Wallets
+
+Waypay supports integration with Pakistan's leading mobile wallet providers:
+
+| Provider | Code | Status |
+|----------|------|--------|
+| JazzCash | 1 | Active |
+| Easypaisa | 2 | Active |
+
+
+## Payment Flows
+
+### 1. Hosted Checkout Flow
+The simplest integration - redirect customers to Waypay's hosted checkout page:
+1. Call `/Payment/initiate-checkout`
+2. Redirect customer to returned `checkoutUrl`
+3. Customer completes payment
+4. Receive webhook notification
+5. Customer redirected to your success/cancel URL
+
+### 2. Deposit Flow (Direct Mobile Wallet)
+Collect payments directly from mobile wallets:
+1. Call `/Payment/deposit` with customer wallet details
+2. Customer receives OTP on their mobile
+3. Customer completes OTP verification
+4. Receive webhook notification
+
+### 3. Withdrawal Flow (Bank Payout)
+Disburse funds to customer bank accounts:
+1. Call `/Payment/withdraw` with bank details
+2. System processes payout (auto or manual approval)
+3. Funds transferred to customer bank
+4. Receive webhook notification
+
 ## Idempotency
 
 To safely retry requests without performing the same operation twice, include an idempotency key:
@@ -267,6 +305,8 @@ Receive real-time notifications when events occur in your Waypay account:
 
 - Payment completed
 - Payment failed
+- Deposit confirmed
+- Withdrawal processed
 - Refund processed
 - Settlement completed
 
@@ -287,8 +327,17 @@ Need help? We're here for you:
   <Card title="Authentication" icon="key" href="/api-reference/authentication">
     Learn how to authenticate your API requests
   </Card>
+  <Card title="Account Balance" icon="wallet" href="/api-reference/endpoints/account-query-balance">
+    Check your wallet balance and pending transactions
+  </Card>
   <Card title="Payment Endpoints" icon="credit-card" href="/api-reference/endpoints/payment-initiate">
     Start accepting payments
+  </Card>
+  <Card title="Deposit Orders" icon="download" href="/api-reference/endpoints/payment-deposit">
+    Collect payments from mobile wallets
+  </Card>
+  <Card title="Withdrawal Orders" icon="upload" href="/api-reference/endpoints/payment-withdraw">
+    Process payouts to bank accounts
   </Card>
   <Card title="Webhooks" icon="webhook" href="/guides/webhooks">
     Set up real-time event notifications

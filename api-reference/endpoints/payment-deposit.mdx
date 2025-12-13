@@ -6,7 +6,7 @@ description: "Create a deposit order to collect payment from customer's mobile w
 
 ## Overview
 
-This endpoint creates a deposit order that initiates a mobile wallet charge from your customer. Use this for collecting payments directly from mobile wallets like JazzCash, Easypaisa, or NayaPay.
+This endpoint creates a deposit order that initiates a mobile wallet charge from your customer. Use this for collecting payments directly from mobile wallets like JazzCash, Easypaisa.
 
 ## Path Parameters
 
@@ -28,8 +28,6 @@ This endpoint creates a deposit order that initiates a mobile wallet charge from
   Mobile wallet provider code:
   - 1: JazzCash
   - 2: Easypaisa
-  - 3: NayaPay
-  - 4: SadaPay
 </ParamField>
 
 <ParamField body="billReference" type="string">
@@ -277,8 +275,7 @@ response = requests.post(
 |----------|------|-------------|
 | JazzCash | 1 | Pakistan's leading mobile wallet |
 | Easypaisa | 2 | Popular mobile wallet service |
-| NayaPay | 3 | Digital wallet platform |
-| SadaPay | 4 | Modern digital wallet |
+
 
 ## Best Practices
 
