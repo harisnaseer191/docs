@@ -78,8 +78,8 @@ Waypay provides separate environments for testing and production:
 
 | Environment | Base URL | API Key Prefix |
 |-------------|----------|----------------|
-| Test | `https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1` | `sk_test_` |
-| Production | `https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1` | `sk_live_` |
+| Test | `https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1` | `pk_test_` |
+| Production | `https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1` | `pk_live_` |
 
 <Tip>
   Use test mode to integrate and test your application without processing real transactions.
@@ -90,7 +90,7 @@ Waypay provides separate environments for testing and production:
 <Warning>
   **Important: Test Mode Information**
   
-  When using test API keys (those starting with `sk_test_`), you are in **sandbox mode**. No real money is processed in test mode.
+  When using test API keys (those starting with `pk_test_`), you are in **sandbox mode**. No real money is processed in test mode.
 </Warning>
 
 ### Test Mode Features
@@ -150,7 +150,7 @@ Use these standardized test credentials when testing in sandbox mode:
 ```bash
 curl --request POST \
   --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/deposit \
-  --header 'SWICH-API-Key: sk_test_xxxxxxxxxxxxx' \
+  --header 'SWICH-API-Key: pk_test_xxxxxxxxxxxxx' \
   --header 'Content-Type: application/json' \
   --data '{
     "mobileNumber": "03123456789",
@@ -180,7 +180,7 @@ When you're ready to go live:
 2. ✅ Implement proper error handling
 3. ✅ Set up webhook endpoints
 4. ✅ Test all payment flows end-to-end
-5. 🔄 **Switch to production API key** (starts with `sk_live_`)
+5. 🔄 **Switch to production API key** (starts with `pk_live_`)
 6. 🔄 **Use real customer data** instead of test credentials
 7. 🔄 **Real money will be processed**
 
@@ -196,7 +196,7 @@ Here's how to create your first test payment:
 ```bash cURL
 curl --request POST \
   --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate-checkout \
-  --header 'SWICH-API-Key: sk_test_xxxxxxxxxxxxx' \
+  --header 'SWICH-API-Key: pk_test_xxxxxxxxxxxxx' \
   --header 'Content-Type: application/json' \
   --data '{
     "amount": 1000,
@@ -222,7 +222,7 @@ const response = await fetch(
   {
     method: 'POST',
     headers: {
-      'SWICH-API-Key': process.env.WAYPAY_API_KEY, // sk_test_ for testing
+      'SWICH-API-Key': process.env.WAYPAY_API_KEY, // pk_test_ for testing
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
@@ -252,7 +252,7 @@ const data = await response.json();
 import os
 import requests
 
-api_key = os.environ.get('WAYPAY_API_KEY')  # sk_test_ for testing
+api_key = os.environ.get('WAYPAY_API_KEY')  # pk_test_ for testing
 
 response = requests.post(
     'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate-checkout',
@@ -298,7 +298,7 @@ data = response.json()
 All API requests must include your API key in the `SWICH-API-Key` header:
 
 ```
-SWICH-API-Key: sk_live_your_api_key
+SWICH-API-Key: pk_live_your_api_key
 ```
 
 <Warning>

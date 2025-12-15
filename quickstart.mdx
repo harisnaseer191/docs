@@ -47,7 +47,7 @@ SWICH-API-Key: YOUR_API_KEY
 
 ### Test Mode (Sandbox)
 
-When using API keys that start with `sk_test_`, you are in **test mode**:
+When using API keys that start with `pk_test_`, you are in **test mode**:
 
 - ✅ **No real money is processed** - All transactions are simulated
 - ✅ **Free unlimited testing** - Test as many transactions as you need
@@ -84,7 +84,7 @@ When using API keys that start with `sk_test_`, you are in **test mode**:
 
 ### Production Mode
 
-When using API keys that start with `sk_live_`:
+When using API keys that start with `pk_live_`:
 
 - ⚠️ **Real money is processed** - Actual charges and transfers occur
 - 💳 **Real customer data required** - Use actual phone numbers, CNICs, bank accounts
@@ -100,7 +100,7 @@ When using API keys that start with `sk_live_`:
 Set your test API key in the terminal:
 
 ```bash
-export SWICH_API_KEY="sk_test_xxxxxxxxxxxxx"
+export SWICH_API_KEY="pk_test_xxxxxxxxxxxxx"
 ```
 
 ### Example 1: Create a test checkout session
@@ -256,7 +256,7 @@ Before switching to production mode:
 - ✅ Set up proper logging and monitoring
 - ✅ Review and implement security best practices
 - ✅ Complete KYC/KYB verification
-- ✅ Obtain production API key (`sk_live_`)
+- ✅ Obtain production API key (`pk_live_`)
 - ✅ Update environment variables with production key
 - ✅ **Switch to using real customer data** (phone, CNIC, bank accounts)
 - ✅ Test a small transaction in production

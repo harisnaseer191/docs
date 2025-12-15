@@ -136,7 +136,7 @@ Create a settlement request to transfer funds from your Waypay wallet to your ba
 ```bash cURL
 curl --request POST \
   --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Settlements \
-  --header 'SWICH-API-Key: sk_test_xxxxxxxx' \
+  --header 'SWICH-API-Key: pk_test_xxxxxxxx' \
   --header 'Content-Type: application/json' \
   --data '{
     "amount": 50000,
@@ -152,7 +152,7 @@ curl --request POST \
 const response = await fetch('https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Settlements', {
   method: 'POST',
   headers: {
-    'SWICH-API-Key': 'sk_test_xxxxxxxx',
+    'SWICH-API-Key': 'pk_test_xxxxxxxx',
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
@@ -174,7 +174,7 @@ import requests
 response = requests.post(
     'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Settlements',
     headers={
-        'SWICH-API-Key': 'sk_test_xxxxxxxx',
+        'SWICH-API-Key': 'pk_test_xxxxxxxx',
         'Content-Type': 'application/json'
     },
     json={

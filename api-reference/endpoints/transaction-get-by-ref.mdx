@@ -101,7 +101,7 @@ Retrieve detailed information about a specific transaction using its transaction
 ```bash cURL
 curl --request GET \
   --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Transaction/by-ref/TXN20251212123456 \
-  --header 'SWICH-API-Key: sk_test_xxxxxxxx'
+  --header 'SWICH-API-Key: pk_test_xxxxxxxx'
 ```
 
 ```javascript Node.js
@@ -110,7 +110,7 @@ const response = await fetch(
   {
     method: 'GET',
     headers: {
-      'SWICH-API-Key': 'sk_test_xxxxxxxx'
+      'SWICH-API-Key': 'pk_test_xxxxxxxx'
     }
   }
 );
@@ -123,7 +123,7 @@ import requests
 
 response = requests.get(
     'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Transaction/by-ref/TXN20251212123456',
-    headers={'SWICH-API-Key': 'sk_test_xxxxxxxx'}
+    headers={'SWICH-API-Key': 'pk_test_xxxxxxxx'}
 )
 ```
 </RequestExample>

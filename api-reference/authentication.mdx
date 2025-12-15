@@ -17,10 +17,10 @@ Waypay provides two types of API keys:
 
 <CardGroup cols={2}>
   <Card title="Test Keys" icon="flask">
-    Use these keys during development and testing. They start with `sk_test_`
+    Use these keys during development and testing. They start with `pk_test_`
   </Card>
   <Card title="Live Keys" icon="circle-check">
-    Use these keys in production. They start with `sk_live_`
+    Use these keys in production. They start with `pk_live_`
   </Card>
 </CardGroup>
 
@@ -45,7 +45,7 @@ SWICH-API-Key: YOUR_API_KEY
 ```bash cURL
 curl --request GET \
   --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Transaction/by-ref/TXN123456 \
-  --header 'SWICH-API-Key: sk_test_xxxxxxxxxxxxx'
+  --header 'SWICH-API-Key: pk_test_xxxxxxxxxxxxx'
 ```
 
 ```javascript Node.js
@@ -110,15 +110,15 @@ Store your API keys in environment variables:
 
 <CodeGroup>
 ```bash Linux/macOS
-export WAYPAY_API_KEY="sk_live_xxxxxxxxxxxxx"
+export WAYPAY_API_KEY="pk_live_xxxxxxxxxxxxx"
 ```
 
 ```powershell Windows PowerShell
-$env:WAYPAY_API_KEY="sk_live_xxxxxxxxxxxxx"
+$env:WAYPAY_API_KEY="pk_live_xxxxxxxxxxxxx"
 ```
 
 ```bash .env File
-WAYPAY_API_KEY=sk_live_xxxxxxxxxxxxx
+WAYPAY_API_KEY=pk_live_xxxxxxxxxxxxx
 ```
 </CodeGroup>
 

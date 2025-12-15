@@ -104,7 +104,7 @@ Get detailed information about a specific settlement using its unique identifier
 ```bash cURL
 curl --request GET \
   --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Settlements/aa0e8400-e29b-41d4-a716-446655440000 \
-  --header 'SWICH-API-Key: sk_test_xxxxxxxx'
+  --header 'SWICH-API-Key: pk_test_xxxxxxxx'
 ```
 
 ```javascript Node.js
@@ -113,7 +113,7 @@ const response = await fetch(
   {
     method: 'GET',
     headers: {
-      'SWICH-API-Key': 'sk_test_xxxxxxxx'
+      'SWICH-API-Key': 'pk_test_xxxxxxxx'
     }
   }
 );
@@ -126,7 +126,7 @@ import requests
 
 response = requests.get(
     'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Settlements/aa0e8400-e29b-41d4-a716-446655440000',
-    headers={'SWICH-API-Key': 'sk_test_xxxxxxxx'}
+    headers={'SWICH-API-Key': 'pk_test_xxxxxxxx'}
 )
 ```
 </RequestExample>
