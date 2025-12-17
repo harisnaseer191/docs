@@ -131,6 +131,9 @@ This endpoint creates a withdrawal order that processes a payout from your merch
     <ResponseField name="status" type="string">
       Payout status
     </ResponseField>
+    <ResponseField name="provider" type="string">
+      Wallet provider name
+    </ResponseField>
     <ResponseField name="transactionReference" type="string">
       Transaction reference number
     </ResponseField>
@@ -267,6 +270,7 @@ print(f"Payout Status: {data['payoutInfo']['status']}")
   "merchantReference": "WD123456",
   "payoutInfo": {
     "status": "Processing",
+    "provider": "JazzCash",
     "transactionReference": "WD20251213123456",
     "message": "Payout initiated successfully",
     "isSuccess": true,
