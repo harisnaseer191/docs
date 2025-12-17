@@ -33,7 +33,11 @@ This endpoint creates a withdrawal order that processes a payout from your merch
 </ParamField>
 
 <ParamField body="customerBankName" type="string">
-  Name of the customer's bank
+  Name of the customer's bank e.g
+  - Bank Alfalah
+  - JazzCash
+  - Easypaisa
+  - Standard Chartered
 </ParamField>
 
 <ParamField body="customerFullName" type="string">
@@ -132,7 +136,7 @@ This endpoint creates a withdrawal order that processes a payout from your merch
       Payout status
     </ResponseField>
     <ResponseField name="provider" type="string">
-      Wallet provider name
+    Provider  from which transaction is completed
     </ResponseField>
     <ResponseField name="transactionReference" type="string">
       Transaction reference number
@@ -189,38 +193,41 @@ curl --request POST \
 ```
 
 ```javascript Node.js
-const response = await fetch('https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/withdraw', {
-  method: 'POST',
-  headers: {
-    'SWICH-API-Key': 'pk_test_xxxxxxxx',
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    amount: 5000,
-    description: 'Freelancer Payment',
-    cnic: '3520108345678',
-    customerAccountNumber: 'PK36SCBL0000001123456702',
-    customerBankName: 'Standard Chartered Bank',
-    customerFullName: 'Ahmed Ali',
-    customerEmail: 'ahmed@example.com',
-    billReference: 'INV-2025-001',
-    autoProcessPayout: true,
-    currency: 'PKR',
-    intentType: 'withdrawal',
-    customerRef: {
-      name: 'Ahmed Ali',
-      email: 'ahmed@example.com',
-      cnic: '3520108345678',
-      phone: '03123456789'
+const response = await fetch(
+  "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/withdraw",
+  {
+    method: "POST",
+    headers: {
+      "SWICH-API-Key": "pk_test_xxxxxxxx",
+      "Content-Type": "application/json",
     },
-    orderRef: {
-      orderRef: 'WD123456'
-    }
-  })
-});
+    body: JSON.stringify({
+      amount: 5000,
+      description: "Freelancer Payment",
+      cnic: "3520108345678",
+      customerAccountNumber: "PK36SCBL0000001123456702",
+      customerBankName: "Standard Chartered Bank",
+      customerFullName: "Ahmed Ali",
+      customerEmail: "ahmed@example.com",
+      billReference: "INV-2025-001",
+      autoProcessPayout: true,
+      currency: "PKR",
+      intentType: "withdrawal",
+      customerRef: {
+        name: "Ahmed Ali",
+        email: "ahmed@example.com",
+        cnic: "3520108345678",
+        phone: "03123456789",
+      },
+      orderRef: {
+        orderRef: "WD123456",
+      },
+    }),
+  }
+);
 
 const data = await response.json();
-console.log('Withdrawal Intent ID:', data.paymentIntentId);
+console.log("Withdrawal Intent ID:", data.paymentIntentId);
 ```
 
 ```python Python
@@ -259,6 +266,7 @@ response = requests.post(
 data = response.json()
 print(f"Payout Status: {data['payoutInfo']['status']}")
 ```
+
 </RequestExample>
 
 <ResponseExample>
@@ -308,6 +316,7 @@ print(f"Payout Status: {data['payoutInfo']['status']}")
   "detail": "Insufficient balance for withdrawal"
 }
 ```
+
 </ResponseExample>
 
 ## Auto Process Payout
@@ -332,6 +341,7 @@ When set to `false` (default), the withdrawal will be created but require manual
 ## Processing Time
 
 Withdrawal processing times vary by bank and amount:
+
 - **Instant**: Some banks support real-time transfers
 - **Same Day**: Most local banks (2-4 hours)
 - **Next Day**: For high-value transactions or certain banks
