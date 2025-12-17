@@ -1352,47 +1352,25 @@
       "CreateWithdrawOrderRequest": {
         "required": [
           "amount",
-          "description"
+          "currency",
+          "customerRef",
+          "description",
+          "orderRef"
         ],
         "type": "object",
         "properties": {
-          "cnic": {
-            "type": "string",
-            "nullable": true
-          },
-          "customerAccountNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "customerBankName": {
-            "type": "string",
-            "nullable": true
-          },
-          "customerFullName": {
-            "type": "string",
-            "nullable": true
-          },
-          "customerEmail": {
-            "type": "string",
-            "nullable": true
-          },
-          "billReference": {
-            "type": "string",
-            "nullable": true
-          },
-          "autoProcessPayout": {
-            "type": "boolean"
-          },
           "amount": {
+            "minimum": 0.01,
             "type": "number",
             "format": "double"
           },
           "currency": {
-            "type": "string",
-            "nullable": true
+            "maxLength": 3,
+            "minLength": 3,
+            "type": "string"
           },
           "customerRef": {
-            "$ref": "#/components/schemas/CustomerRefDto"
+            "$ref": "#/components/schemas/WithdrawalCustomerRefDto"
           },
           "orderRef": {
             "$ref": "#/components/schemas/OrderRefDto"
@@ -1403,15 +1381,14 @@
             "pattern": "^[A-Za-z0-9 ]{1,200}$",
             "type": "string"
           },
-          "successUrl": {
-            "type": "string",
-            "nullable": true
-          },
-          "cancelUrl": {
-            "type": "string",
-            "nullable": true
-          },
           "intentType": {
+            "type": "string",
+            "nullable": true
+          },
+          "autoProcessPayout": {
+            "type": "boolean"
+          },
+          "metadataJson": {
             "type": "string",
             "nullable": true
           }
@@ -1783,6 +1760,10 @@
             "type": "string",
             "nullable": true
           },
+          "provider": {
+            "type": "string",
+            "nullable": true
+          },
           "transactionReference": {
             "type": "string",
             "nullable": true
@@ -2086,7 +2067,67 @@
           }
         },
         "additionalProperties": false
+      },
+      "WithdrawalCustomerRefDto": {
+        "required": [
+          "accountTitle",
+          "bankAccountNumber",
+          "bankName",
+          "cnic",
+          "email",
+          "name",
+          "phone"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "email": {
+            "minLength": 1,
+            "type": "string",
+            "format": "email"
+          },
+          "cnic": {
+            "minLength": 1,
+            "pattern": "^\\d{13}$",
+            "type": "string"
+          },
+          "phone": {
+            "minLength": 1,
+            "pattern": "^(\\+92|0)?3\\d{9}$",
+            "type": "string"
+          },
+          "shippingAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "bankAccountNumber": {
+            "maxLength": 24,
+            "minLength": 10,
+            "type": "string"
+          },
+          "bankName": {
+            "maxLength": 100,
+            "minLength": 2,
+            "type": "string"
+          },
+          "accountTitle": {
+            "maxLength": 100,
+            "minLength": 2,
+            "type": "string"
+          },
+          "billReference": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
       }
     }
   }
 }
+

@@ -20,87 +20,86 @@ This endpoint creates a withdrawal order that processes a payout from your merch
   Withdrawal amount (must be greater than 0.01)
 </ParamField>
 
+<ParamField body="currency" type="string" required>
+  Payment currency - exactly 3 characters (e.g., "PKR", "USD")
+</ParamField>
+
 <ParamField body="description" type="string" required>
   Withdrawal description (1-200 alphanumeric characters and spaces only)
-</ParamField>
-
-<ParamField body="cnic" type="string">
-  Customer's CNIC number
-</ParamField>
-
-<ParamField body="customerAccountNumber" type="string">
-  Customer's bank account number or IBAN
-</ParamField>
-
-<ParamField body="customerBankName" type="string">
-  Name of the customer's bank e.g
-  - Bank Alfalah
-  - JazzCash
-  - Easypaisa
-  - Standard Chartered
-</ParamField>
-
-<ParamField body="customerFullName" type="string">
-  Customer's full name as per bank account
-</ParamField>
-
-<ParamField body="customerEmail" type="string">
-  Customer's email address
-</ParamField>
-
-<ParamField body="billReference" type="string">
-  Optional bill or invoice reference
-</ParamField>
-
-<ParamField body="autoProcessPayout" type="boolean">
-  Whether to automatically process the payout (default: false)
-</ParamField>
-
-<ParamField body="currency" type="string">
-  Payment currency (e.g., "PKR", "USD")
-</ParamField>
-
-<ParamField body="successUrl" type="string">
-  URL to redirect after successful withdrawal
-</ParamField>
-
-<ParamField body="cancelUrl" type="string">
-  URL to redirect after cancelled withdrawal
+  
+  **Pattern:** `^[A-Za-z0-9 ]{1,200}$`
 </ParamField>
 
 <ParamField body="intentType" type="string">
   Payment intent type (e.g., "withdrawal")
 </ParamField>
 
-<ParamField body="customerRef" type="object">
-  Customer information
+<ParamField body="autoProcessPayout" type="boolean">
+  Whether to automatically process the payout (default: false)
+</ParamField>
+
+<ParamField body="metadataJson" type="string">
+  Optional JSON string containing additional metadata for the transaction
+</ParamField>
+
+<ParamField body="customerRef" type="object" required>
+  Customer information with bank account details
   <Expandable title="properties">
     <ParamField body="name" type="string" required>
-      Customer full name
+      Customer full name (minimum 1 character)
     </ParamField>
     <ParamField body="email" type="string" required>
-      Customer email address
+      Customer email address (must be valid email format)
     </ParamField>
     <ParamField body="cnic" type="string" required>
-      Customer CNIC number
+      Customer CNIC number - must be exactly 13 digits
+      
+      **Pattern:** `^\d{13}$`
+      
+      **Example:** `3520108345678`
     </ParamField>
     <ParamField body="phone" type="string" required>
-      Customer phone number
+      Customer phone number - Pakistani mobile format
+      
+      **Pattern:** `^(\+92|0)?3\d{9}$`
+      
+      **Examples:** `03123456789`, `+923123456789`, `3123456789`
+    </ParamField>
+    <ParamField body="bankAccountNumber" type="string" required>
+      Customer's bank account number or IBAN (10-24 characters)
+      
+      **Example:** `PK36SCBL0000001123456702`
+    </ParamField>
+    <ParamField body="bankName" type="string" required>
+      Name of the customer's bank (2-100 characters)
+      
+      **Examples:**
+      - Bank Alfalah
+      - JazzCash
+      - Easypaisa
+      - Standard Chartered
+      - HBL
+      - UBL
+    </ParamField>
+    <ParamField body="accountTitle" type="string" required>
+      Account holder name as per bank account (2-100 characters)
+    </ParamField>
+    <ParamField body="billReference" type="string">
+      Optional bill or invoice reference (0-50 characters)
     </ParamField>
     <ParamField body="shippingAddress" type="string">
-      Shipping address
-    </ParamField>
-    <ParamField body="estimatedDays" type="string">
-      Estimated delivery days
+      Optional shipping address
     </ParamField>
   </Expandable>
 </ParamField>
 
-<ParamField body="orderRef" type="object">
+<ParamField body="orderRef" type="object" required>
   Order information
   <Expandable title="properties">
     <ParamField body="orderRef" type="string" required>
       Order reference (1-20 alphanumeric characters)
+      
+      **Pattern:** `^[A-Za-z0-9]{1,20}$`
     </ParamField>
     <ParamField body="discount" type="string">
       Discount amount or percentage
@@ -136,7 +135,7 @@ This endpoint creates a withdrawal order that processes a payout from your merch
       Payout status
     </ResponseField>
     <ResponseField name="provider" type="string">
-    Provider  from which transaction is completed
+      Provider from which transaction is completed
     </ResponseField>
     <ResponseField name="transactionReference" type="string">
       Transaction reference number
@@ -170,21 +169,19 @@ curl --request POST \
   --header 'Content-Type: application/json' \
   --data '{
     "amount": 5000,
-    "description": "Freelancer Payment",
-    "cnic": "3520108345678",
-    "customerAccountNumber": "PK36SCBL0000001123456702",
-    "customerBankName": "Standard Chartered Bank",
-    "customerFullName": "Ahmed Ali",
-    "customerEmail": "ahmed@example.com",
-    "billReference": "INV-2025-001",
-    "autoProcessPayout": true,
     "currency": "PKR",
+    "description": "Freelancer Payment",
     "intentType": "withdrawal",
+    "autoProcessPayout": true,
     "customerRef": {
       "name": "Ahmed Ali",
       "email": "ahmed@example.com",
       "cnic": "3520108345678",
-      "phone": "03123456789"
+      "phone": "03123456789",
+      "bankAccountNumber": "PK36SCBL0000001123456702",
+      "bankName": "Standard Chartered Bank",
+      "accountTitle": "Ahmed Ali",
+      "billReference": "INV-2025-001"
     },
     "orderRef": {
       "orderRef": "WD123456"
@@ -203,21 +200,19 @@ const response = await fetch(
     },
     body: JSON.stringify({
       amount: 5000,
-      description: "Freelancer Payment",
-      cnic: "3520108345678",
-      customerAccountNumber: "PK36SCBL0000001123456702",
-      customerBankName: "Standard Chartered Bank",
-      customerFullName: "Ahmed Ali",
-      customerEmail: "ahmed@example.com",
-      billReference: "INV-2025-001",
-      autoProcessPayout: true,
       currency: "PKR",
+      description: "Freelancer Payment",
       intentType: "withdrawal",
+      autoProcessPayout: true,
       customerRef: {
         name: "Ahmed Ali",
         email: "ahmed@example.com",
         cnic: "3520108345678",
         phone: "03123456789",
+        bankAccountNumber: "PK36SCBL0000001123456702",
+        bankName: "Standard Chartered Bank",
+        accountTitle: "Ahmed Ali",
+        billReference: "INV-2025-001"
       },
       orderRef: {
         orderRef: "WD123456",
@@ -241,21 +236,19 @@ response = requests.post(
     },
     json={
         'amount': 5000,
-        'description': 'Freelancer Payment',
-        'cnic': '3520108345678',
-        'customerAccountNumber': 'PK36SCBL0000001123456702',
-        'customerBankName': 'Standard Chartered Bank',
-        'customerFullName': 'Ahmed Ali',
-        'customerEmail': 'ahmed@example.com',
-        'billReference': 'INV-2025-001',
-        'autoProcessPayout': True,
         'currency': 'PKR',
+        'description': 'Freelancer Payment',
         'intentType': 'withdrawal',
+        'autoProcessPayout': True,
         'customerRef': {
             'name': 'Ahmed Ali',
             'email': 'ahmed@example.com',
             'cnic': '3520108345678',
-            'phone': '03123456789'
+            'phone': '03123456789',
+            'bankAccountNumber': 'PK36SCBL0000001123456702',
+            'bankName': 'Standard Chartered Bank',
+            'accountTitle': 'Ahmed Ali',
+            'billReference': 'INV-2025-001'
         },
         'orderRef': {
             'orderRef': 'WD123456'
@@ -319,6 +312,30 @@ print(f"Payout Status: {data['payoutInfo']['status']}")
 
 </ResponseExample>
 
+## Validation Rules
+
+### CNIC Format
+- Must be exactly 13 digits
+- Pattern: `^\d{13}$`
+- Example: `3520108345678`
+
+### Phone Number Format
+- Must be Pakistani mobile number
+- Pattern: `^(\+92|0)?3\d{9}$`
+- Valid formats:
+  - `03123456789` (without country code)
+  - `+923123456789` (with + prefix)
+  - `923123456789` (with country code, no +)
+
+### Bank Account Number
+- Length: 10-24 characters
+- Supports both IBAN and regular account numbers
+- Example IBAN: `PK36SCBL0000001123456702`
+
+### Currency
+- Must be exactly 3 characters
+- Examples: `PKR`, `USD`, `EUR`
+
 ## Auto Process Payout
 
 When `autoProcessPayout` is set to `true`, the system will automatically initiate the bank transfer without requiring manual approval. This is useful for:
@@ -337,6 +354,8 @@ When set to `false` (default), the withdrawal will be created but require manual
 - Monitor the `payoutInfo.status` to track withdrawal completion
 - Store the `paymentIntentId` for future reference and reconciliation
 - Validate CNIC and account holder name match for compliance
+- Verify phone number format before submission
+- Use `metadataJson` to store additional transaction context
 
 ## Processing Time
 
