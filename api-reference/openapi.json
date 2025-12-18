@@ -1208,9 +1208,11 @@
       "CreateDepositOrderRequest": {
         "required": [
           "amount",
+          "customerRef",
           "description",
           "last6CNICDigits",
-          "mobileNumber"
+          "mobileNumber",
+          "orderRef"
         ],
         "type": "object",
         "properties": {
@@ -1422,10 +1424,7 @@
       },
       "CustomerRefDto": {
         "required": [
-          "cnic",
-          "email",
-          "name",
-          "phone"
+          "name"
         ],
         "type": "object",
         "properties": {
@@ -1434,16 +1433,18 @@
             "type": "string"
           },
           "email": {
-            "minLength": 1,
-            "type": "string"
+            "type": "string",
+            "format": "email",
+            "nullable": true
           },
           "cnic": {
-            "minLength": 1,
-            "type": "string"
+            "pattern": "^\\d{13}$",
+            "type": "string",
+            "nullable": true
           },
           "phone": {
-            "minLength": 1,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "shippingAddress": {
             "type": "string",
@@ -1459,7 +1460,9 @@
       "InitiatePaymentRequest": {
         "required": [
           "amount",
-          "description"
+          "customerRef",
+          "description",
+          "orderRef"
         ],
         "type": "object",
         "properties": {
@@ -2073,10 +2076,7 @@
           "accountTitle",
           "bankAccountNumber",
           "bankName",
-          "cnic",
-          "email",
-          "name",
-          "phone"
+          "name"
         ],
         "type": "object",
         "properties": {
@@ -2085,19 +2085,18 @@
             "type": "string"
           },
           "email": {
-            "minLength": 1,
             "type": "string",
-            "format": "email"
+            "format": "email",
+            "nullable": true
           },
           "cnic": {
-            "minLength": 1,
             "pattern": "^\\d{13}$",
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "phone": {
-            "minLength": 1,
-            "pattern": "^(\\+92|0)?3\\d{9}$",
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "shippingAddress": {
             "type": "string",
@@ -2130,4 +2129,3 @@
     }
   }
 }
-

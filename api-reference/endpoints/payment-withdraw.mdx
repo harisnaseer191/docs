@@ -48,22 +48,18 @@ This endpoint creates a withdrawal order that processes a payout from your merch
     <ParamField body="name" type="string" required>
       Customer full name (minimum 1 character)
     </ParamField>
-    <ParamField body="email" type="string" required>
+    <ParamField body="email" type="string">
       Customer email address (must be valid email format)
     </ParamField>
-    <ParamField body="cnic" type="string" required>
+    <ParamField body="cnic" type="string">
       Customer CNIC number - must be exactly 13 digits
       
       **Pattern:** `^\d{13}$`
       
       **Example:** `3520108345678`
     </ParamField>
-    <ParamField body="phone" type="string" required>
-      Customer phone number - Pakistani mobile format
-      
-      **Pattern:** `^(\+92|0)?3\d{9}$`
-      
-      **Examples:** `03123456789`, `+923123456789`, `3123456789`
+    <ParamField body="phone" type="string">
+      Customer phone number
     </ParamField>
     <ParamField body="bankAccountNumber" type="string" required>
       Customer's bank account number or IBAN (10-24 characters)
@@ -314,27 +310,60 @@ print(f"Payout Status: {data['payoutInfo']['status']}")
 
 ## Validation Rules
 
-### CNIC Format
-- Must be exactly 13 digits
+### CNIC Format (Optional)
+- Must be exactly 13 digits when provided
 - Pattern: `^\d{13}$`
 - Example: `3520108345678`
 
-### Phone Number Format
-- Must be Pakistani mobile number
-- Pattern: `^(\+92|0)?3\d{9}$`
-- Valid formats:
-  - `03123456789` (without country code)
-  - `+923123456789` (with + prefix)
-  - `923123456789` (with country code, no +)
+### Phone Number (Optional)
+- No specific format required
+- Recommended format for Pakistani numbers: `03XXXXXXXXX` or `+923XXXXXXXXX`
 
-### Bank Account Number
+### Bank Account Number (Required)
 - Length: 10-24 characters
 - Supports both IBAN and regular account numbers
 - Example IBAN: `PK36SCBL0000001123456702`
 
-### Currency
+### Bank Name (Required)
+- Length: 2-100 characters
+- Examples: Bank Alfalah, JazzCash, Easypaisa, Standard Chartered, HBL, UBL
+
+### Account Title (Required)
+- Length: 2-100 characters
+- Must match the bank account holder's name
+
+### Currency (Required)
 - Must be exactly 3 characters
 - Examples: `PKR`, `USD`, `EUR`
+
+### Description (Required)
+- Length: 1-200 characters
+- Pattern: `^[A-Za-z0-9 ]{1,200}$`
+- Only alphanumeric characters and spaces allowed
+
+## Required vs Optional Fields
+
+### Required Fields
+- `amount` - Withdrawal amount
+- `currency` - Payment currency (3 characters)
+- `description` - Transaction description
+- `customerRef.name` - Customer full name
+- `customerRef.bankAccountNumber` - Bank account or IBAN
+- `customerRef.bankName` - Bank name
+- `customerRef.accountTitle` - Account holder name
+- `orderRef.orderRef` - Unique order reference
+
+### Optional Fields
+- `intentType` - Payment intent type
+- `autoProcessPayout` - Auto-process flag (default: false)
+- `metadataJson` - Additional metadata
+- `customerRef.email` - Customer email
+- `customerRef.cnic` - Customer CNIC
+- `customerRef.phone` - Customer phone
+- `customerRef.billReference` - Bill/invoice reference
+- `customerRef.shippingAddress` - Shipping address
+- `orderRef.discount` - Discount information
+- `orderRef.tax` - Tax information
 
 ## Auto Process Payout
 
@@ -353,8 +382,9 @@ When set to `false` (default), the withdrawal will be created but require manual
 - Use `autoProcessPayout: false` for high-value transactions that need review
 - Monitor the `payoutInfo.status` to track withdrawal completion
 - Store the `paymentIntentId` for future reference and reconciliation
-- Validate CNIC and account holder name match for compliance
-- Verify phone number format before submission
+- Provide email and phone when available for better customer communication
+- Include CNIC for compliance and verification purposes when available
+- Verify account title matches the bank account holder's name
 - Use `metadataJson` to store additional transaction context
 
 ## Processing Time
@@ -366,3 +396,53 @@ Withdrawal processing times vary by bank and amount:
 - **Next Day**: For high-value transactions or certain banks
 
 The `estimatedCompletionTime` field provides the expected completion timestamp.
+
+## Common Error Scenarios
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| Invalid bank account | Incorrect IBAN or account number format | Verify account number format (10-24 characters) |
+| Bank not found | Invalid or unsupported bank name | Use exact bank name from supported list |
+| Account mismatch | Account title doesn't match bank records | Verify account holder name |
+| Insufficient balance | Not enough funds in merchant wallet | Top up wallet or reduce withdrawal amount |
+| Validation error | Missing required fields | Ensure all required fields are provided |
+
+## Security Considerations
+
+- Never store sensitive bank account information in plain text
+- Use HTTPS for all API communications
+- Validate bank account details before processing withdrawals
+- Implement rate limiting to prevent abuse
+- Monitor for suspicious withdrawal patterns
+- Keep API keys secure and rotate regularly
+- Set up alerts for large withdrawal amounts
+- Use `autoProcessPayout: false` for manual review of high-value transactions
+
+## Testing
+
+Use these test credentials in sandbox mode:
+
+- **Name**: `Test User`
+- **Email**: `test@example.com` (optional)
+- **CNIC**: `3520108345678` (optional)
+- **Phone**: `03123456789` (optional)
+- **Bank Account**: `PK36SCBL0000001123456702`
+- **Bank Name**: `Standard Chartered Bank`
+- **Account Title**: `Test User`
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Check Transaction Status" icon="magnifying-glass" href="/api-reference/endpoints/transaction-by-ref">
+    Monitor withdrawal status by transaction reference
+  </Card>
+  <Card title="Setup Webhooks" icon="webhook" href="/guides/webhooks">
+    Receive real-time notifications for withdrawal events
+  </Card>
+  <Card title="Handle Refunds" icon="rotate-left" href="/api-reference/endpoints/refunds-create">
+    Process refunds if needed
+  </Card>
+  <Card title="View Settlement" icon="building-columns" href="/api-reference/endpoints/settlements-get">
+    Check settlement details
+  </Card>
+</CardGroup>
