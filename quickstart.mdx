@@ -7,7 +7,7 @@ description: "Get your WayPay account, API key, and make your first API call"
 
 To use the WayPay Merchant APIs, first create an account:
 
-- Go to: https://waypay-dev-web.icydesert-41d42f7e.uaenorth.azurecontainerapps.io
+- Go to: https://portal.dev.waypay.live
 - Click Sign Up and complete the registration form (business name, contact, email, phone).
 - Verify your email address via the link sent to your inbox.
 - Provide required business details and documents for compliance (KYC/KYB).
@@ -108,7 +108,7 @@ export SWICH_API_KEY="pk_test_xxxxxxxxxxxxx"
 ### Example 1: Create a test checkout session
 
 ```bash
-curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate-checkout" \
+curl -X POST "https://gateway.dev.waypay.live/Gateway/v1/Payment/initiate-checkout" \
   -H "Content-Type: application/json" \
   -H "SWICH-API-Key: $SWICH_API_KEY" \
   -d '{
@@ -144,7 +144,7 @@ Redirect your customer to the `checkoutUrl` to complete the test payment.
 ### Example 2: Test mobile wallet deposit
 
 ```bash
-curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/deposit" \
+curl -X POST "https://gateway.dev.waypay.live/Gateway/v1/Payment/deposit" \
   -H "Content-Type: application/json" \
   -H "SWICH-API-Key: $SWICH_API_KEY" \
   -d '{
@@ -191,7 +191,7 @@ curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azureconta
 ### Example 3: Test bank withdrawal/payout
 
 ```bash
-curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/withdraw" \
+curl -X POST "https://gateway.dev.waypay.live/Gateway/v1/Payment/withdraw" \
   -H "Content-Type: application/json" \
   -H "SWICH-API-Key: $SWICH_API_KEY" \
   -d '{
@@ -242,21 +242,21 @@ curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azureconta
 ### Check test wallet balance
 
 ```bash
-curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Account/query-balance" \
+curl -X POST "https://gateway.dev.waypay.live/Gateway/v1/Account/query-balance" \
   -H "SWICH-API-Key: $SWICH_API_KEY"
 ```
 
 ### Get test transaction details
 
 ```bash
-curl -X GET "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Transaction/by-ref/TEST-ORD-12345" \
+curl -X GET "https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/TEST-ORD-12345" \
   -H "SWICH-API-Key: $SWICH_API_KEY"
 ```
 
 ### Issue a test refund
 
 ```bash
-curl -X POST "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Refunds" \
+curl -X POST "https://gateway.dev.waypay.live/Gateway/v1/Refunds" \
   -H "Content-Type: application/json" \
   -H "SWICH-API-Key: $SWICH_API_KEY" \
   -d '{

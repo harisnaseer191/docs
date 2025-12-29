@@ -9,7 +9,7 @@
   "favicon": "/favicon.svg",
   "openapi": ["/openapi.json"],
   "api": {
-    "baseUrl": "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1",
+    "baseUrl": "https://gateway.dev.waypay.live/Gateway/v1",
     "auth": {
       "method": "bearer"
     }

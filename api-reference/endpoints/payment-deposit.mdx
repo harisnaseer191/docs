@@ -154,7 +154,7 @@ This endpoint creates a deposit order that initiates a mobile wallet charge from
 <RequestExample>
 ```bash cURL
 curl --request POST \
-  --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/deposit \
+  --url https://gateway.dev.waypay.live/Gateway/v1/Payment/deposit \
   --header 'SWICH-API-Key: pk_test_xxxxxxxx' \
   --header 'Content-Type: application/json' \
   --data '{
@@ -179,7 +179,7 @@ curl --request POST \
 
 ```javascript Node.js
 const response = await fetch(
-  'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/deposit',
+  'https://gateway.dev.waypay.live/Gateway/v1/Payment/deposit',
   {
     method: 'POST',
     headers: {
@@ -215,7 +215,7 @@ console.log('Payment Intent ID:', data.paymentIntentId);
 import requests
 
 response = requests.post(
-    'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/deposit',
+    'https://gateway.dev.waypay.live/Gateway/v1/Payment/deposit',
     headers={
         'SWICH-API-Key': 'pk_test_xxxxxxxx',
         'Content-Type': 'application/json'

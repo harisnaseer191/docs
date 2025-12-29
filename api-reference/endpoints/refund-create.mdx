@@ -85,7 +85,7 @@ This endpoint allows you to initiate a refund for a previously completed transac
 <RequestExample>
 ```bash cURL
 curl --request POST \
-  --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Refunds \
+  --url https://gateway.dev.waypay.live/Gateway/v1/Refunds \
   --header 'SWICH-API-Key: pk_test_xxxxxxxx' \
   --header 'Content-Type: application/json' \
   --data '{
@@ -96,7 +96,7 @@ curl --request POST \
 ```
 
 ```javascript Node.js
-const response = await fetch('https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Refunds', {
+const response = await fetch('https://gateway.dev.waypay.live/Gateway/v1/Refunds', {
   method: 'POST',
   headers: {
     'SWICH-API-Key': 'pk_test_xxxxxxxx',
@@ -116,7 +116,7 @@ const data = await response.json();
 import requests
 
 response = requests.post(
-    'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Refunds',
+    'https://gateway.dev.waypay.live/Gateway/v1/Refunds',
     headers={
         'SWICH-API-Key': 'pk_test_xxxxxxxx',
         'Content-Type': 'application/json'

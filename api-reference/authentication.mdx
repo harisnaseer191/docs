@@ -44,7 +44,7 @@ SWICH-API-Key: YOUR_API_KEY
 <CodeGroup>
 ```bash cURL
 curl --request GET \
-  --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Transaction/by-ref/TXN123456 \
+  --url https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/TXN123456 \
   --header 'SWICH-API-Key: pk_test_xxxxxxxxxxxxx'
 ```
 
@@ -52,7 +52,7 @@ curl --request GET \
 const fetch = require('node-fetch');
 
 const response = await fetch(
-  'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Transaction/by-ref/TXN123456',
+  'https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/TXN123456',
   {
     method: 'GET',
     headers: {
@@ -71,7 +71,7 @@ import requests
 api_key = os.environ.get('WAYPAY_API_KEY')
 
 response = requests.get(
-    'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Transaction/by-ref/TXN123456',
+    'https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/TXN123456',
     headers={
         'SWICH-API-Key': api_key
     }
@@ -87,7 +87,7 @@ $api_key = getenv('WAYPAY_API_KEY');
 $curl = curl_init();
 
 curl_setopt_array($curl, [
-  CURLOPT_URL => "https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Transaction/by-ref/TXN123456",
+  CURLOPT_URL => "https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/TXN123456",
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_HTTPHEADER => [
     "SWICH-API-Key: " . $api_key
@@ -224,7 +224,7 @@ Test your authentication setup with a simple API call:
 <CodeGroup>
 ```bash cURL
 curl --request GET \
-  --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Settlements/schedule \
+  --url https://gateway.dev.waypay.live/Gateway/v1/Settlements/schedule \
   --header 'SWICH-API-Key: YOUR_API_KEY'
 ```
 
@@ -232,7 +232,7 @@ curl --request GET \
 const testAuth = async () => {
   try {
     const response = await fetch(
-      'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Settlements/schedule',
+      'https://gateway.dev.waypay.live/Gateway/v1/Settlements/schedule',
       {
         headers: {
           'SWICH-API-Key': process.env.WAYPAY_API_KEY
@@ -261,7 +261,7 @@ def test_auth():
     api_key = os.environ.get('WAYPAY_API_KEY')
     
     response = requests.get(
-        'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Settlements/schedule',
+        'https://gateway.dev.waypay.live/Gateway/v1/Settlements/schedule',
         headers={'SWICH-API-Key': api_key}
     )
     

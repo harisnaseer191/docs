@@ -14,7 +14,7 @@ The Waypay Gateway API allows you to accept payments, process payouts, manage re
 ## Base URL
 
 ```
-https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1
+https://gateway.dev.waypay.live/Gateway/v1
 ```
 
 ## Key Features
@@ -78,8 +78,8 @@ Waypay provides separate environments for testing and production:
 
 | Environment | Base URL | API Key Prefix |
 |-------------|----------|----------------|
-| Test | `https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1` | `pk_test_` |
-| Production | `https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1` | `pk_live_` |
+| Test | `https://gateway.dev.waypay.live/Gateway/v1` | `pk_test_` |
+| Production | `https://gateway.dev.waypay.live/Gateway/v1` | `pk_live_` |
 
 <Tip>
   Use test mode to integrate and test your application without processing real transactions.
@@ -149,7 +149,7 @@ Use these standardized test credentials when testing in sandbox mode:
 
 ```bash
 curl --request POST \
-  --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/deposit \
+  --url https://gateway.dev.waypay.live/Gateway/v1/Payment/deposit \
   --header 'SWICH-API-Key: pk_test_xxxxxxxxxxxxx' \
   --header 'Content-Type: application/json' \
   --data '{
@@ -195,7 +195,7 @@ Here's how to create your first test payment:
 <CodeGroup>
 ```bash cURL
 curl --request POST \
-  --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate-checkout \
+  --url https://gateway.dev.waypay.live/Gateway/v1/Payment/initiate-checkout \
   --header 'SWICH-API-Key: pk_test_xxxxxxxxxxxxx' \
   --header 'Content-Type: application/json' \
   --data '{
@@ -218,7 +218,7 @@ curl --request POST \
 
 ```javascript Node.js
 const response = await fetch(
-  'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate-checkout',
+  'https://gateway.dev.waypay.live/Gateway/v1/Payment/initiate-checkout',
   {
     method: 'POST',
     headers: {
@@ -255,7 +255,7 @@ import requests
 api_key = os.environ.get('WAYPAY_API_KEY')  # pk_test_ for testing
 
 response = requests.post(
-    'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Payment/initiate-checkout',
+    'https://gateway.dev.waypay.live/Gateway/v1/Payment/initiate-checkout',
     headers={
         'SWICH-API-Key': api_key,
         'Content-Type': 'application/json'

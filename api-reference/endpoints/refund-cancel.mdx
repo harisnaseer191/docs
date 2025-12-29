@@ -27,13 +27,13 @@ Cancel a refund that is in pending status. Once a refund is approved or processe
 <RequestExample>
 ```bash cURL
 curl --request POST \
-  --url https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Refunds/550e8400-e29b-41d4-a716-446655440000/cancel \
+  --url https://gateway.dev.waypay.live/Gateway/v1/Refunds/550e8400-e29b-41d4-a716-446655440000/cancel \
   --header 'SWICH-API-Key: pk_test_xxxxxxxx'
 ```
 
 ```javascript Node.js
 const response = await fetch(
-  'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Refunds/550e8400-e29b-41d4-a716-446655440000/cancel',
+  'https://gateway.dev.waypay.live/Gateway/v1/Refunds/550e8400-e29b-41d4-a716-446655440000/cancel',
   {
     method: 'POST',
     headers: {
@@ -49,7 +49,7 @@ const data = await response.json();
 import requests
 
 response = requests.post(
-    'https://waypay-merchant-api.icydesert-41d42f7e.uaenorth.azurecontainerapps.io/Gateway/v1/Refunds/550e8400-e29b-41d4-a716-446655440000/cancel',
+    'https://gateway.dev.waypay.live/Gateway/v1/Refunds/550e8400-e29b-41d4-a716-446655440000/cancel',
     headers={
         'SWICH-API-Key': 'pk_test_xxxxxxxx'
     }
