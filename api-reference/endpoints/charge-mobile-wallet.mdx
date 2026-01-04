@@ -36,10 +36,6 @@ This endpoint allows you to charge a customer's mobile wallet (JazzCash, Easypai
   - `4` - Other provider
 </ParamField>
 
-<ParamField body="last6CNICDigits" type="string" required>
-  Last 6 digits of customer's CNIC (exactly 6 numeric digits)
-</ParamField>
-
 <ParamField body="billReference" type="string">
   Optional bill reference number
 </ParamField>
@@ -73,7 +69,6 @@ curl --request POST \
     "mobileNumber": "03123456789",
     "amount": 500,
     "walletProvider": 1,
-    "last6CNICDigits": "345678",
     "billReference": "BILL-2025-001",
     "description": "Subscription payment"
   }'
@@ -91,7 +86,6 @@ const response = await fetch('https://gateway.dev.waypay.live/Gateway/v1/Payment
     mobileNumber: '03123456789',
     amount: 500,
     walletProvider: 1,
-    last6CNICDigits: '345678',
     description: 'Subscription payment'
   })
 });
@@ -113,7 +107,6 @@ response = requests.post(
         'mobileNumber': '03123456789',
         'amount': 500,
         'walletProvider': 1,
-        'last6CNICDigits': '345678',
         'description': 'Subscription payment'
     }
 )

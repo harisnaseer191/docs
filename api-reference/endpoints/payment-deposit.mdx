@@ -34,14 +34,6 @@ This endpoint creates a deposit order that initiates a mobile wallet charge from
   Optional bill or invoice reference
 </ParamField>
 
-<ParamField body="last6CNICDigits" type="string" required>
-  Last 6 digits of customer's CNIC - must be exactly 6 numeric digits
-  
-  **Pattern:** `^\d{6}$`
-  
-  **Example:** `345678`
-</ParamField>
-
 <ParamField body="currency" type="string">
   Payment currency (e.g., "PKR")
 </ParamField>
@@ -161,7 +153,6 @@ curl --request POST \
     "mobileNumber": "03123456789",
     "amount": 1500,
     "walletProvider": 1,
-    "last6CNICDigits": "345678",
     "currency": "PKR",
     "description": "Product Purchase",
     "intentType": "deposit",
@@ -190,7 +181,6 @@ const response = await fetch(
       mobileNumber: '03123456789',
       amount: 1500,
       walletProvider: 1,
-      last6CNICDigits: '345678',
       currency: 'PKR',
       description: 'Product Purchase',
       intentType: 'deposit',
@@ -224,7 +214,6 @@ response = requests.post(
         'mobileNumber': '03123456789',
         'amount': 1500,
         'walletProvider': 1,
-        'last6CNICDigits': '345678',
         'currency': 'PKR',
         'description': 'Product Purchase',
         'intentType': 'deposit',
@@ -293,12 +282,6 @@ print(f"Charge Status: {data['walletChargeInfo']['status']}")
 
 ## Validation Rules
 
-### Last 6 CNIC Digits
-- Must be exactly 6 numeric digits
-- Pattern: `^\d{6}$`
-- Example: `345678`
-- Must match the last 6 digits of the full CNIC provided in `customerRef.cnic`
-
 ### CNIC Format
 - Must be exactly 13 digits
 - Pattern: `^\d{13}$`
@@ -336,19 +319,17 @@ print(f"Charge Status: {data['walletChargeInfo']['status']}")
 ## Best Practices
 
 - **Validate Before Submission**: Always validate mobile number and CNIC format before making the request
-- **Match CNIC Digits**: Ensure the `last6CNICDigits` match the last 6 digits of `customerRef.cnic`
 - **Handle OTP Flow**: Implement proper UI/UX for customers to complete OTP verification
 - **Monitor Status**: Poll the transaction status or use webhooks to get real-time updates
 - **Error Handling**: Implement retry logic for temporary failures
 - **Store Payment Intent ID**: Keep the `paymentIntentId` for reconciliation and support
-- **Test Mode**: Use test credentials (`03123456789`, `345678`) in sandbox environment
+- **Test Mode**: Use test credentials (`03123456789`) in sandbox environment
 - **Production Mode**: Use real customer data when processing live transactions
 
 ## Common Error Scenarios
 
 | Error | Cause | Solution |
 |-------|-------|----------|
-| Invalid CNIC digits | Last 6 digits don't match full CNIC | Verify the last 6 digits of the CNIC |
 | Wallet not available | Customer's wallet account inactive | Ask customer to verify wallet account |
 | Insufficient balance | Customer wallet has insufficient funds | Customer needs to top up wallet |
 | Invalid mobile number | Number not registered with wallet | Verify mobile number with customer |
@@ -369,7 +350,6 @@ Use these test credentials in sandbox mode:
 
 - **Mobile Number**: `03123456789`
 - **CNIC**: `3520108345678`
-- **Last 6 CNIC Digits**: `345678`
 - **OTP**: `123456`
 - **Wallet Provider**: `1` (JazzCash) or `2` (Easypaisa)
 
