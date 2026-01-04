@@ -87,6 +87,15 @@ This endpoint creates a payment intent and returns a checkout URL where customer
   Payment intent type (e.g., "checkout")
 </ParamField>
 
+<ParamField body="paymentMethod" type="integer">
+  Preferred payment method:
+  - 1: JazzCash
+  - 2: Easypaisa
+  - 3: Payfast
+  
+  If not specified, customer can choose from all available payment methods
+</ParamField>
+
 <ParamField body="metadataJson" type="string">
   Optional JSON string containing additional metadata for the transaction
 </ParamField>
@@ -128,7 +137,8 @@ curl --request POST \
     },
     "successUrl": "https://yoursite.com/success",
     "cancelUrl": "https://yoursite.com/cancel",
-    "intentType": "checkout"
+    "intentType": "checkout",
+    "paymentMethod": 1
   }'
 ```
 
@@ -158,7 +168,8 @@ const response = await fetch(
       },
       successUrl: 'https://yoursite.com/success',
       cancelUrl: 'https://yoursite.com/cancel',
-      intentType: 'checkout'
+      intentType: 'checkout',
+      paymentMethod: 1
     })
   }
 );
@@ -193,7 +204,8 @@ response = requests.post(
         },
         'successUrl': 'https://yoursite.com/success',
         'cancelUrl': 'https://yoursite.com/cancel',
-        'intentType': 'checkout'
+        'intentType': 'checkout',
+        'paymentMethod': 1
     }
 )
 
@@ -291,6 +303,7 @@ print(f"Checkout URL: {data['checkoutUrl']}")
 - `successUrl` - Success redirect URL
 - `cancelUrl` - Cancel redirect URL
 - `intentType` - Payment intent type
+- `paymentMethod` - Preferred payment method (1: JazzCash, 2: Easypaisa, 3: Payfast)
 - `metadataJson` - Additional metadata
 
 ## Checkout Session Flow

@@ -28,6 +28,14 @@ This endpoint creates a deposit order that initiates a mobile wallet charge from
   Mobile wallet provider code:
   - 1: JazzCash
   - 2: Easypaisa
+  - 3: Payfast
+</ParamField>
+
+<ParamField body="paymentMethod" type="integer">
+  Payment method (same as walletProvider):
+  - 1: JazzCash
+  - 2: Easypaisa
+  - 3: Payfast
 </ParamField>
 
 <ParamField body="billReference" type="string">
@@ -153,6 +161,7 @@ curl --request POST \
     "mobileNumber": "03123456789",
     "amount": 1500,
     "walletProvider": 1,
+    "paymentMethod": 1,
     "currency": "PKR",
     "description": "Product Purchase",
     "intentType": "deposit",
@@ -181,6 +190,7 @@ const response = await fetch(
       mobileNumber: '03123456789',
       amount: 1500,
       walletProvider: 1,
+      paymentMethod: 1,
       currency: 'PKR',
       description: 'Product Purchase',
       intentType: 'deposit',
@@ -214,6 +224,7 @@ response = requests.post(
         'mobileNumber': '03123456789',
         'amount': 1500,
         'walletProvider': 1,
+        'paymentMethod': 1,
         'currency': 'PKR',
         'description': 'Product Purchase',
         'intentType': 'deposit',
@@ -303,6 +314,11 @@ print(f"Charge Status: {data['walletChargeInfo']['status']}")
 |----------|------|--------|-------------|
 | JazzCash | 1 | Active | Pakistan's leading mobile wallet service |
 | Easypaisa | 2 | Active | Popular mobile wallet and financial service |
+| Payfast | 3 | Active | Payment gateway service |
+
+<Note>
+  The `paymentMethod` and `walletProvider` fields accept the same values. You can use either field to specify the payment method.
+</Note>
 
 ## Payment Flow
 
