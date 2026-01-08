@@ -91,7 +91,6 @@ This endpoint creates a payment intent and returns a checkout URL where customer
   Preferred payment method:
   - 1: JazzCash
   - 2: Easypaisa
-  - 3: Payfast
   
   If not specified, customer can choose from all available payment methods
 </ParamField>
@@ -303,7 +302,7 @@ print(f"Checkout URL: {data['checkoutUrl']}")
 - `successUrl` - Success redirect URL
 - `cancelUrl` - Cancel redirect URL
 - `intentType` - Payment intent type
-- `paymentMethod` - Preferred payment method (1: JazzCash, 2: Easypaisa, 3: Payfast)
+- `paymentMethod` - Preferred payment method (1: JazzCash, 2: Easypaisa)
 - `metadataJson` - Additional metadata
 
 ## Checkout Session Flow
