@@ -36,10 +36,6 @@ This endpoint creates a deposit order that initiates a mobile wallet charge from
   - 2: Easypaisa
 </ParamField>
 
-<ParamField body="billReference" type="string">
-  Optional bill or invoice reference
-</ParamField>
-
 <ParamField body="currency" type="string">
   Payment currency (e.g., "PKR")
 </ParamField>
@@ -65,8 +61,8 @@ This endpoint creates a deposit order that initiates a mobile wallet charge from
 <ParamField body="customerRef" type="object" required>
   Customer information
   <Expandable title="properties">
-    <ParamField body="name" type="string" required>
-      Customer full name (minimum 1 character)
+    <ParamField body="name" type="string">
+      Customer full name
     </ParamField>
     <ParamField body="email" type="string">
       Customer email address (must be valid email format)

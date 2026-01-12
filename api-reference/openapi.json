@@ -84,182 +84,6 @@
         }
       }
     },
-    "/Gateway/v{version}/PayfastPayment/initiate-payment": {
-      "post": {
-        "tags": [
-          "PayfastPayment"
-        ],
-        "parameters": [
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InitiatePayfastPaymentRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InitiatePayfastPaymentRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/InitiatePayfastPaymentRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/PayfastPaymentFormResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PayfastPaymentFormResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PayfastPaymentFormResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Gateway/v{version}/PayfastPayment/payment-callback": {
-      "post": {
-        "tags": [
-          "PayfastPayment"
-        ],
-        "parameters": [
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PayfastCallbackRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PayfastCallbackRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/PayfastCallbackRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/PayfastCallbackResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PayfastCallbackResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PayfastCallbackResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/Gateway/v{version}/Payment/initiate-checkout": {
       "post": {
         "tags": [
@@ -577,160 +401,6 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Gateway/v{version}/Payment/charge-mobile-wallet": {
-      "post": {
-        "tags": [
-          "Payment"
-        ],
-        "parameters": [
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChargeMobileWalletWithTokenRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ChargeMWalletResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ChargeMWalletResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ChargeMWalletResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Unprocessable Content",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Gateway/v{version}/Payment/get-token-info": {
-      "get": {
-        "tags": [
-          "Payment"
-        ],
-        "parameters": [
-          {
-            "name": "token",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/TokenInfoResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TokenInfoResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TokenInfoResponse"
                 }
               }
             }
@@ -1320,60 +990,6 @@
         },
         "additionalProperties": false
       },
-      "ChargeMWalletResponse": {
-        "type": "object",
-        "properties": {
-          "trxnRef": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "type": "string",
-            "nullable": true
-          },
-          "message": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "ChargeMobileWalletWithTokenRequest": {
-        "required": [
-          "amount",
-          "mobileNumber",
-          "token",
-          "walletProvider"
-        ],
-        "type": "object",
-        "properties": {
-          "token": {
-            "minLength": 1,
-            "type": "string"
-          },
-          "mobileNumber": {
-            "minLength": 1,
-            "type": "string"
-          },
-          "amount": {
-            "minimum": 0.01,
-            "type": "number",
-            "format": "double"
-          },
-          "walletProvider": {
-            "$ref": "#/components/schemas/MobileWalletProvider"
-          },
-          "billReference": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "CreateDepositOrderRequest": {
         "required": [
           "amount",
@@ -1398,10 +1014,6 @@
           },
           "paymentMethod": {
             "$ref": "#/components/schemas/MobileWalletProvider"
-          },
-          "billReference": {
-            "type": "string",
-            "nullable": true
           },
           "currency": {
             "type": "string",
@@ -1599,14 +1211,11 @@
         "additionalProperties": false
       },
       "CustomerRefDto": {
-        "required": [
-          "name"
-        ],
         "type": "object",
         "properties": {
           "name": {
-            "minLength": 1,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "email": {
             "type": "string",
@@ -1632,16 +1241,6 @@
           }
         },
         "additionalProperties": { }
-      },
-      "InitiatePayfastPaymentRequest": {
-        "type": "object",
-        "properties": {
-          "paymentIntentId": {
-            "type": "string",
-            "format": "uuid"
-          }
-        },
-        "additionalProperties": false
       },
       "InitiatePaymentRequest": {
         "required": [
@@ -1941,177 +1540,6 @@
         },
         "additionalProperties": { }
       },
-      "PayfastCallbackRequest": {
-        "type": "object",
-        "properties": {
-          "err_code": {
-            "type": "string",
-            "nullable": true
-          },
-          "err_msg": {
-            "type": "string",
-            "nullable": true
-          },
-          "transaction_id": {
-            "type": "string",
-            "nullable": true
-          },
-          "basket_id": {
-            "type": "string",
-            "nullable": true
-          },
-          "order_date": {
-            "type": "string",
-            "nullable": true
-          },
-          "rdv_Message_Key": {
-            "type": "string",
-            "nullable": true
-          },
-          "response_Key": {
-            "type": "string",
-            "nullable": true
-          },
-          "paymentType": {
-            "type": "string",
-            "nullable": true
-          },
-          "paymentName": {
-            "type": "string",
-            "nullable": true
-          },
-          "validation_hash": {
-            "type": "string",
-            "nullable": true
-          },
-          "transaction_amount": {
-            "type": "string",
-            "nullable": true
-          },
-          "merchant_amount": {
-            "type": "string",
-            "nullable": true
-          },
-          "discounted_amount": {
-            "type": "string",
-            "nullable": true
-          },
-          "issuer_name": {
-            "type": "string",
-            "nullable": true
-          },
-          "transaction_currency": {
-            "type": "string",
-            "nullable": true
-          },
-          "billNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "customerId": {
-            "type": "string",
-            "nullable": true
-          },
-          "recurring_txn": {
-            "type": "string",
-            "nullable": true
-          },
-          "additional_value": {
-            "type": "string",
-            "nullable": true
-          },
-          "additional_fee": {
-            "type": "string",
-            "nullable": true
-          },
-          "paymentIntentId": {
-            "type": "string",
-            "format": "uuid"
-          }
-        },
-        "additionalProperties": false
-      },
-      "PayfastCallbackResponse": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "paymentSuccessful": {
-            "type": "boolean"
-          },
-          "paymentIntentId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "basketId": {
-            "type": "string",
-            "nullable": true
-          },
-          "transactionId": {
-            "type": "string",
-            "nullable": true
-          },
-          "paymentId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "paymentAttemptId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "amount": {
-            "type": "string",
-            "nullable": true
-          },
-          "responseCode": {
-            "type": "string",
-            "nullable": true
-          },
-          "responseMessage": {
-            "type": "string",
-            "nullable": true
-          },
-          "paymentMethod": {
-            "type": "string",
-            "nullable": true
-          },
-          "issuerName": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "PayfastPaymentFormResponse": {
-        "type": "object",
-        "properties": {
-          "formAction": {
-            "type": "string",
-            "nullable": true
-          },
-          "formFields": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            },
-            "nullable": true
-          },
-          "basketId": {
-            "type": "string",
-            "nullable": true
-          },
-          "paymentIntentId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "expiresAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "additionalProperties": false
-      },
       "PayoutInfo": {
         "type": "object",
         "properties": {
@@ -2288,37 +1716,6 @@
         "type": "integer",
         "format": "int32"
       },
-      "TokenInfoResponse": {
-        "type": "object",
-        "properties": {
-          "paymentIntentId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "merchantId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "isLiveToken": {
-            "type": "boolean"
-          },
-          "apiKey": {
-            "type": "string",
-            "nullable": true
-          },
-          "amount": {
-            "type": "number",
-            "format": "double"
-          },
-          "customerRef": {
-            "$ref": "#/components/schemas/CustomerRefDto"
-          },
-          "orderRef": {
-            "$ref": "#/components/schemas/OrderRefDto"
-          }
-        },
-        "additionalProperties": false
-      },
       "TransactionStatus": {
         "enum": [
           1,
@@ -2431,14 +1828,13 @@
         "required": [
           "accountTitle",
           "bankAccountNumber",
-          "bankName",
-          "name"
+          "bankName"
         ],
         "type": "object",
         "properties": {
           "name": {
-            "minLength": 1,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "email": {
             "type": "string",

@@ -33,8 +33,8 @@ This endpoint creates a payment intent and returns a checkout URL where customer
 <ParamField body="customerRef" type="object" required>
   Customer information
   <Expandable title="properties">
-    <ParamField body="name" type="string" required>
-      Customer full name (minimum 1 character)
+    <ParamField body="name" type="string">
+      Customer full name
     </ParamField>
     <ParamField body="email" type="string">
       Customer email address (must be valid email format when provided)
@@ -262,10 +262,6 @@ print(f"Checkout URL: {data['checkoutUrl']}")
 - Pattern: `^[A-Za-z0-9 ]{1,200}$`
 - Only alphanumeric characters and spaces allowed
 
-### Customer Name (Required)
-- Minimum length: 1 character
-- Must be provided
-
 ### CNIC (Optional)
 - Must be exactly 13 digits when provided
 - Pattern: `^\d{13}$`
@@ -286,12 +282,12 @@ print(f"Checkout URL: {data['checkoutUrl']}")
 - `amount` - Payment amount
 - `description` - Transaction description
 - `customerRef` - Customer information object
-- `customerRef.name` - Customer full name
 - `orderRef` - Order information object
 - `orderRef.orderRef` - Unique order reference
 
 ### Optional Fields
 - `currency` - Payment currency (defaults to merchant's currency)
+- `customerRef.name` - Customer full name
 - `customerRef.email` - Customer email address
 - `customerRef.cnic` - Customer CNIC number
 - `customerRef.phone` - Customer phone number
