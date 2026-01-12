@@ -45,8 +45,8 @@ This endpoint creates a withdrawal order that processes a payout from your merch
 <ParamField body="customerRef" type="object" required>
   Customer information with bank account details
   <Expandable title="properties">
-    <ParamField body="name" type="string" required>
-      Customer full name (minimum 1 character)
+    <ParamField body="name" type="string">
+      Customer full name
     </ParamField>
     <ParamField body="email" type="string">
       Customer email address (must be valid email format)
@@ -347,16 +347,18 @@ print(f"Payout Status: {data['payoutInfo']['status']}")
 - `amount` - Withdrawal amount
 - `currency` - Payment currency (3 characters)
 - `description` - Transaction description
-- `customerRef.name` - Customer full name
+- `customerRef` - Customer information object
 - `customerRef.bankAccountNumber` - Bank account or IBAN
 - `customerRef.bankName` - Bank name
 - `customerRef.accountTitle` - Account holder name
+- `orderRef` - Order information object
 - `orderRef.orderRef` - Unique order reference
 
 ### Optional Fields
 - `intentType` - Payment intent type
 - `autoProcessPayout` - Auto-process flag (default: false)
 - `metadataJson` - Additional metadata
+- `customerRef.name` - Customer full name
 - `customerRef.email` - Customer email
 - `customerRef.cnic` - Customer CNIC
 - `customerRef.phone` - Customer phone
@@ -382,7 +384,7 @@ When set to `false` (default), the withdrawal will be created but require manual
 - Use `autoProcessPayout: false` for high-value transactions that need review
 - Monitor the `payoutInfo.status` to track withdrawal completion
 - Store the `paymentIntentId` for future reference and reconciliation
-- Provide email and phone when available for better customer communication
+- Provide name, email and phone when available for better customer communication
 - Include CNIC for compliance and verification purposes when available
 - Verify account title matches the bank account holder's name
 - Use `metadataJson` to store additional transaction context
