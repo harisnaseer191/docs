@@ -159,12 +159,7 @@ curl --request POST \
     "currency": "PKR",
     "description": "Test Payment",
     "intentType": "deposit",
-    "customerRef": {
-      "name": "Test User",
-      "email": "test@example.com",
-      "cnic": "3520108345678",
-      "phone": "03123456789"
-    },
+    "customerRef": {},
     "orderRef": {
       "orderRef": "TEST123456"
     }
@@ -201,12 +196,7 @@ curl --request POST \
     "amount": 1000,
     "currency": "PKR",
     "description": "Product Purchase",
-    "customerRef": {
-      "name": "Test User",
-      "email": "test@example.com",
-      "cnic": "3520108345678",
-      "phone": "03123456789"
-    },
+    "customerRef": {},
     "orderRef": {
       "orderRef": "ORD123456"
     },
@@ -228,12 +218,7 @@ const response = await fetch(
       amount: 1000,
       currency: 'PKR',
       description: 'Product Purchase',
-      customerRef: {
-        name: 'Test User',
-        email: 'test@example.com',
-        cnic: '3520108345678',
-        phone: '03123456789'
-      },
+      customerRef: {},
       orderRef: {
         orderRef: 'ORD123456'
       },
@@ -263,12 +248,7 @@ response = requests.post(
         'amount': 1000,
         'currency': 'PKR',
         'description': 'Product Purchase',
-        'customerRef': {
-            'name': 'Test User',
-            'email': 'test@example.com',
-            'cnic': '3520108345678',
-            'phone': '03123456789'
-        },
+        'customerRef': {},
         'orderRef': {
             'orderRef': 'ORD123456'
         },

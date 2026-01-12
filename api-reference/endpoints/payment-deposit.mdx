@@ -58,8 +58,8 @@ This endpoint creates a deposit order that initiates a mobile wallet charge from
   Payment intent type (e.g., "deposit")
 </ParamField>
 
-<ParamField body="customerRef" type="object" required>
-  Customer information
+<ParamField body="customerRef" type="object">
+  Customer information (optional object, all fields within are also optional)
   <Expandable title="properties">
     <ParamField body="name" type="string">
       Customer full name
@@ -159,12 +159,6 @@ curl --request POST \
     "currency": "PKR",
     "description": "Product Purchase",
     "intentType": "deposit",
-    "customerRef": {
-      "name": "Ali Ahmed",
-      "email": "ali@example.com",
-      "cnic": "3520108345678",
-      "phone": "03123456789"
-    },
     "orderRef": {
       "orderRef": "ORD123456"
     }
@@ -188,12 +182,6 @@ const response = await fetch(
       currency: 'PKR',
       description: 'Product Purchase',
       intentType: 'deposit',
-      customerRef: {
-        name: 'Ali Ahmed',
-        email: 'ali@example.com',
-        cnic: '3520108345678',
-        phone: '03123456789'
-      },
       orderRef: {
         orderRef: 'ORD123456'
       }
@@ -222,12 +210,6 @@ response = requests.post(
         'currency': 'PKR',
         'description': 'Product Purchase',
         'intentType': 'deposit',
-        'customerRef': {
-            'name': 'Ali Ahmed',
-            'email': 'ali@example.com',
-            'cnic': '3520108345678',
-            'phone': '03123456789'
-        },
         'orderRef': {
             'orderRef': 'ORD123456'
         }

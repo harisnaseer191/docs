@@ -30,8 +30,8 @@ This endpoint creates a payment intent and returns a checkout URL where customer
   **Pattern:** `^[A-Za-z0-9 ]{1,200}$`
 </ParamField>
 
-<ParamField body="customerRef" type="object" required>
-  Customer information
+<ParamField body="customerRef" type="object">
+  Customer information (optional object, all fields within are also optional)
   <Expandable title="properties">
     <ParamField body="name" type="string">
       Customer full name
@@ -123,12 +123,6 @@ curl --request POST \
     "amount": 1000,
     "currency": "PKR",
     "description": "Product Purchase",
-    "customerRef": {
-      "name": "John Doe",
-      "email": "john@example.com",
-      "cnic": "3520108345678",
-      "phone": "03123456789"
-    },
     "orderRef": {
       "orderRef": "ORD123456",
       "discount": "10",
@@ -154,12 +148,6 @@ const response = await fetch(
       amount: 1000,
       currency: 'PKR',
       description: 'Product Purchase',
-      customerRef: {
-        name: 'John Doe',
-        email: 'john@example.com',
-        cnic: '3520108345678',
-        phone: '03123456789'
-      },
       orderRef: {
         orderRef: 'ORD123456',
         discount: '10',
@@ -190,12 +178,6 @@ response = requests.post(
         'amount': 1000,
         'currency': 'PKR',
         'description': 'Product Purchase',
-        'customerRef': {
-            'name': 'John Doe',
-            'email': 'john@example.com',
-            'cnic': '3520108345678',
-            'phone': '03123456789'
-        },
         'orderRef': {
             'orderRef': 'ORD123456',
             'discount': '10',
@@ -281,12 +263,12 @@ print(f"Checkout URL: {data['checkoutUrl']}")
 ### Required Fields
 - `amount` - Payment amount
 - `description` - Transaction description
-- `customerRef` - Customer information object
 - `orderRef` - Order information object
 - `orderRef.orderRef` - Unique order reference
 
 ### Optional Fields
 - `currency` - Payment currency (defaults to merchant's currency)
+- `customerRef` - Customer information object
 - `customerRef.name` - Customer full name
 - `customerRef.email` - Customer email address
 - `customerRef.cnic` - Customer CNIC number
