@@ -47,13 +47,27 @@ This endpoint creates a deposit order that initiates a mobile wallet charge from
 </ParamField>
 
 <ParamField body="callbackUrl" type="string">
-  Dynamic callback URL for redirecting customers after payment completion
+  Webhook URL on your server to receive real-time transaction status updates
   
-  This URL will be used to redirect the customer after they complete or cancel the payment. You can include query parameters or path segments that will be preserved. The payment status and details will be appended as query parameters.
+  This should be a publicly accessible HTTPS endpoint in your merchant system that can receive POST requests from Waypay. When a transaction status changes, Waypay will send a webhook notification to this URL with the transaction details.
+  
+  **When to use this parameter:**
+  - Use this parameter only if you need a **dynamic webhook URL** that varies per transaction (e.g., session-specific, order-specific URLs)
+  - If your webhook URL is **static** (same for all transactions), configure it in your **Merchant Portal** instead. The system will automatically use the portal-configured URL when this parameter is not provided.
   
   **Maximum length:** 2048 characters
   
-  **Example:** `https://yoursite.com/payment/callback?session_id=abc123`
+  **Required:** HTTPS URL that can accept POST requests
+  
+  **Example (Dynamic):** `https://yoursite.com/api/webhooks/deposit?order_id=12345`
+  
+  **Example (Static):** Configure `https://yoursite.com/api/webhooks/payment` in Merchant Portal and omit this parameter
+  
+  <Tip>
+    **Best Practice:** Use the Merchant Portal for static webhook URLs. Use this parameter only when you need dynamic, per-transaction webhook URLs.
+  </Tip>
+  
+  See the [Initiate Checkout](/api-reference/endpoints/payment-initiate#callback-url) documentation for complete webhook payload structure and implementation examples.
 </ParamField>
 
 <ParamField body="intentType" type="string">

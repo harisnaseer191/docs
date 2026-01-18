@@ -76,13 +76,49 @@ This endpoint creates a payment intent and returns a checkout URL where customer
 </ParamField>
 
 <ParamField body="callbackUrl" type="string">
-  Dynamic callback URL for redirecting customers after payment completion
+  Webhook URL on your server to receive real-time transaction status updates
   
-  This URL will be used to redirect the customer after they complete or cancel the payment. You can include query parameters or path segments that will be preserved. The payment status and details will be appended as query parameters.
+  This should be a publicly accessible HTTPS endpoint in your merchant system that can receive POST requests from Waypay. When a transaction status changes, Waypay will send a webhook notification to this URL with the transaction details.
+  
+  **When to use this parameter:**
+  - Use this parameter only if you need a **dynamic webhook URL** that varies per transaction (e.g., session-specific, order-specific URLs)
+  - If your webhook URL is **static** (same for all transactions), configure it in your **Merchant Portal** instead. The system will automatically use the portal-configured URL when this parameter is not provided.
   
   **Maximum length:** 2048 characters
   
-  **Example:** `https://yoursite.com/payment/callback?session_id=abc123`
+  **Required:** HTTPS URL that can accept POST requests
+  
+  **Example (Dynamic):** `https://yoursite.com/api/webhooks/payment?order_id=12345`
+  
+  **Example (Static):** Configure `https://yoursite.com/api/webhooks/payment` in Merchant Portal and omit this parameter
+  
+  <Tip>
+    **Best Practice:** Use the Merchant Portal for static webhook URLs to avoid sending the same URL with every API request. Use this parameter only when you need dynamic, per-transaction webhook URLs.
+  </Tip>
+  
+  **Webhook Payload Example:**
+  ```json
+  {
+    "id": "36e98f20908e426fa8a2b67fdfb088f0",
+    "type": "TransactionStatusChanged",
+    "created": 1768724277,
+    "livemode": false,
+    "data": {
+      "TransactionId": "829727d1-7193-4177-9da8-9765b18699c3",
+      "PreviousStatus": "Pending",
+      "CurrentStatus": "Completed",
+      "Amount": 20.00,
+      "Currency": "PKR",
+      "Reason": null,
+      "ProviderTxnRefNo": "WPAYTREA51GR85549B81",
+      "CustomerRef": null,
+      "OrderRef": "{\"OrderRef\":\"Abcd12456\",\"Discount\":null,\"Tax\":null}",
+      "MerchantId": "dd15c78a-83b0-499f-9e6c-beba37a8f875",
+      "Timestamp": "2026-01-18T08:17:57.6448041+00:00"
+    },
+    "api_version": "v1"
+  }
+  ```
 </ParamField>
 
 <ParamField body="intentType" type="string">
@@ -296,46 +332,251 @@ print(f"Checkout URL: {data['checkoutUrl']}")
 
 ## Callback URL
 
-The `callbackUrl` parameter allows you to specify a dynamic URL where customers will be redirected after completing or canceling their payment. This provides flexibility for handling different callback scenarios.
+The `callbackUrl` parameter specifies a webhook endpoint on your server where Waypay will send real-time transaction status updates.
+
+### Static vs Dynamic Webhook URLs
+
+**Static Webhook URL (Recommended for most use cases):**
+- Configure once in your **Merchant Portal** under Webhook Settings
+- The system automatically uses this URL for all transactions
+- No need to include `callbackUrl` in API requests
+- Easier to manage and update
+- **Best for:** Standard integrations where all webhooks go to the same endpoint
+
+**Dynamic Webhook URL (Optional):**
+- Provide `callbackUrl` parameter in each API request
+- Overrides the portal-configured URL for that specific transaction
+- Useful for session-specific or order-specific routing
+- **Best for:** Multi-tenant systems, session tracking, or custom routing needs
+
+<Note>
+  **Priority:** If both are configured, the `callbackUrl` parameter in the API request takes precedence over the Merchant Portal setting.
+</Note>
 
 ### How It Works
-- After payment completion (success or cancellation), the customer is redirected to your `callbackUrl`
-- Payment status and details are automatically appended as query parameters
-- Your existing URL parameters are preserved
+- When a transaction status changes (e.g., Pending → Completed), Waypay sends a POST request to your callback URL
+- Your webhook endpoint must accept POST requests and return a 200 OK response
+- The webhook contains complete transaction details in JSON format
+- This enables real-time order processing and updates in your system
 
-### Query Parameters Added
-- `payment_intent_id` - The unique payment intent ID
-- `status` - Payment status (e.g., "completed", "cancelled", "failed")
-- `order_ref` - Your order reference number
+### Webhook Payload Structure
 
-### Example
+**Headers:**
+- `Content-Type: application/json`
+- `User-Agent: Waypay-Webhook/1.0`
 
-**Your callback URL:**
+**Body:**
+```json
+{
+  "id": "36e98f20908e426fa8a2b67fdfb088f0",
+  "type": "TransactionStatusChanged",
+  "created": 1768724277,
+  "livemode": false,
+  "data": {
+    "TransactionId": "829727d1-7193-4177-9da8-9765b18699c3",
+    "PreviousStatus": "Pending",
+    "CurrentStatus": "Completed",
+    "Amount": 20.00,
+    "Currency": "PKR",
+    "Reason": null,
+    "ProviderTxnRefNo": "WPAYTREA51GR85549B81",
+    "CustomerRef": null,
+    "OrderRef": "{\"OrderRef\":\"Abcd12456\",\"Discount\":null,\"Tax\":null}",
+    "MerchantId": "dd15c78a-83b0-499f-9e6c-beba37a8f875",
+    "Timestamp": "2026-01-18T08:17:57.6448041+00:00"
+  },
+  "api_version": "v1"
+}
 ```
-https://yoursite.com/payment/callback?session_id=abc123
+
+### Webhook Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique webhook event ID |
+| `type` | string | Event type (e.g., "TransactionStatusChanged") |
+| `created` | integer | Unix timestamp when webhook was created |
+| `livemode` | boolean | Whether this is a production transaction |
+| `data.TransactionId` | uuid | Unique transaction identifier |
+| `data.PreviousStatus` | string | Previous transaction status |
+| `data.CurrentStatus` | string | New transaction status |
+| `data.Amount` | decimal | Transaction amount |
+| `data.Currency` | string | Currency code (e.g., "PKR") |
+| `data.ProviderTxnRefNo` | string | Payment provider reference number |
+| `data.OrderRef` | string | Your order reference (JSON string) |
+| `data.MerchantId` | uuid | Your merchant identifier |
+| `data.Timestamp` | datetime | When the status changed |
+
+### Transaction Statuses
+
+Common status transitions:
+- `Pending` → `Completed` - Payment successful
+- `Pending` → `Failed` - Payment failed
+- `Pending` → `Cancelled` - Payment cancelled by customer
+- `Pending` → `Expired` - Payment session expired
+
+### Webhook Endpoint Requirements
+
+Your webhook endpoint must:
+1. **Accept POST requests** - Waypay sends webhooks via HTTP POST
+2. **Use HTTPS** - Must be a secure endpoint (SSL/TLS required)
+3. **Be publicly accessible** - Waypay servers must be able to reach your endpoint
+4. **Respond quickly** - Return 200 OK within 5 seconds
+5. **Handle idempotency** - Same webhook may be sent multiple times
+6. **Validate authenticity** - Verify the webhook is from Waypay (recommended)
+
+### Example Webhook Handler
+
+<CodeGroup>
+```javascript Node.js/Express
+app.post('/api/webhooks/payment', express.json(), (req, res) => {
+  const webhook = req.body;
+  
+  // Validate webhook
+  if (webhook.type === 'TransactionStatusChanged') {
+    const { TransactionId, CurrentStatus, Amount, OrderRef } = webhook.data;
+    
+    // Parse OrderRef JSON string
+    const order = JSON.parse(OrderRef);
+    
+    // Process based on status
+    if (CurrentStatus === 'Completed') {
+      // Update order status in database
+      // Send confirmation email
+      // Fulfill order
+      console.log(`Payment completed for order ${order.OrderRef}`);
+    } else if (CurrentStatus === 'Failed') {
+      // Handle failed payment
+      console.log(`Payment failed for order ${order.OrderRef}`);
+    }
+  }
+  
+  // Always return 200 OK
+  res.status(200).send('Webhook received');
+});
 ```
 
-**Redirected URL after payment:**
-```
-https://yoursite.com/payment/callback?session_id=abc123&payment_intent_id=550e8400-e29b-41d4-a716-446655440000&status=completed&order_ref=ORD123456
+```python Python/Flask
+@app.route('/api/webhooks/payment', methods=['POST'])
+def handle_payment_webhook():
+    webhook = request.json
+    
+    # Validate webhook
+    if webhook.get('type') == 'TransactionStatusChanged':
+        data = webhook.get('data', {})
+        transaction_id = data.get('TransactionId')
+        current_status = data.get('CurrentStatus')
+        amount = data.get('Amount')
+        
+        # Parse OrderRef JSON string
+        order_ref = json.loads(data.get('OrderRef', '{}'))
+        
+        # Process based on status
+        if current_status == 'Completed':
+            # Update order status in database
+            # Send confirmation email
+            # Fulfill order
+            print(f"Payment completed for order {order_ref.get('OrderRef')}")
+        elif current_status == 'Failed':
+            # Handle failed payment
+            print(f"Payment failed for order {order_ref.get('OrderRef')}")
+    
+    # Always return 200 OK
+    return '', 200
 ```
 
-### Use Cases
-- Session-specific callbacks: `https://yoursite.com/callback?session={sessionId}`
-- User-specific callbacks: `https://yoursite.com/payment/return?user_id={userId}`
-- Multi-tenant callbacks: `https://{tenant}.yoursite.com/payment/complete`
-- Deep linking: `https://yoursite.com/orders/{orderId}/payment/status`
+```php PHP
+<?php
+// webhook.php
+$webhook = json_decode(file_get_contents('php://input'), true);
+
+if ($webhook['type'] === 'TransactionStatusChanged') {
+    $data = $webhook['data'];
+    $transactionId = $data['TransactionId'];
+    $currentStatus = $data['CurrentStatus'];
+    $amount = $data['Amount'];
+    
+    // Parse OrderRef JSON string
+    $orderRef = json_decode($data['OrderRef'], true);
+    
+    // Process based on status
+    if ($currentStatus === 'Completed') {
+        // Update order status in database
+        // Send confirmation email
+        // Fulfill order
+        error_log("Payment completed for order " . $orderRef['OrderRef']);
+    } elseif ($currentStatus === 'Failed') {
+        // Handle failed payment
+        error_log("Payment failed for order " . $orderRef['OrderRef']);
+    }
+}
+
+// Always return 200 OK
+http_response_code(200);
+echo 'Webhook received';
+?>
+```
+</CodeGroup>
+
+### Best Practices
+
+<AccordionGroup>
+  <Accordion title="Return 200 OK Immediately">
+    Your webhook endpoint should return a 200 OK response as quickly as possible. Process the webhook data asynchronously if needed.
+  </Accordion>
+  
+  <Accordion title="Handle Duplicate Webhooks">
+    Use the webhook `id` or `TransactionId` to prevent processing the same event multiple times. Store processed webhook IDs in your database.
+  </Accordion>
+  
+  <Accordion title="Verify Webhook Authenticity">
+    Validate that webhooks are actually from Waypay by checking the source IP or implementing webhook signatures (contact support for details).
+  </Accordion>
+  
+  <Accordion title="Log All Webhooks">
+    Keep logs of all webhook events received for debugging and reconciliation purposes.
+  </Accordion>
+  
+  <Accordion title="Parse OrderRef Carefully">
+    The `OrderRef` field is a JSON string. Always parse it properly to extract your order reference and other data.
+  </Accordion>
+  
+  <Accordion title="Handle All Status Types">
+    Implement handlers for all possible transaction statuses: Completed, Failed, Cancelled, Expired, etc.
+  </Accordion>
+</AccordionGroup>
+
+### Testing Webhooks
+
+**In Test Mode:**
+1. Use tools like [ngrok](https://ngrok.com) to expose your local development server
+2. Set the ngrok URL as your `callbackUrl`
+3. Monitor webhook deliveries in your application logs
+4. Test with various payment scenarios (success, failure, cancellation)
+
+**Example ngrok setup:**
+```bash
+# Start your local server
+npm start  # Running on localhost:3000
+
+# In another terminal, start ngrok
+ngrok http 3000
+
+# Use the ngrok URL in your callback
+# https://abc123.ngrok.io/api/webhooks/payment
+```
 
 ## Best Practices
 
 - **Provide Email**: Include customer email for payment receipts and notifications
 - **Include Phone**: Provide phone number for OTP verification and updates
-- **Set Callback URL**: Provide a `callbackUrl` for seamless post-payment user experience
-- **Use Dynamic Callbacks**: Leverage callback URL parameters for session/user-specific redirects
+- **Set Webhook URL**: Configure a reliable `callbackUrl` webhook endpoint to receive real-time transaction updates
+- **Implement Webhook Handler**: Build a robust webhook handler that processes all transaction statuses
+- **Return 200 OK Fast**: Your webhook endpoint should respond within 5 seconds
 - **Use Unique Order References**: Ensure `orderRef` is unique per transaction
 - **Store Payment Intent ID**: Save the `paymentIntentId` for future reference
 - **Monitor Expiration**: Track `expiresAt` and handle expired sessions
-- **Implement Webhooks**: Don't rely solely on callback URL for payment confirmation
+- **Process Webhooks Asynchronously**: Don't block webhook responses with long-running tasks
 - **Add Metadata**: Use `metadataJson` for additional context (cart items, customer preferences, etc.)
 - **Validate Before Submit**: Pre-validate all data before making the API call
 - **Handle Errors Gracefully**: Implement proper error handling and user feedback
@@ -358,14 +599,17 @@ This metadata is:
 
 ## Security Considerations
 
-- Use HTTPS for all callback URLs
-- Validate the `payment_intent_id` when customer returns to your callback URL
-- Verify payment status via API or webhook, not just the callback redirect
+- Use HTTPS for all callback URLs (webhook endpoints)
+- Validate webhook authenticity to ensure requests are from Waypay
+- Verify payment status via the Transaction API for critical operations
 - Keep API keys secure and never expose in client-side code
-- Implement CSRF protection on callback URL endpoints
-- Sanitize and validate all callback URL parameters
+- Implement CSRF protection on webhook endpoints
+- Use webhook signatures for verification (contact support for implementation details)
+- Store webhook IDs to prevent duplicate processing
+- Sanitize and validate all webhook payload data
 - Set appropriate expiration times for sessions
 - Monitor for unusual patterns or abuse
+- Log all webhook events for audit trail
 
 ## Testing
 
