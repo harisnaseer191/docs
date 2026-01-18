@@ -46,12 +46,14 @@ This endpoint creates a deposit order that initiates a mobile wallet charge from
   **Pattern:** `^[A-Za-z0-9 ]{1,200}$`
 </ParamField>
 
-<ParamField body="successUrl" type="string">
-  URL to redirect after successful payment
-</ParamField>
-
-<ParamField body="cancelUrl" type="string">
-  URL to redirect after cancelled payment
+<ParamField body="callbackUrl" type="string">
+  Dynamic callback URL for redirecting customers after payment completion
+  
+  This URL will be used to redirect the customer after they complete or cancel the payment. You can include query parameters or path segments that will be preserved. The payment status and details will be appended as query parameters.
+  
+  **Maximum length:** 2048 characters
+  
+  **Example:** `https://yoursite.com/payment/callback?session_id=abc123`
 </ParamField>
 
 <ParamField body="intentType" type="string">
@@ -159,6 +161,7 @@ curl --request POST \
     "currency": "PKR",
     "description": "Product Purchase",
     "intentType": "deposit",
+    "callbackUrl": "https://yoursite.com/payment/callback",
     "orderRef": {
       "orderRef": "ORD123456"
     }
@@ -182,6 +185,7 @@ const response = await fetch(
       currency: 'PKR',
       description: 'Product Purchase',
       intentType: 'deposit',
+      callbackUrl: 'https://yoursite.com/payment/callback',
       orderRef: {
         orderRef: 'ORD123456'
       }
@@ -210,6 +214,7 @@ response = requests.post(
         'currency': 'PKR',
         'description': 'Product Purchase',
         'intentType': 'deposit',
+        'callbackUrl': 'https://yoursite.com/payment/callback',
         'orderRef': {
             'orderRef': 'ORD123456'
         }

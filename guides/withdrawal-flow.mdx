@@ -49,20 +49,19 @@ curl --request POST \
   --header 'Content-Type: application/json' \
   --data '{
     "amount": 5000,
-    "description": "Refund Payment",
-    "cnic": "4210112345678",
-    "customerAccountNumber": "PK36SCBL0000001123456702",
-    "customerBankName": "Standard Chartered Bank",
-    "customerFullName": "Ahmed Ali",
-    "customerEmail": "ahmed@example.com",
-    "billReference": "REF-2025-001",
-    "autoProcessPayout": true,
     "currency": "PKR",
+    "description": "Refund Payment",
+    "autoProcessPayout": true,
+    "callbackUrl": "https://yoursite.com/withdrawal/callback",
     "customerRef": {
       "name": "Ahmed Ali",
       "email": "ahmed@example.com",
       "cnic": "4210112345678",
-      "phone": "03001234567"
+      "phone": "03001234567",
+      "bankAccountNumber": "PK36SCBL0000001123456702",
+      "bankName": "Standard Chartered Bank",
+      "accountTitle": "Ahmed Ali",
+      "billReference": "REF-2025-001"
     },
     "orderRef": {
       "orderRef": "WD123456"
@@ -81,20 +80,19 @@ const response = await fetch(
     },
     body: JSON.stringify({
       amount: 5000,
-      description: 'Refund Payment',
-      cnic: '4210112345678',
-      customerAccountNumber: 'PK36SCBL0000001123456702',
-      customerBankName: 'Standard Chartered Bank',
-      customerFullName: 'Ahmed Ali',
-      customerEmail: 'ahmed@example.com',
-      billReference: 'REF-2025-001',
-      autoProcessPayout: true,
       currency: 'PKR',
+      description: 'Refund Payment',
+      autoProcessPayout: true,
+      callbackUrl: 'https://yoursite.com/withdrawal/callback',
       customerRef: {
         name: 'Ahmed Ali',
         email: 'ahmed@example.com',
         cnic: '4210112345678',
-        phone: '03001234567'
+        phone: '03001234567',
+        bankAccountNumber: 'PK36SCBL0000001123456702',
+        bankName: 'Standard Chartered Bank',
+        accountTitle: 'Ahmed Ali',
+        billReference: 'REF-2025-001'
       },
       orderRef: {
         orderRef: 'WD123456'
@@ -118,20 +116,19 @@ response = requests.post(
     },
     json={
         'amount': 5000,
-        'description': 'Refund Payment',
-        'cnic': '4210112345678',
-        'customerAccountNumber': 'PK36SCBL0000001123456702',
-        'customerBankName': 'Standard Chartered Bank',
-        'customerFullName': 'Ahmed Ali',
-        'customerEmail': 'ahmed@example.com',
-        'billReference': 'REF-2025-001',
-        'autoProcessPayout': True,
         'currency': 'PKR',
+        'description': 'Refund Payment',
+        'autoProcessPayout': True,
+        'callbackUrl': 'https://yoursite.com/withdrawal/callback',
         'customerRef': {
             'name': 'Ahmed Ali',
             'email': 'ahmed@example.com',
             'cnic': '4210112345678',
-            'phone': '03001234567'
+            'phone': '03001234567',
+            'bankAccountNumber': 'PK36SCBL0000001123456702',
+            'bankName': 'Standard Chartered Bank',
+            'accountTitle': 'Ahmed Ali',
+            'billReference': 'REF-2025-001'
         },
         'orderRef': {
             'orderRef': 'WD123456'

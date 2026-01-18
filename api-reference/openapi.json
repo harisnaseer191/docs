@@ -993,7 +993,6 @@
       "CreateDepositOrderRequest": {
         "required": [
           "amount",
-          "customerRef",
           "description",
           "mobileNumber",
           "orderRef"
@@ -1033,11 +1032,13 @@
           },
           "successUrl": {
             "type": "string",
-            "nullable": true
+            "nullable": true,
+            "deprecated": true
           },
           "cancelUrl": {
             "type": "string",
-            "nullable": true
+            "nullable": true,
+            "deprecated": true
           },
           "intentType": {
             "type": "string",
@@ -1046,7 +1047,12 @@
           "webhookUrl": {
             "maxLength": 2048,
             "type": "string",
-            "format": "uri",
+            "nullable": true,
+            "deprecated": true
+          },
+          "callbackUrl": {
+            "maxLength": 2048,
+            "type": "string",
             "nullable": true
           }
         },
@@ -1179,7 +1185,12 @@
           "webhookUrl": {
             "maxLength": 2048,
             "type": "string",
-            "format": "uri",
+            "nullable": true,
+            "deprecated": true
+          },
+          "callbackUrl": {
+            "maxLength": 2048,
+            "type": "string",
             "nullable": true
           }
         },
@@ -1245,7 +1256,6 @@
       "InitiatePaymentRequest": {
         "required": [
           "amount",
-          "customerRef",
           "description",
           "orderRef"
         ],
@@ -1272,9 +1282,16 @@
           },
           "successUrl": {
             "type": "string",
-            "nullable": true
+            "nullable": true,
+            "deprecated": true
           },
           "cancelUrl": {
+            "type": "string",
+            "nullable": true,
+            "deprecated": true
+          },
+          "callbackUrl": {
+            "maxLength": 2048,
             "type": "string",
             "nullable": true
           },
@@ -1506,6 +1523,14 @@
           "createdAtUtc": {
             "type": "string",
             "format": "date-time"
+          },
+          "isLive": {
+            "type": "boolean"
+          },
+          "transactionMode": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
           }
         },
         "additionalProperties": false

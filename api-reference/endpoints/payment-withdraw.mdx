@@ -42,6 +42,16 @@ This endpoint creates a withdrawal order that processes a payout from your merch
   Optional JSON string containing additional metadata for the transaction
 </ParamField>
 
+<ParamField body="callbackUrl" type="string">
+  Dynamic callback URL for redirecting customers after payout completion
+  
+  This URL will be used to redirect the customer after the withdrawal/payout is processed. You can include query parameters or path segments that will be preserved. The payout status and details will be appended as query parameters.
+  
+  **Maximum length:** 2048 characters
+  
+  **Example:** `https://yoursite.com/withdrawal/callback?request_id=xyz789`
+</ParamField>
+
 <ParamField body="customerRef" type="object" required>
   Customer information with bank account details
   <Expandable title="properties">
@@ -169,6 +179,7 @@ curl --request POST \
     "description": "Freelancer Payment",
     "intentType": "withdrawal",
     "autoProcessPayout": true,
+    "callbackUrl": "https://yoursite.com/withdrawal/callback",
     "customerRef": {
       "name": "Ahmed Ali",
       "email": "ahmed@example.com",
@@ -200,6 +211,7 @@ const response = await fetch(
       description: "Freelancer Payment",
       intentType: "withdrawal",
       autoProcessPayout: true,
+      callbackUrl: "https://yoursite.com/withdrawal/callback",
       customerRef: {
         name: "Ahmed Ali",
         email: "ahmed@example.com",
@@ -236,6 +248,7 @@ response = requests.post(
         'description': 'Freelancer Payment',
         'intentType': 'withdrawal',
         'autoProcessPayout': True,
+        'callbackUrl': 'https://yoursite.com/withdrawal/callback',
         'customerRef': {
             'name': 'Ahmed Ali',
             'email': 'ahmed@example.com',
@@ -358,6 +371,7 @@ print(f"Payout Status: {data['payoutInfo']['status']}")
 - `intentType` - Payment intent type
 - `autoProcessPayout` - Auto-process flag (default: false)
 - `metadataJson` - Additional metadata
+- `callbackUrl` - Dynamic callback URL for post-payout redirect
 - `customerRef.name` - Customer full name
 - `customerRef.email` - Customer email
 - `customerRef.cnic` - Customer CNIC

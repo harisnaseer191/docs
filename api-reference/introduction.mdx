@@ -200,8 +200,7 @@ curl --request POST \
     "orderRef": {
       "orderRef": "ORD123456"
     },
-    "successUrl": "https://yoursite.com/success",
-    "cancelUrl": "https://yoursite.com/cancel"
+    "callbackUrl": "https://yoursite.com/payment/callback"
   }'
 ```
 
@@ -222,8 +221,7 @@ const response = await fetch(
       orderRef: {
         orderRef: 'ORD123456'
       },
-      successUrl: 'https://yoursite.com/success',
-      cancelUrl: 'https://yoursite.com/cancel'
+      callbackUrl: 'https://yoursite.com/payment/callback'
     })
   }
 );
@@ -252,8 +250,7 @@ response = requests.post(
         'orderRef': {
             'orderRef': 'ORD123456'
         },
-        'successUrl': 'https://yoursite.com/success',
-        'cancelUrl': 'https://yoursite.com/cancel'
+        'callbackUrl': 'https://yoursite.com/payment/callback'
     }
 )
 

@@ -59,8 +59,7 @@ curl --request POST \
     "orderRef": {
       "orderRef": "ORD12345"
     },
-    "successUrl": "https://yoursite.com/success",
-    "cancelUrl": "https://yoursite.com/cancel"
+    "callbackUrl": "https://yoursite.com/payment/callback"
   }'
 ```
 
@@ -86,8 +85,7 @@ const response = await fetch(
       orderRef: {
         orderRef: 'ORD12345'
       },
-      successUrl: 'https://yoursite.com/success',
-      cancelUrl: 'https://yoursite.com/cancel'
+      callbackUrl: 'https://yoursite.com/success'
     })
   }
 );
@@ -118,8 +116,7 @@ response = requests.post(
         'orderRef': {
             'orderRef': 'ORD12345'
         },
-        'successUrl': 'https://yoursite.com/success',
-        'cancelUrl': 'https://yoursite.com/cancel'
+        'callbackUrl': 'https://yoursite.com/payment/callback'
     }
 )
 ```
@@ -182,7 +179,7 @@ The Payment Server records the transaction details and final status in the datab
 
 ### Step 14: Show Success/Failure Message
 
-The user is shown a success or failure message on the checkout page, then redirected to your success or cancel URL.
+The user is shown a success or failure message on the checkout page, then redirected to your callback URL with payment status details.
 
 ## Payment Methods Supported
 
@@ -201,24 +198,23 @@ The user is shown a success or failure message on the checkout page, then redire
   </Card>
 </CardGroup>
 
-## Redirect URLs
+## Callback URL
 
-### Success URL
-When payment is successful, the customer is redirected to your `successUrl` with these query parameters:
+### How It Works
+After payment completion (success or failure), the customer is redirected to your `callbackUrl` with payment status details appended as query parameters.
 
+**Example callback redirect:**
 ```
-https://yoursite.com/success?paymentIntentId=550e8400-e29b-41d4-a716-446655440000&status=completed
+https://yoursite.com/payment/callback?payment_intent_id=550e8400-e29b-41d4-a716-446655440000&status=completed&order_ref=ORD12345
 ```
 
-### Cancel URL
-If the customer cancels or payment fails, they're redirected to your `cancelUrl`:
-
-```
-https://yoursite.com/cancel?paymentIntentId=550e8400-e29b-41d4-a716-446655440000&status=cancelled
-```
+**Query parameters added:**
+- `payment_intent_id` - The unique payment intent ID
+- `status` - Payment status (e.g., "completed", "cancelled", "failed")
+- `order_ref` - Your order reference number
 
 <Warning>
-  **Never rely solely on redirect URLs for order fulfillment.** Always verify payment status using webhooks or the Transaction API before delivering goods/services.
+  **Never rely solely on callback URL redirects for order fulfillment.** Always verify payment status using webhooks or the Transaction API before delivering goods/services.
 </Warning>
 
 ## Best Practices
@@ -239,11 +235,12 @@ https://yoursite.com/cancel?paymentIntentId=550e8400-e29b-41d4-a716-446655440000
     Use meaningful `orderRef` values that help you identify orders in your system.
   </Accordion>
 
-  <Accordion title="Set Appropriate Redirect URLs">
+  <Accordion title="Set Appropriate Callback URL">
     - Use HTTPS URLs
     - Ensure URLs are publicly accessible
     - Handle both success and failure scenarios
     - Don't expose sensitive information in URLs
+    - Your callback URL can include custom parameters that will be preserved
   </Accordion>
 
   <Accordion title="Store Payment Intent IDs">
@@ -258,7 +255,7 @@ https://yoursite.com/cancel?paymentIntentId=550e8400-e29b-41d4-a716-446655440000
     Never expose your API key on the frontend. Always call the checkout API from your backend server.
   </Card>
   <Card title="HTTPS Only" icon="lock">
-    Ensure all redirect URLs use HTTPS to protect customer data in transit.
+    Ensure callback URLs use HTTPS to protect customer data in transit.
   </Card>
   <Card title="Webhook Verification" icon="shield-check">
     Verify webhook signatures to ensure notifications are from Waypay.

@@ -75,12 +75,14 @@ This endpoint creates a payment intent and returns a checkout URL where customer
   </Expandable>
 </ParamField>
 
-<ParamField body="successUrl" type="string">
-  URL to redirect after successful payment
-</ParamField>
-
-<ParamField body="cancelUrl" type="string">
-  URL to redirect after cancelled payment
+<ParamField body="callbackUrl" type="string">
+  Dynamic callback URL for redirecting customers after payment completion
+  
+  This URL will be used to redirect the customer after they complete or cancel the payment. You can include query parameters or path segments that will be preserved. The payment status and details will be appended as query parameters.
+  
+  **Maximum length:** 2048 characters
+  
+  **Example:** `https://yoursite.com/payment/callback?session_id=abc123`
 </ParamField>
 
 <ParamField body="intentType" type="string">
@@ -128,8 +130,7 @@ curl --request POST \
       "discount": "10",
       "tax": "15"
     },
-    "successUrl": "https://yoursite.com/success",
-    "cancelUrl": "https://yoursite.com/cancel",
+    "callbackUrl": "https://yoursite.com/payment/callback",
     "intentType": "checkout",
     "paymentMethod": 1
   }'
@@ -153,8 +154,7 @@ const response = await fetch(
         discount: '10',
         tax: '15'
       },
-      successUrl: 'https://yoursite.com/success',
-      cancelUrl: 'https://yoursite.com/cancel',
+      callbackUrl: 'https://yoursite.com/payment/callback',
       intentType: 'checkout',
       paymentMethod: 1
     })
@@ -183,8 +183,7 @@ response = requests.post(
             'discount': '10',
             'tax': '15'
         },
-        'successUrl': 'https://yoursite.com/success',
-        'cancelUrl': 'https://yoursite.com/cancel',
+        'callbackUrl': 'https://yoursite.com/payment/callback',
         'intentType': 'checkout',
         'paymentMethod': 1
     }
@@ -277,8 +276,7 @@ print(f"Checkout URL: {data['checkoutUrl']}")
 - `customerRef.estimatedDays` - Estimated delivery days
 - `orderRef.discount` - Discount information
 - `orderRef.tax` - Tax information
-- `successUrl` - Success redirect URL
-- `cancelUrl` - Cancel redirect URL
+- `callbackUrl` - Dynamic callback URL for post-payment redirect
 - `intentType` - Payment intent type
 - `paymentMethod` - Preferred payment method (1: JazzCash, 2: Easypaisa)
 - `metadataJson` - Additional metadata
@@ -290,42 +288,54 @@ print(f"Checkout URL: {data['checkoutUrl']}")
 3. **Redirect Customer** - Send customer to the checkout URL
 4. **Customer Pays** - Customer selects payment method and completes payment
 5. **Receive Webhook** - You receive webhook notification of payment status
-6. **Customer Redirected** - Customer is redirected to `successUrl` or `cancelUrl`
+6. **Customer Redirected** - Customer is redirected to your `callbackUrl` with payment status
 
 <Info>
   Checkout sessions expire after a certain period (indicated by `expiresAt`). After expiration, the customer must initiate a new checkout session.
 </Info>
 
-## Redirect URLs
+## Callback URL
 
-### Success URL
-- Customer is redirected here after successful payment
-- Query parameters added:
-  - `payment_intent_id` - The payment intent ID
-  - `status` - Payment status
-  - `order_ref` - Your order reference
+The `callbackUrl` parameter allows you to specify a dynamic URL where customers will be redirected after completing or canceling their payment. This provides flexibility for handling different callback scenarios.
 
-### Cancel URL
-- Customer is redirected here if they cancel the payment
-- Query parameters added:
-  - `payment_intent_id` - The payment intent ID
-  - `status` - Payment status
-  - `order_ref` - Your order reference
+### How It Works
+- After payment completion (success or cancellation), the customer is redirected to your `callbackUrl`
+- Payment status and details are automatically appended as query parameters
+- Your existing URL parameters are preserved
 
-**Example:**
+### Query Parameters Added
+- `payment_intent_id` - The unique payment intent ID
+- `status` - Payment status (e.g., "completed", "cancelled", "failed")
+- `order_ref` - Your order reference number
+
+### Example
+
+**Your callback URL:**
 ```
-https://yoursite.com/success?payment_intent_id=550e8400-e29b-41d4-a716-446655440000&status=completed&order_ref=ORD123456
+https://yoursite.com/payment/callback?session_id=abc123
 ```
+
+**Redirected URL after payment:**
+```
+https://yoursite.com/payment/callback?session_id=abc123&payment_intent_id=550e8400-e29b-41d4-a716-446655440000&status=completed&order_ref=ORD123456
+```
+
+### Use Cases
+- Session-specific callbacks: `https://yoursite.com/callback?session={sessionId}`
+- User-specific callbacks: `https://yoursite.com/payment/return?user_id={userId}`
+- Multi-tenant callbacks: `https://{tenant}.yoursite.com/payment/complete`
+- Deep linking: `https://yoursite.com/orders/{orderId}/payment/status`
 
 ## Best Practices
 
 - **Provide Email**: Include customer email for payment receipts and notifications
 - **Include Phone**: Provide phone number for OTP verification and updates
-- **Set Redirect URLs**: Always provide `successUrl` and `cancelUrl` for better UX
+- **Set Callback URL**: Provide a `callbackUrl` for seamless post-payment user experience
+- **Use Dynamic Callbacks**: Leverage callback URL parameters for session/user-specific redirects
 - **Use Unique Order References**: Ensure `orderRef` is unique per transaction
 - **Store Payment Intent ID**: Save the `paymentIntentId` for future reference
 - **Monitor Expiration**: Track `expiresAt` and handle expired sessions
-- **Implement Webhooks**: Don't rely solely on redirect URLs for payment confirmation
+- **Implement Webhooks**: Don't rely solely on callback URL for payment confirmation
 - **Add Metadata**: Use `metadataJson` for additional context (cart items, customer preferences, etc.)
 - **Validate Before Submit**: Pre-validate all data before making the API call
 - **Handle Errors Gracefully**: Implement proper error handling and user feedback
@@ -348,11 +358,12 @@ This metadata is:
 
 ## Security Considerations
 
-- Use HTTPS for all redirect URLs
-- Validate the `payment_intent_id` when customer returns
-- Verify payment status via API or webhook, not just redirect
+- Use HTTPS for all callback URLs
+- Validate the `payment_intent_id` when customer returns to your callback URL
+- Verify payment status via API or webhook, not just the callback redirect
 - Keep API keys secure and never expose in client-side code
-- Implement CSRF protection on redirect URL endpoints
+- Implement CSRF protection on callback URL endpoints
+- Sanitize and validate all callback URL parameters
 - Set appropriate expiration times for sessions
 - Monitor for unusual patterns or abuse
 
