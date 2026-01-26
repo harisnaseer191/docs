@@ -28,6 +28,14 @@ This endpoint allows you to initiate a refund for a previously completed transac
   Reason for refund (max 500 characters)
 </ParamField>
 
+<ParamField body="signature" type="string" required>
+  Request signature for authentication. A 32-character lowercase hexadecimal string generated using MD5 hash.
+  
+  <Warning>Never expose your secret key in client-side code or public repositories.</Warning>
+  
+  See the [Signature Guide](/signature-guide) for implementation details.
+</ParamField>
+
 ## Response
 
 <ResponseField name="id" type="uuid">
@@ -91,7 +99,8 @@ curl --request POST \
   --data '{
     "trxnRef": "TXN20251212123456",
     "amount": 250,
-    "reason": "Customer requested refund"
+    "reason": "Customer requested refund",
+    "signature": "d4e5f6789012345678abcdef1234567"
   }'
 ```
 
@@ -105,7 +114,8 @@ const response = await fetch('https://gateway.dev.waypay.live/Gateway/v1/Refunds
   body: JSON.stringify({
     trxnRef: 'TXN20251212123456',
     amount: 250,
-    reason: 'Customer requested refund'
+    reason: 'Customer requested refund',
+    signature: 'd4e5f6789012345678abcdef1234567'
   })
 });
 
@@ -124,7 +134,8 @@ response = requests.post(
     json={
         'trxnRef': 'TXN20251212123456',
         'amount': 250,
-        'reason': 'Customer requested refund'
+        'reason': 'Customer requested refund',
+        'signature': 'd4e5f6789012345678abcdef1234567'
     }
 )
 ```
