@@ -124,8 +124,8 @@ curl -X POST "https://gateway.dev.waypay.live/Gateway/v1/Payment/initiate-checko
     "orderRef": { 
       "orderRef": "TEST-ORD-12345" 
     },
-    "successUrl": "https://merchant.example.com/checkout/success",
-    "cancelUrl": "https://merchant.example.com/checkout/cancel"
+    "callbackUrl": "https://merchant.example.com/webhook/payment",
+    "signature": "a1b2c3d4e5f6789012345678abcdef12"
   }'
 ```
 
@@ -162,7 +162,8 @@ curl -X POST "https://gateway.dev.waypay.live/Gateway/v1/Payment/deposit" \
     },
     "orderRef": {
       "orderRef": "TEST-DEP-456"
-    }
+    },
+    "signature": "b2c3d4e5f6789012345678abcdef123"
   }'
 ```
 
@@ -211,7 +212,8 @@ curl -X POST "https://gateway.dev.waypay.live/Gateway/v1/Payment/withdraw" \
     },
     "orderRef": {
       "orderRef": "TEST-WD-789"
-    }
+    },
+    "signature": "c3d4e5f6789012345678abcdef12345"
   }'
 ```
 
@@ -264,6 +266,14 @@ curl -X POST "https://gateway.dev.waypay.live/Gateway/v1/Refunds" \
     "reason": "Test refund - customer return"
   }'
 ```
+
+<Note>
+  **About Signatures in Examples**
+  
+  The `signature` field values shown in the examples above (e.g., `a1b2c3d4e5f6789012345678abcdef12`) are placeholders. In production, you must generate valid signatures using your secret key.
+  
+  See the [Signature Generation Guide](/signature-guide) for step-by-step instructions on how to generate signatures in C#, Node.js, Python, PHP, and Java.
+</Note>
 
 ## Going Live Checklist
 
