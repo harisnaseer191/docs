@@ -84,6 +84,383 @@
         }
       }
     },
+    "/api/test/disbursement/ibft/init": {
+      "post": {
+        "tags": [
+          "DisbursementTest"
+        ],
+        "parameters": [
+          {
+            "name": "isLive",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestIBFTInitRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestIBFTInitRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestIBFTInitRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/IBFTInitResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IBFTInitResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IBFTInitResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/test/disbursement/ibft/confirm": {
+      "post": {
+        "tags": [
+          "DisbursementTest"
+        ],
+        "parameters": [
+          {
+            "name": "isLive",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestIBFTConfirmRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestIBFTConfirmRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestIBFTConfirmRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/IBFTConfirmResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IBFTConfirmResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IBFTConfirmResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/test/disbursement/mw/disburse": {
+      "post": {
+        "tags": [
+          "DisbursementTest"
+        ],
+        "parameters": [
+          {
+            "name": "isLive",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestMWDisbursementRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestMWDisbursementRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestMWDisbursementRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MWDisbursementResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MWDisbursementResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MWDisbursementResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/test/disbursement/status": {
+      "post": {
+        "tags": [
+          "DisbursementTest"
+        ],
+        "parameters": [
+          {
+            "name": "isLive",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestDisbursementStatusRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestDisbursementStatusRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestDisbursementStatusRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisbursementStatusResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisbursementStatusResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisbursementStatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/test/disbursement/samples": {
+      "get": {
+        "tags": [
+          "DisbursementTest"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/multiverse/webhook": {
+      "post": {
+        "tags": [
+          "MultiverseWebhook"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MultiverseWebhookNotification"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/Gateway/v{version}/Payment/initiate-checkout": {
       "post": {
         "tags": [
@@ -995,7 +1372,8 @@
           "amount",
           "description",
           "mobileNumber",
-          "orderRef"
+          "orderRef",
+          "signature"
         ],
         "type": "object",
         "properties": {
@@ -1054,6 +1432,10 @@
             "maxLength": 2048,
             "type": "string",
             "nullable": true
+          },
+          "signature": {
+            "minLength": 1,
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1065,6 +1447,10 @@
             "type": "string",
             "format": "uuid"
           },
+          "merchantId": {
+            "type": "string",
+            "format": "uuid"
+          },
           "amount": {
             "type": "number",
             "format": "double"
@@ -1073,7 +1459,7 @@
             "type": "string",
             "nullable": true
           },
-          "merchantReference": {
+          "merchantOrderReference": {
             "type": "string",
             "nullable": true
           },
@@ -1146,7 +1532,8 @@
           "currency",
           "customerRef",
           "description",
-          "orderRef"
+          "orderRef",
+          "signature"
         ],
         "type": "object",
         "properties": {
@@ -1192,6 +1579,10 @@
             "maxLength": 2048,
             "type": "string",
             "nullable": true
+          },
+          "signature": {
+            "minLength": 1,
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1253,11 +1644,150 @@
         },
         "additionalProperties": { }
       },
+      "DisbursementStatusResponse": {
+        "type": "object",
+        "properties": {
+          "responseCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "responseDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactionID": {
+            "type": "string",
+            "nullable": true
+          },
+          "referenceID": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactionStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "isReversed": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "IBFTConfirmResponse": {
+        "type": "object",
+        "properties": {
+          "responseCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "responseDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactionID": {
+            "type": "string",
+            "nullable": true
+          },
+          "referenceID": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "string",
+            "nullable": true
+          },
+          "fee": {
+            "type": "string",
+            "nullable": true
+          },
+          "fed": {
+            "type": "string",
+            "nullable": true
+          },
+          "bankAccountNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "receiverMSISDN": {
+            "type": "string",
+            "nullable": true
+          },
+          "bankAccountTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "bankName": {
+            "type": "string",
+            "nullable": true
+          },
+          "balance": {
+            "type": "string",
+            "nullable": true
+          },
+          "retrievalReferenceNo": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "IBFTInitResponse": {
+        "type": "object",
+        "properties": {
+          "responseCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "responseDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactionID": {
+            "type": "string",
+            "nullable": true
+          },
+          "referenceID": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "string",
+            "nullable": true
+          },
+          "fee": {
+            "type": "string",
+            "nullable": true
+          },
+          "fed": {
+            "type": "string",
+            "nullable": true
+          },
+          "bankAccountNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "receiverMSISDN": {
+            "type": "string",
+            "nullable": true
+          },
+          "bankAccountTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "bankName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "InitiatePaymentRequest": {
         "required": [
           "amount",
           "description",
-          "orderRef"
+          "orderRef",
+          "signature"
         ],
         "type": "object",
         "properties": {
@@ -1305,6 +1835,10 @@
           "metadataJson": {
             "type": "string",
             "nullable": true
+          },
+          "signature": {
+            "minLength": 1,
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -1323,6 +1857,40 @@
           "expiresAt": {
             "type": "string",
             "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MWDisbursementResponse": {
+        "type": "object",
+        "properties": {
+          "responseCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "responseDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactionID": {
+            "type": "string",
+            "nullable": true
+          },
+          "referenceID": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateTime": {
+            "type": "string",
+            "nullable": true
+          },
+          "retrievalReferenceNo": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1544,6 +2112,28 @@
         "type": "integer",
         "format": "int32"
       },
+      "MultiverseWebhookNotification": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "orderId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "OrderRefDto": {
         "required": [
           "orderRef"
@@ -1740,6 +2330,108 @@
         ],
         "type": "integer",
         "format": "int32"
+      },
+      "TestDisbursementStatusRequest": {
+        "required": [
+          "originalReferenceId",
+          "referenceId"
+        ],
+        "type": "object",
+        "properties": {
+          "originalReferenceId": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "referenceId": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TestIBFTConfirmRequest": {
+        "required": [
+          "initTransactionId",
+          "referenceId"
+        ],
+        "type": "object",
+        "properties": {
+          "initTransactionId": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "referenceId": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TestIBFTInitRequest": {
+        "required": [
+          "amount",
+          "bankAccountNumber",
+          "bankCode",
+          "referenceId"
+        ],
+        "type": "object",
+        "properties": {
+          "bankAccountNumber": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "bankCode": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "amount": {
+            "minLength": 1,
+            "pattern": "^\\d+\\.\\d{2}$",
+            "type": "string"
+          },
+          "receiverMSISDN": {
+            "pattern": "^03\\d{9}$",
+            "type": "string",
+            "nullable": true
+          },
+          "referenceId": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TestMWDisbursementRequest": {
+        "required": [
+          "amount",
+          "receiverMSISDN",
+          "referenceId"
+        ],
+        "type": "object",
+        "properties": {
+          "receiverCNIC": {
+            "maxLength": 13,
+            "minLength": 13,
+            "pattern": "^\\d{13}$",
+            "type": "string",
+            "nullable": true
+          },
+          "receiverMSISDN": {
+            "minLength": 1,
+            "pattern": "^03\\d{9}$",
+            "type": "string"
+          },
+          "amount": {
+            "minLength": 1,
+            "pattern": "^\\d+\\.\\d{2}$",
+            "type": "string"
+          },
+          "referenceId": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
       },
       "TransactionStatus": {
         "enum": [

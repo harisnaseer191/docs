@@ -137,6 +137,22 @@ This endpoint creates a payment intent and returns a checkout URL where customer
   Optional JSON string containing additional metadata for the transaction
 </ParamField>
 
+<ParamField body="signature" type="string" required>
+  Request signature for security verification
+  
+  A cryptographic signature generated using MD5 hash algorithm to ensure the integrity and authenticity of the request. The signature is calculated using all request parameters (excluding the signature field itself) combined with your merchant secret key.
+  
+  **Format:** 32-character lowercase hexadecimal string
+  
+  **Example:** `a1b2c3d4e5f6789012345678abcdef12`
+  
+  <Warning>
+    Never expose your secret key in client-side code. Always generate signatures on your server.
+  </Warning>
+  
+  **Learn how to generate signatures:** See the complete [Signature Generation Guide](/signature-guide) for step-by-step instructions and implementation examples in C#, Node.js, Python, PHP, and Java.
+</ParamField>
+
 ## Response
 
 <ResponseField name="paymentIntentId" type="uuid">
@@ -168,7 +184,8 @@ curl --request POST \
     },
     "callbackUrl": "https://yoursite.com/payment/callback",
     "intentType": "checkout",
-    "paymentMethod": 1
+    "paymentMethod": 1,
+    "signature": "a1b2c3d4e5f6789012345678abcdef12"
   }'
 ```
 
@@ -192,7 +209,8 @@ const response = await fetch(
       },
       callbackUrl: 'https://yoursite.com/payment/callback',
       intentType: 'checkout',
-      paymentMethod: 1
+      paymentMethod: 1,
+      signature: 'a1b2c3d4e5f6789012345678abcdef12'
     })
   }
 );
@@ -221,7 +239,8 @@ response = requests.post(
         },
         'callbackUrl': 'https://yoursite.com/payment/callback',
         'intentType': 'checkout',
-        'paymentMethod': 1
+        'paymentMethod': 1,
+        'signature': 'a1b2c3d4e5f6789012345678abcdef12'
     }
 )
 
@@ -300,6 +319,7 @@ print(f"Checkout URL: {data['checkoutUrl']}")
 - `description` - Transaction description
 - `orderRef` - Order information object
 - `orderRef.orderRef` - Unique order reference
+- `signature` - Request signature for security verification
 
 ### Optional Fields
 - `currency` - Payment currency (defaults to merchant's currency)
