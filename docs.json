@@ -21,7 +21,7 @@
         "groups": [
           {
             "group": "Getting started",
-            "pages": ["index", "quickstart","signature-guide"]
+            "pages": ["index", "quickstart"]
           },
           {
             "group": "Core Business Processes",
@@ -34,7 +34,7 @@
         "groups": [
           {
             "group": "API documentation",
-            "pages": ["api-reference/introduction"]
+            "pages": ["api-reference/introduction","api-reference/signature-guide"]
           },
           {
             "group": "Authentication",
