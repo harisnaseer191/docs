@@ -37,7 +37,9 @@ Request:
 {
   "amount": 1000,
   "currency": "PKR",
-  "orderId": "ORD-12345",
+  "orderRef": {
+    "orderRef": "ORD123456"
+  },
   "description": "Payment for order",
   "customerRef": { "name": "Ayesha" },  ✗ SKIPPED (object)
   "items": ["item1", "item2"],           ✗ SKIPPED (array)
@@ -47,22 +49,22 @@ Request:
 Secret Key: mer_sk_abc123def456
 
 Step 1-2: Filter parameters
-  ✓ amount, currency, description, orderId
+  ✓ amount, currency, description, orderRef
 
 Step 3: Normalize keys to lowercase
   ✓ amount → amount
   ✓ currency → currency
   ✓ description → description
-  ✓ orderId → orderid (lowercase!)
+  ✓ orderRef → orderref (lowercase!)
 
 Step 4: Sort alphabetically (lowercase keys)
-  ✓ amount, currency, description, orderid
+  ✓ amount, currency, description, orderref
 
 Step 5: Build query string
-  ✓ amount=1000&currency=PKR&description=Payment for order&orderid=ORD-12345
+  ✓ amount=1000&currency=PKR&description=Payment for order&orderref={"orderRef":"ORD123456"}
 
 Step 6: Append secret key
-  ✓ amount=1000&currency=PKR&description=Payment for order&orderid=ORD-12345mer_sk_abc123def456
+  ✓ amount=1000&currency=PKR&description=Payment for order&orderref={"orderRef":"ORD123456"}mer_sk_abc123def456
 
 Step 7-8: MD5 hash (lowercase)
   ✓ a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
@@ -99,7 +101,7 @@ Different data types require specific formatting rules to ensure signature consi
   <Accordion title="🔑 ALL Keys Must Be Lowercase">
     All parameter keys must be converted to lowercase before sorting and building the query string:
     
-    - `orderId` → `orderid`
+    - `orderRef` → `orderref`
     - `callbackUrl` → `callbackurl`
     - `paymentMethod` → `paymentmethod`
     
@@ -118,9 +120,19 @@ Different data types require specific formatting rules to ensure signature consi
     ❌ Incorrect: `True`, `FALSE`, `TRUE`
   </Accordion>
 
-  <Accordion title="Objects & Arrays: Completely excluded">
-    Complex nested objects are NOT included in signature calculation.
-    Arrays of any type are NOT included in signature calculation.
+  <Accordion title="Objects & Arrays: Handling varies by type">
+    - **Most objects** (like `customerRef`): Excluded from signature calculation
+    - **Required parameter objects** (like `orderRef`): Serialized to JSON string and included
+    - **Arrays**: Always excluded from signature calculation
+    
+    **Example:**
+    ```javascript
+    {
+      "orderRef": { "orderRef": "ORD123456" },  // → included as JSON string
+      "customerRef": { "name": "..." },          // → excluded
+      "items": ["a", "b"]                        // → excluded
+    }
+    ```
   </Accordion>
 
   <Accordion title="DateTime Values: Use .NET default ToString()">
@@ -266,7 +278,9 @@ function formatValue(value) {
 const params = {
     amount: 1000,        // Integer: will be "1000"
     currency: 'PKR',
-    orderId: 'ORD-12345' // Note: key becomes "orderid" (lowercase)
+    orderRef: {
+      orderRef: 'ORD123456'
+    }
 };
 const signature = generateSignature(params, 'mer_sk_abc123def456');
 console.log(signature);
@@ -317,7 +331,9 @@ def format_value(value):
 params = {
     'amount': 1000.00,
     'currency': 'PKR',
-    'orderId': 'ORD-12345'
+    'orderRef': {
+        'orderRef': 'ORD123456'
+    }
 }
 signature = generate_signature(params, 'mer_sk_abc123def456')
 print(signature)
@@ -374,7 +390,9 @@ function formatValue($value): string {
 $params = [
     'amount' => 1000.00,
     'currency' => 'PKR',
-    'orderId' => 'ORD-12345'
+    'orderRef' => [
+        'orderRef' => 'ORD123456'
+    ]
 ];
 $signature = generateSignature($params, 'mer_sk_abc123def456');
 echo $signature;
@@ -467,7 +485,9 @@ POST /api/v1/signature/generate
   "parameters": {
     "amount": 1000,
     "currency": "PKR",
-    "orderId": "ORD-12345"
+    "orderRef": {
+      "orderRef": "ORD123456"
+    }
   },
   "secretKey": "mer_sk_abc123def456"
 }
@@ -477,13 +497,13 @@ POST /api/v1/signature/generate
 ```json
 {
   "signature": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
-  "queryString": "amount=1000&currency=PKR&orderid=ORD-12345",
+  "queryString": "amount=1000&currency=PKR&orderref={\"orderRef\":\"ORD123456\"}",
   "sortedParameters": {
     "amount": "1000",
     "currency": "PKR",
-    "orderid": "ORD-12345"
+    "orderref": "{\"orderRef\":\"ORD123456\"}"
   },
-  "signatureInput": "amount=1000&currency=PKR&orderid=ORD-12345mer_sk_abc...456"
+  "signatureInput": "amount=1000&currency=PKR&orderref={\"orderRef\":\"ORD123456\"}mer_sk_abc...456"
 }
 ```
 
@@ -499,7 +519,9 @@ POST /api/v1/signature/verify
   "parameters": {
     "amount": 1000,
     "currency": "PKR",
-    "orderId": "ORD-12345"
+    "orderRef": {
+      "orderRef": "ORD123456"
+    }
   },
   "secretKey": "mer_sk_abc123def456",
   "providedSignature": "your_generated_signature"
@@ -512,7 +534,7 @@ POST /api/v1/signature/verify
   "isValid": true,
   "providedSignature": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
   "expectedSignature": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
-  "queryString": "amount=1000&currency=PKR&orderid=ORD-12345",
+  "queryString": "amount=1000&currency=PKR&orderref={\"orderRef\":\"ORD123456\"}",
   "issues": []
 }
 ```
@@ -523,11 +545,11 @@ POST /api/v1/signature/verify
   "isValid": false,
   "providedSignature": "wrong_signature",
   "expectedSignature": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
-  "queryString": "amount=1000&currency=PKR&orderid=ORD-12345",
+  "queryString": "amount=1000&currency=PKR&orderref={\"orderRef\":\"ORD123456\"}",
   "sortedParameters": {
     "amount": "1000",
     "currency": "PKR",
-    "orderid": "ORD-12345"
+    "orderref": "{\"orderRef\":\"ORD123456\"}"
   },
   "issues": [
     "Signature length is 15, expected 32 characters for MD5",
@@ -561,7 +583,7 @@ POST /api/v1/signature/verify
   </Step>
   
   <Step title="Are all parameter keys converted to lowercase?">
-    - `orderId` → `orderid`
+    - `orderRef` → `orderref`
     - `callbackUrl` → `callbackurl`
     - `Amount` → `amount`
   </Step>
@@ -578,6 +600,7 @@ POST /api/v1/signature/verify
   
   <Step title="Are you skipping objects and arrays?">
     - `customerRef: { name: "..." }` → SKIP
+    - `orderRef: { orderRef: "..." }` → INCLUDE (serialize to JSON string)
     - `items: [...]` → SKIP
   </Step>
   
@@ -599,7 +622,9 @@ curl -X POST "https://gateway.dev.waypay.live/Gateway/v1/Payment/initiate-checko
   -d '{
     "amount": 1500,
     "currency": "PKR",
-    "orderId": "ORD-2024-001",
+    "orderRef": {
+      "orderRef": "ORD123456"
+    },
     "description": "Payment for Order #2024-001",
     "callbackUrl": "https://yoursite.com/callback",
     "customerRef": {
@@ -617,7 +642,9 @@ const crypto = require('crypto');
 const params = {
   amount: 1500,
   currency: 'PKR',
-  orderId: 'ORD-2024-001',
+  orderRef: {
+    orderRef: 'ORD123456'
+  },
   description: 'Payment for Order #2024-001',
   callbackUrl: 'https://yoursite.com/callback',
   customerRef: {
@@ -648,7 +675,9 @@ import hashlib
 params = {
     'amount': 1500,
     'currency': 'PKR',
-    'orderId': 'ORD-2024-001',
+    'orderRef': {
+        'orderRef': 'ORD123456'
+    },
     'description': 'Payment for Order #2024-001',
     'callbackUrl': 'https://yoursite.com/callback',
     'customerRef': {
@@ -675,25 +704,23 @@ response = requests.post(
 
 **Signature Calculation:**
 ```
-Parameters (after filtering, customerRef is skipped as it's an object):
+Parameters (after filtering, customerRef and orderRef are skipped as they're objects):
   amount=1500
   callbackUrl=https://yoursite.com/callback
   currency=PKR
   description=Payment for Order #2024-001
-  orderId=ORD-2024-001
 
 Keys normalized to lowercase:
   amount → amount
   callbackUrl → callbackurl
   currency → currency
   description → description
-  orderId → orderid
 
 Query String (sorted by lowercase keys):
-  amount=1500&callbackurl=https://yoursite.com/callback&currency=PKR&description=Payment for Order #2024-001&orderid=ORD-2024-001
+  amount=1500&callbackurl=https://yoursite.com/callback&currency=PKR&description=Payment for Order #2024-001
 
 Signature Input:
-  amount=1500&callbackurl=https://yoursite.com/callback&currency=PKR&description=Payment for Order #2024-001&orderid=ORD-2024-001mer_sk_your_secret_key
+  amount=1500&callbackurl=https://yoursite.com/callback&currency=PKR&description=Payment for Order #2024-001mer_sk_your_secret_key
 
 MD5 Hash:
   a1b2c3d4e5f6789012345678abcdef12
@@ -764,9 +791,9 @@ If you have existing integrations, you must update your signature generation cod
 
 <AccordionGroup>
   <Accordion title="1. All keys are now lowercase in signature calculation">
-    **Old:** `orderId`, `callbackUrl`, `paymentMethod`
+    **Old:** `orderRef`, `callbackUrl`, `paymentMethod`
     
-    **New:** `orderid`, `callbackurl`, `paymentmethod`
+    **New:** `orderref`, `callbackurl`, `paymentmethod`
   </Accordion>
 
   <Accordion title="2. Integer formatting changed">
