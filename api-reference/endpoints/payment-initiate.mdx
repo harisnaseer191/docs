@@ -17,7 +17,7 @@ This endpoint creates a payment intent and returns a checkout URL where customer
 ## Request Body
 
 <ParamField body="amount" type="number" required>
-  Payment amount (must be greater than 0.01)
+  Payment amount (must be greater than 10)
 </ParamField>
 
 <ParamField body="currency" type="string">
@@ -290,7 +290,7 @@ print(f"Checkout URL: {data['checkoutUrl']}")
 ## Validation Rules
 
 ### Amount (Required)
-- Must be a number greater than 0.01
+- Must be a number greater than 10
 - Format: decimal/double
 
 ### Description (Required)
@@ -639,7 +639,7 @@ Use these test credentials in sandbox mode:
 - **Email**: `test@example.com`
 - **CNIC**: `3520108345678`
 - **Phone**: `03123456789`
-- **Amount**: Any amount > 0.01
+- **Amount**: Any amount > 10
 - **Order Reference**: `TEST-ORD-XXXXX`
 
 ## Common Error Scenarios

@@ -262,8 +262,9 @@ curl -X POST "https://gateway.dev.waypay.live/Gateway/v1/Refunds" \
   -H "SWICH-API-Key: $SWICH_API_KEY" \
   -d '{
     "trxnRef": "TXN20251212123456",
-    "amount": 500.0,
-    "reason": "Test refund - customer return"
+    "amount": 500,
+    "reason": "Test refund - customer return",
+    "signature": "d4e5f6789012345678abcdef1234567"
   }'
 ```
 
@@ -325,7 +326,7 @@ Ensure the header is present and correct:
 Check your payload fields and formats:
 
 - `description` must be 1-200 alphanumeric characters and spaces
-- `amount` must be greater than 0.01
+- `amount` must be greater than 10
 - `currency` must be exactly 3 characters (e.g., "PKR")
 - Required fields are present (name, email, cnic, phone)
 - In test mode, use correct test credentials
