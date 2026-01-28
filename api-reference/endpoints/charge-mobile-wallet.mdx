@@ -34,10 +34,6 @@ This endpoint allows you to charge a customer's mobile wallet (JazzCash, Easypai
   - `2` - Easypaisa
 </ParamField>
 
-<ParamField body="billReference" type="string">
-  Optional bill reference number
-</ParamField>
-
 <ParamField body="description" type="string">
   Payment description
 </ParamField>
@@ -67,7 +63,6 @@ curl --request POST \
     "mobileNumber": "03123456789",
     "amount": 500,
     "walletProvider": 1,
-    "billReference": "BILL-2025-001",
     "description": "Subscription payment"
   }'
 ```

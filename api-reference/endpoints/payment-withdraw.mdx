@@ -104,9 +104,6 @@ This endpoint creates a withdrawal order that processes a payout from your merch
     <ParamField body="accountTitle" type="string" required>
       Account holder name as per bank account (2-100 characters)
     </ParamField>
-    <ParamField body="billReference" type="string">
-      Optional bill or invoice reference (0-50 characters)
-    </ParamField>
     <ParamField body="shippingAddress" type="string">
       Optional shipping address
     </ParamField>
@@ -217,8 +214,7 @@ curl --request POST \
       "phone": "03123456789",
       "bankAccountNumber": "PK36SCBL0000001123456702",
       "bankName": "Standard Chartered Bank",
-      "accountTitle": "Ahmed Ali",
-      "billReference": "INV-2025-001"
+      "accountTitle": "Ahmed Ali"
     },
     "orderRef": {
       "orderRef": "WD123456"
@@ -250,8 +246,7 @@ const response = await fetch(
         phone: "03123456789",
         bankAccountNumber: "PK36SCBL0000001123456702",
         bankName: "Standard Chartered Bank",
-        accountTitle: "Ahmed Ali",
-        billReference: "INV-2025-001"
+        accountTitle: "Ahmed Ali"
       },
       orderRef: {
         orderRef: "WD123456",
@@ -288,8 +283,7 @@ response = requests.post(
             'phone': '03123456789',
             'bankAccountNumber': 'PK36SCBL0000001123456702',
             'bankName': 'Standard Chartered Bank',
-            'accountTitle': 'Ahmed Ali',
-            'billReference': 'INV-2025-001'
+            'accountTitle': 'Ahmed Ali'
         },
         'orderRef': {
             'orderRef': 'WD123456'
@@ -410,7 +404,6 @@ print(f"Payout Status: {data['payoutInfo']['status']}")
 - `customerRef.email` - Customer email
 - `customerRef.cnic` - Customer CNIC
 - `customerRef.phone` - Customer phone
-- `customerRef.billReference` - Bill/invoice reference
 - `customerRef.shippingAddress` - Shipping address
 - `orderRef.discount` - Discount information
 - `orderRef.tax` - Tax information
