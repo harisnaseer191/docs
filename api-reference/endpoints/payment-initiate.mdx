@@ -62,9 +62,9 @@ This endpoint creates a payment intent and returns a checkout URL where customer
   Order information
   <Expandable title="properties">
     <ParamField body="orderRef" type="string" required>
-      Order reference (1-20 alphanumeric characters)
+      Order reference (alphanumeric characters)
       
-      **Pattern:** `^[A-Za-z0-9]{1,20}$`
+      **Pattern:** `^[A-Za-z0-9]+$`
     </ParamField>
     <ParamField body="discount" type="string">
       Discount amount or percentage
@@ -308,8 +308,8 @@ print(f"Checkout URL: {data['checkoutUrl']}")
 - Example: `user@example.com`
 
 ### Order Reference (Required)
-- Length: 1-20 alphanumeric characters
-- Pattern: `^[A-Za-z0-9]{1,20}$`
+- Alphanumeric characters only
+- Pattern: `^[A-Za-z0-9]+$`
 - Must be unique per transaction
 
 ## Required vs Optional Fields

@@ -106,9 +106,9 @@ This endpoint creates a deposit order that initiates a mobile wallet charge from
   Order information
   <Expandable title="properties">
     <ParamField body="orderRef" type="string" required>
-      Order reference (1-20 alphanumeric characters)
+      Order reference (alphanumeric characters)
       
-      **Pattern:** `^[A-Za-z0-9]{1,20}$`
+      **Pattern:** `^[A-Za-z0-9]+$`
     </ParamField>
     <ParamField body="discount" type="string">
       Discount amount or percentage
@@ -313,8 +313,8 @@ print(f"Charge Status: {data['walletChargeInfo']['status']}")
 - Example: `3520108345678`
 
 ### Order Reference
-- Length: 1-20 alphanumeric characters
-- Pattern: `^[A-Za-z0-9]{1,20}$`
+- Alphanumeric characters only
+- Pattern: `^[A-Za-z0-9]+$`
 - Example: `ORD123456`
 
 ### Description
