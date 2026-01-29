@@ -104,9 +104,6 @@ This endpoint creates a withdrawal order that processes a payout from your merch
     <ParamField body="accountTitle" type="string" required>
       Account holder name as per bank account (2-100 characters)
     </ParamField>
-    <ParamField body="shippingAddress" type="string">
-      Optional shipping address
-    </ParamField>
   </Expandable>
 </ParamField>
 
@@ -159,6 +156,22 @@ This endpoint creates a withdrawal order that processes a payout from your merch
 
 <ResponseField name="merchantReference" type="string">
   Your merchant reference for this transaction
+</ResponseField>
+
+<ResponseField name="isLive" type="boolean">
+  Whether this is a live or test transaction
+</ResponseField>
+
+<ResponseField name="fee" type="number">
+  Transaction fee amount
+</ResponseField>
+
+<ResponseField name="totalRequired" type="number">
+  Total amount required (withdrawal amount + fee)
+</ResponseField>
+
+<ResponseField name="availableBalance" type="number">
+  Your current available wallet balance
 </ResponseField>
 
 <ResponseField name="payoutInfo" type="object">
@@ -305,6 +318,10 @@ print(f"Payout Status: {data['payoutInfo']['status']}")
   "amount": 5000,
   "currency": "PKR",
   "merchantReference": "WD123456",
+  "isLive": false,
+  "fee": 150.00,
+  "totalRequired": 5150.00,
+  "availableBalance": 10000.00,
   "payoutInfo": {
     "status": "Processing",
     "provider": "JazzCash",
@@ -404,7 +421,6 @@ print(f"Payout Status: {data['payoutInfo']['status']}")
 - `customerRef.email` - Customer email
 - `customerRef.cnic` - Customer CNIC
 - `customerRef.phone` - Customer phone
-- `customerRef.shippingAddress` - Shipping address
 - `orderRef.discount` - Discount information
 - `orderRef.tax` - Tax information
 
