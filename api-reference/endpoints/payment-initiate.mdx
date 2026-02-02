@@ -110,7 +110,7 @@ This endpoint creates a payment intent and returns a checkout URL where customer
       "Amount": 20.00,
       "Currency": "PKR",
       "Reason": null,
-      "ProviderTxnRefNo": "WPAYTREA51GR85549B81",
+      "TransactionReference": "WPAYTREA51GR85549B81",
       "CustomerRef": null,
       "OrderRef": "{\"OrderRef\":\"Abcd12456\",\"Discount\":null,\"Tax\":null}",
       "MerchantId": "dd15c78a-83b0-499f-9e6c-beba37a8f875",
@@ -399,7 +399,7 @@ The `callbackUrl` parameter specifies a webhook endpoint on your server where Wa
     "Amount": 20.00,
     "Currency": "PKR",
     "Reason": null,
-    "ProviderTxnRefNo": "WPAYTREA51GR85549B81",
+    "TransactionReference": "WPAYTREA51GR85549B81",
     "CustomerRef": null,
     "OrderRef": "{\"OrderRef\":\"Abcd12456\",\"Discount\":null,\"Tax\":null}",
     "MerchantId": "dd15c78a-83b0-499f-9e6c-beba37a8f875",
@@ -422,7 +422,7 @@ The `callbackUrl` parameter specifies a webhook endpoint on your server where Wa
 | `data.CurrentStatus` | string | New transaction status |
 | `data.Amount` | decimal | Transaction amount |
 | `data.Currency` | string | Currency code (e.g., "PKR") |
-| `data.ProviderTxnRefNo` | string | Payment provider reference number |
+| `data.TransactionReference` | string | Payment provider reference number |
 | `data.OrderRef` | string | Your order reference (JSON string) |
 | `data.MerchantId` | uuid | Your merchant identifier |
 | `data.Timestamp` | datetime | When the status changed |
