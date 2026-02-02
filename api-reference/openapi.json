@@ -1449,14 +1449,14 @@
         }
       }
     },
-    "/Gateway/v{version}/Transaction/by-ref/{reference}": {
+    "/Gateway/v{version}/Transaction/by-ref/{identifier}": {
       "get": {
         "tags": [
           "Transaction"
         ],
         "parameters": [
           {
-            "name": "reference",
+            "name": "identifier",
             "in": "path",
             "required": true,
             "schema": {

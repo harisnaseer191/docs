@@ -1,21 +1,26 @@
 ---
 title: "Query Transaction/Order Status"
-api: "GET /Gateway/v{version}/Transaction/by-ref/{reference}"
-description: "Retrieve transaction details using transaction reference or order reference"
+api: "GET /Gateway/v{version}/Transaction/by-ref/{identifier}"
+description: "Retrieve transaction details using payment intent ID, order reference, or transaction reference"
 ---
 
 ## Overview
 
-Retrieve detailed information about a specific transaction using either the transaction reference number (provided by Waypay) or your merchant order reference (the orderRef you provided when creating the transaction).
+Retrieve detailed information about a specific transaction using one of three identifiers: the payment intent ID, your merchant order reference, or the Waypay transaction reference. This flexibility allows you to query transactions using whichever identifier is most convenient for your system.
 
 ## Path Parameters
 
-<ParamField path="reference" type="string" required>
-  Transaction reference number OR your merchant order reference
+<ParamField path="identifier" type="string" required>
+  Transaction identifier - can be one of three types:
   
-  You can provide either:
-  - **Transaction Reference** - The `txnRef` returned by Waypay (e.g., `WP20251212123456`)
+  You can provide any of the following:
+  - **Payment Intent ID** - The UUID returned when creating a payment (e.g., `550e8400-e29b-41d4-a716-446655440000`)
   - **Merchant Order Reference** - Your `orderRef` provided when creating the transaction (e.g., `ORD123456`)
+  - **Transaction Reference** - The `txnRef` returned by Waypay (e.g., `WP20251212123456`)
+  
+  <Tip>
+    **Recommended:** Use your merchant order reference for the easiest integration with your existing systems.
+  </Tip>
 </ParamField>
 
 <ParamField path="version" type="string" required>
@@ -126,9 +131,9 @@ Retrieve detailed information about a specific transaction using either the tran
 </ResponseField>
 
 <RequestExample>
-```bash cURL (by Transaction Reference)
+```bash cURL (by Payment Intent ID)
 curl --request GET \
-  --url https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/TXN20251212123456 \
+  --url https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/550e8400-e29b-41d4-a716-446655440000 \
   --header 'SWICH-API-Key: pk_test_xxxxxxxx'
 ```
 
@@ -138,9 +143,15 @@ curl --request GET \
   --header 'SWICH-API-Key: pk_test_xxxxxxxx'
 ```
 
-```javascript Node.js (by Transaction Reference)
+```bash cURL (by Transaction Reference)
+curl --request GET \
+  --url https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/WP20251212123456 \
+  --header 'SWICH-API-Key: pk_test_xxxxxxxx'
+```
+
+```javascript Node.js (by Payment Intent ID)
 const response = await fetch(
-  'https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/TXN20251212123456',
+  'https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/550e8400-e29b-41d4-a716-446655440000',
   {
     method: 'GET',
     headers: {
@@ -166,11 +177,25 @@ const response = await fetch(
 const data = await response.json();
 ```
 
-```python Python (by Transaction Reference)
+```javascript Node.js (by Transaction Reference)
+const response = await fetch(
+  'https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/WP20251212123456',
+  {
+    method: 'GET',
+    headers: {
+      'SWICH-API-Key': 'pk_test_xxxxxxxx'
+    }
+  }
+);
+
+const data = await response.json();
+```
+
+```python Python (by Payment Intent ID)
 import requests
 
 response = requests.get(
-    'https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/TXN20251212123456',
+    'https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/550e8400-e29b-41d4-a716-446655440000',
     headers={'SWICH-API-Key': 'pk_test_xxxxxxxx'}
 )
 ```
@@ -180,6 +205,15 @@ import requests
 
 response = requests.get(
     'https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/ORD123456',
+    headers={'SWICH-API-Key': 'pk_test_xxxxxxxx'}
+)
+```
+
+```python Python (by Transaction Reference)
+import requests
+
+response = requests.get(
+    'https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/WP20251212123456',
     headers={'SWICH-API-Key': 'pk_test_xxxxxxxx'}
 )
 ```
@@ -198,7 +232,7 @@ response = requests.get(
   "description": "Product Purchase",
   "transactionNotes": "Payment completed successfully",
   "txnprovider": "JazzCash",
-  "txnRef": "TXN20251212123456",
+  "txnRef": "WP20251212123456",
   "status": 3,
   "statusText": "Success",
   "createdAtUtc": "2025-12-12T10:30:00Z",
@@ -239,25 +273,39 @@ response = requests.get(
 ```
 </ResponseExample>
 
-## Query by Transaction Reference vs Order Reference
+## Query by Payment Intent ID, Order Reference, or Transaction Reference
 
-This endpoint supports querying transactions using two types of references:
+This endpoint supports querying transactions using three types of identifiers, giving you maximum flexibility:
 
-### Transaction Reference (txnRef)
-- **What it is:** A unique reference generated by Waypay when a transaction is created
-- **Format:** `TXN20251212123456` (system-generated)
-- **Where to get it:** Returned in webhook notifications and API responses
-- **Use case:** Query transactions when you have the Waypay transaction reference from webhooks
+### Payment Intent ID (paymentIntentId)
+- **What it is:** A UUID generated by Waypay when you create any payment, deposit, or withdrawal order
+- **Format:** UUID (e.g., `550e8400-e29b-41d4-a716-446655440000`)
+- **Where to get it:** Returned immediately in the API response when creating a transaction
+- **Use case:** Query transactions right after creation using the payment intent ID you just received
 
 ### Merchant Order Reference (orderRef)
 - **What it is:** Your own order reference that you provided when creating the transaction
-- **Format:** Your custom format (e.g., `ORD123456`, `ORDER-2025-001`)
+- **Format:** Your custom format (e.g., `ORD123456`, `ORDER-2025-001`, `INV-2025-12345`)
 - **Where to get it:** From your own system/database
-- **Use case:** Query transactions using your internal order tracking system
+- **Use case:** Query transactions using your internal order tracking system without storing Waypay IDs
+
+### Transaction Reference (txnRef)
+- **What it is:** A unique reference generated by Waypay after the transaction is processed
+- **Format:** Waypay's format (e.g., `WP20251212123456`)
+- **Where to get it:** Returned in webhook notifications and transaction details
+- **Use case:** Query transactions when you have the Waypay transaction reference from webhooks or receipts
 
 <Note>
-  **Recommended Approach:** Use your merchant order reference (orderRef) for easier integration with your system. This allows you to query transactions without storing Waypay's transaction reference.
+  **Recommended Approach:** Use your merchant order reference (orderRef) for the easiest integration. This allows you to query transactions without storing any Waypay-generated identifiers.
 </Note>
+
+### Which Identifier Should You Use?
+
+| Identifier | Best For | Availability | Format |
+|------------|----------|--------------|--------|
+| **Payment Intent ID** | Immediate status checks after creating a transaction | Available instantly in API response | UUID |
+| **Order Reference** | Integration with existing order management systems | Always available (you provide it) | Your custom format |
+| **Transaction Reference** | Webhook processing and customer receipts | Available after transaction processing | Waypay format |
 
 ## Response Fields Explained
 
@@ -296,18 +344,36 @@ The `status` field shows the current state of the transaction:
 
 ## Best Practices
 
-- **Use Order Reference**: Query by your `orderRef` for easier integration - no need to store Waypay's txnRef
+- **Use Order Reference**: Query by your `orderRef` for the easiest integration - no need to store Waypay identifiers
+- **Store Payment Intent ID**: If you need immediate status checks, save the `paymentIntentId` returned from transaction creation
 - **Poll Wisely**: Don't poll too frequently. Use webhooks for real-time updates instead
-- **Handle 404s**: A 404 response means the transaction doesn't exist or you don't have access to it
-- **Store Transaction IDs**: Save the `id` field from responses for your records
+- **Handle 404s**: A 404 response means the identifier doesn't exist or you don't have access to it
+- **Store Transaction IDs**: Save the `id` field from responses for your records and reconciliation
 - **Check Status**: Always verify the `status` field before processing the transaction
 - **Fee Transparency**: Use `feeCalculationBreakdown` to understand fee calculations
 - **Reconciliation**: Use `merchantOrderRef` to match transactions with your orders
 - **Live vs Test**: Check `isLive` to distinguish between production and test transactions
+- **Choose the Right Identifier**: Use payment intent ID for immediate checks, order reference for long-term tracking
 
 ## Use Cases
 
 <AccordionGroup>
+  <Accordion title="Immediate Status Check After Payment Creation">
+    Check transaction status immediately after creating a payment using the payment intent ID.
+    ```javascript
+    // Step 1: Create payment
+    const paymentResponse = await createPayment({
+      amount: 1000,
+      orderRef: { orderRef: 'ORD123456' },
+      description: 'Product Purchase'
+    });
+    
+    // Step 2: Immediately check status using payment intent ID
+    const transaction = await getTransactionByRef(paymentResponse.paymentIntentId);
+    console.log(`Payment ${paymentResponse.paymentIntentId} status: ${transaction.statusText}`);
+    ```
+  </Accordion>
+  
   <Accordion title="Order Status Page">
     Display transaction status to customers on your order status page by querying with your order reference.
     ```javascript
@@ -321,7 +387,7 @@ The `status` field shows the current state of the transaction:
     Verify webhook notifications by querying the transaction using the txnRef from the webhook payload.
     ```javascript
     function handleWebhook(webhookData) {
-      const txnRef = webhookData.data.TransactionId;
+      const txnRef = webhookData.data.TransactionReference;
       const transaction = await getTransactionByRef(txnRef);
       // Verify the webhook data matches the actual transaction
       if (transaction.status === 3) {
@@ -350,6 +416,28 @@ The `status` field shows the current state of the transaction:
     console.log(`Transaction Status: ${transaction.statusText}`);
     console.log(`Amount: ${transaction.amount} ${transaction.currency}`);
     console.log(`Payment Method: ${transaction.txnprovider}`);
+    console.log(`Waypay Reference: ${transaction.txnRef}`);
+    ```
+  </Accordion>
+  
+  <Accordion title="Payment Receipt Generation">
+    Generate detailed payment receipts using the payment intent ID or transaction reference.
+    ```javascript
+    const paymentIntentId = '550e8400-e29b-41d4-a716-446655440000';
+    const transaction = await getTransactionByRef(paymentIntentId);
+    
+    const receipt = {
+      orderId: transaction.merchantOrderRef,
+      amount: transaction.amount,
+      fee: transaction.fee,
+      netAmount: transaction.netAmount,
+      transactionRef: transaction.txnRef,
+      paymentMethod: transaction.txnprovider,
+      status: transaction.statusText,
+      date: transaction.createdAtUtc
+    };
+    
+    await generateReceipt(receipt);
     ```
   </Accordion>
 </AccordionGroup>
@@ -358,8 +446,8 @@ The `status` field shows the current state of the transaction:
 
 | Error | Cause | Solution |
 |-------|-------|----------|
-| 404 Not Found | Reference doesn't exist or access denied | Verify the reference is correct and belongs to your merchant account |
-| 400 Bad Request | Invalid reference format | Ensure the reference string is properly formatted |
+| 404 Not Found | Identifier doesn't exist or access denied | Verify the identifier is correct and belongs to your merchant account |
+| 400 Bad Request | Invalid identifier format | Ensure the identifier string is properly formatted (UUID for payment intent, your format for order ref) |
 | 401 Unauthorized | Invalid or missing API key | Check your API key is correct and has not expired |
 
 ## Security Considerations
