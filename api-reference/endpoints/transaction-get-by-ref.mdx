@@ -51,19 +51,19 @@ Retrieve detailed information about a specific transaction using one of three id
 
 <ResponseField name="txType" type="integer">
   Transaction type:
-  - `0` - Payment
-  - `1` - Refund
-  - `2` - Payout
-  - `3` - Settlement
-  - `4` - Fee
-  - `5` - Adjustment
-  - `6` - Chargeback
-  - `7` - Reversal
-  - `8` - Transfer
+  - `0` - CardDeposit (Deposit)
+  - `1` - WalletDeposit
+  - `2` - Transfer
+  - `3` - Withdrawal
+  - `4` - WalletWithdrawal
+  - `5` - Fee
+  - `6` - Reversal (Reversed)
+  - `7` - Settlement
+  - `8` - Refund
 </ResponseField>
 
 <ResponseField name="txnType" type="string">
-  Transaction type description
+  Transaction type description (e.g., "Deposit", "WalletDeposit", "Withdrawal")
 </ResponseField>
 
 <ResponseField name="description" type="string">
@@ -85,21 +85,21 @@ Retrieve detailed information about a specific transaction using one of three id
 <ResponseField name="status" type="integer">
   Transaction status:
   - `1` - Pending
-  - `2` - Processing
-  - `3` - Success
-  - `4` - Failed
-  - `5` - Cancelled
-  - `6` - Expired
+  - `2` - Completed
+  - `3` - Failed
+  - `4` - Cancelled
+  - `5` - RefundRequested
+  - `6` - RefundFailed
   - `7` - Refunded
-  - `8` - PartiallyRefunded
-  - `9` - Disputed
-  - `10` - OnHold
-  - `11` - RequiresAction
-  - `12` - Declined
+  - `8` - InProgress
+  - `9` - OnHold
+  - `10` - Reversed
+  - `11` - Disputed
+  - `12` - Settled
 </ResponseField>
 
 <ResponseField name="statusText" type="string">
-  Human-readable status description
+  Human-readable status description (e.g., "Pending", "Completed", "Failed")
 </ResponseField>
 
 <ResponseField name="createdAtUtc" type="datetime">
@@ -227,14 +227,14 @@ response = requests.get(
   "currency": "PKR",
   "fee": 25.00,
   "netAmount": 975.00,
-  "txType": 0,
-  "txnType": "Payment",
+  "txType": 1,
+  "txnType": "WalletDeposit",
   "description": "Product Purchase",
   "transactionNotes": "Payment completed successfully",
   "txnprovider": "JazzCash",
   "txnRef": "WP20251212123456",
-  "status": 3,
-  "statusText": "Success",
+  "status": 2,
+  "statusText": "Completed",
   "createdAtUtc": "2025-12-12T10:30:00Z",
   "isLive": false,
   "transactionMode": "Test",
@@ -314,33 +314,33 @@ The `txType` field indicates what type of transaction this is:
 
 | Value | Type | Description |
 |-------|------|-------------|
-| 0 | Payment | Customer payment/deposit |
-| 1 | Refund | Money returned to customer |
-| 2 | Payout | Withdrawal/disbursement |
-| 3 | Settlement | Merchant payout |
-| 4 | Fee | Transaction fee |
-| 5 | Adjustment | Balance adjustment |
-| 6 | Chargeback | Disputed transaction reversal |
-| 7 | Reversal | Transaction reversal |
-| 8 | Transfer | Internal transfer |
+| 0 | CardDeposit | Customer payment via card (displays as "Deposit") |
+| 1 | WalletDeposit | Payment via mobile wallet |
+| 2 | Transfer | Internal transfer between accounts |
+| 3 | Withdrawal | Bank withdrawal/disbursement |
+| 4 | WalletWithdrawal | Mobile wallet withdrawal |
+| 5 | Fee | Transaction processing fee |
+| 6 | Reversal | Transaction reversal (displays as "Reversed") |
+| 7 | Settlement | Merchant settlement payout |
+| 8 | Refund | Money returned to customer |
 
 ### Transaction Status (status)
 The `status` field shows the current state of the transaction:
 
 | Value | Status | Description |
 |-------|--------|-------------|
-| 1 | Pending | Transaction initiated, awaiting completion |
-| 2 | Processing | Currently being processed |
-| 3 | Success | Transaction completed successfully |
-| 4 | Failed | Transaction failed |
-| 5 | Cancelled | Transaction cancelled by user or system |
-| 6 | Expired | Transaction expired (timeout) |
-| 7 | Refunded | Fully refunded |
-| 8 | PartiallyRefunded | Partially refunded |
-| 9 | Disputed | Under dispute/chargeback |
-| 10 | OnHold | Temporarily on hold |
-| 11 | RequiresAction | Requires additional action |
-| 12 | Declined | Payment declined |
+| 1 | Pending | Transaction initiated, awaiting processing |
+| 2 | Completed | Transaction completed successfully |
+| 3 | Failed | Transaction failed |
+| 4 | Cancelled | Transaction cancelled by user or system |
+| 5 | RefundRequested | Refund has been requested |
+| 6 | RefundFailed | Refund attempt failed |
+| 7 | Refunded | Transaction has been refunded |
+| 8 | InProgress | Transaction is currently being processed |
+| 9 | OnHold | Transaction temporarily on hold |
+| 10 | Reversed | Transaction has been reversed |
+| 11 | Disputed | Transaction is under dispute |
+| 12 | Settled | Transaction has been settled to merchant account |
 
 ## Best Practices
 
@@ -390,7 +390,7 @@ The `status` field shows the current state of the transaction:
       const txnRef = webhookData.data.TransactionReference;
       const transaction = await getTransactionByRef(txnRef);
       // Verify the webhook data matches the actual transaction
-      if (transaction.status === 3) {
+      if (transaction.status === 2) { // Completed
         fulfillOrder(transaction.merchantOrderRef);
       }
     }
