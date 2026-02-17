@@ -90,16 +90,31 @@ This endpoint creates a withdrawal order that processes a payout from your merch
       
       **Example:** `PK36SCBL0000001123456702`
     </ParamField>
-    <ParamField body="bankName" type="string" required>
-      Name of the customer's bank (2-100 characters)
+    <ParamField body="bankCode" type="string" required>
+      Standard bank code for IBFT withdrawals (2-20 characters)
+      
+      This code identifies the target bank for processing the withdrawal. Use the standardized bank codes listed in the [Bank Codes Reference](#bank-codes-reference) section below.
       
       **Examples:**
-      - Bank Alfalah
+      - `HBL` - Habib Bank Limited
+      - `UBL` - United Bank Limited
+      - `MCB` - MCB Bank Limited
+      - `JAZZCASH` - JazzCash
+      - `EASYPAISA` - Easypaisa
+      
+      See the complete list of valid bank codes below.
+    </ParamField>
+    <ParamField body="bankName" type="string">
+      Name of the customer's bank (optional, for display purposes only)
+      
+      This field is informational only. The `bankCode` is used for actual processing.
+      
+      **Examples:**
+      - Habib Bank Limited
+      - United Bank Limited
+      - Standard Chartered Bank
       - JazzCash
       - Easypaisa
-      - Standard Chartered
-      - HBL
-      - UBL
     </ParamField>
     <ParamField body="accountTitle" type="string" required>
       Account holder name as per bank account (2-100 characters)
@@ -226,6 +241,7 @@ curl --request POST \
       "cnic": "3520108345678",
       "phone": "03123456789",
       "bankAccountNumber": "PK36SCBL0000001123456702",
+      "bankCode": "SCB",
       "bankName": "Standard Chartered Bank",
       "accountTitle": "Ahmed Ali"
     },
@@ -258,6 +274,7 @@ const response = await fetch(
         cnic: "3520108345678",
         phone: "03123456789",
         bankAccountNumber: "PK36SCBL0000001123456702",
+        bankCode: "SCB",
         bankName: "Standard Chartered Bank",
         accountTitle: "Ahmed Ali"
       },
@@ -295,6 +312,7 @@ response = requests.post(
             'cnic': '3520108345678',
             'phone': '03123456789',
             'bankAccountNumber': 'PK36SCBL0000001123456702',
+            'bankCode': 'SCB',
             'bankName': 'Standard Chartered Bank',
             'accountTitle': 'Ahmed Ali'
         },
@@ -381,9 +399,18 @@ print(f"Payout Status: {data['payoutInfo']['status']}")
 - Supports both IBAN and regular account numbers
 - Example IBAN: `PK36SCBL0000001123456702`
 
-### Bank Name (Required)
+### Bank Code (Required)
+- Length: 2-20 characters
+- Must be a valid standard bank code from the supported banks list
+- Case-insensitive (will be automatically normalized)
+- Examples: `HBL`, `UBL`, `MCB`, `JAZZCASH`, `EASYPAISA`, `SCB`
+- See [Bank Codes Reference](#bank-codes-reference) for complete list
+
+### Bank Name (Optional)
 - Length: 2-100 characters
-- Examples: Bank Alfalah, JazzCash, Easypaisa, Standard Chartered, HBL, UBL
+- For informational/display purposes only
+- The `bankCode` field is used for actual transaction processing
+- Examples: Habib Bank Limited, United Bank Limited, Standard Chartered Bank
 
 ### Account Title (Required)
 - Length: 2-100 characters
@@ -406,7 +433,7 @@ print(f"Payout Status: {data['payoutInfo']['status']}")
 - `description` - Transaction description
 - `customerRef` - Customer information object
 - `customerRef.bankAccountNumber` - Bank account or IBAN
-- `customerRef.bankName` - Bank name
+- `customerRef.bankCode` - Standard bank code for IBFT processing
 - `customerRef.accountTitle` - Account holder name
 - `orderRef` - Order information object
 - `orderRef.orderRef` - Unique order reference
@@ -421,6 +448,7 @@ print(f"Payout Status: {data['payoutInfo']['status']}")
 - `customerRef.email` - Customer email
 - `customerRef.cnic` - Customer CNIC
 - `customerRef.phone` - Customer phone
+- `customerRef.bankName` - Bank name (informational only)
 - `orderRef.discount` - Discount information
 - `orderRef.tax` - Tax information
 
@@ -437,6 +465,7 @@ When set to `false` (default), the withdrawal will be created but require manual
 ## Best Practices
 
 - Always verify the customer's bank account details before processing
+- Use the correct standardized `bankCode` from the Bank Codes Reference section
 - Ensure sufficient balance in your merchant wallet (including transaction fees)
 - Use `autoProcessPayout: false` for high-value transactions that need review
 - Monitor the `payoutInfo.status` to track withdrawal completion
@@ -445,6 +474,7 @@ When set to `false` (default), the withdrawal will be created but require manual
 - Include CNIC for compliance and verification purposes when available
 - Verify account title matches the bank account holder's name
 - Use `metadataJson` to store additional transaction context
+- The `bankName` field is optional and informational only - use `bankCode` for processing
 
 ## Processing Time
 
@@ -461,10 +491,127 @@ The `estimatedCompletionTime` field provides the expected completion timestamp.
 | Error | Cause | Solution |
 |-------|-------|----------|
 | Invalid bank account | Incorrect IBAN or account number format | Verify account number format (10-24 characters) |
-| Bank not found | Invalid or unsupported bank name | Use exact bank name from supported list |
+| Invalid bank code | Unsupported or incorrect bank code | Use a valid bank code from the supported list |
+| Bank not found | Bank code not recognized | Check the Bank Codes Reference section for valid codes |
 | Account mismatch | Account title doesn't match bank records | Verify account holder name |
 | Insufficient balance | Not enough funds in merchant wallet | Top up wallet or reduce withdrawal amount |
-| Validation error | Missing required fields | Ensure all required fields are provided |
+| Validation error | Missing required fields | Ensure all required fields are provided including bankCode |
+
+## Bank Codes Reference
+
+Use these standardized bank codes in the `bankCode` field when creating withdrawal orders. The codes are case-insensitive.
+
+### Major Banks
+
+| Bank Code | Bank Name | Also Accepts |
+|-----------|-----------|--------------|
+| `HBL` | Habib Bank Limited | HBL, Habib Bank |
+| `UBL` | United Bank Limited | UBL, United Bank |
+| `MCB` | MCB Bank Limited | MCB, MCB Bank |
+| `ABL` | Allied Bank Limited | ABL, Allied Bank, Allied |
+| `ASKARI` | Askari Bank Limited | Askari, Askari Bank |
+| `MEEZAN` | Meezan Bank Limited | Meezan, Meezan Bank |
+| `FAYSAL` | Faysal Bank Limited | Faysal, Faysal Bank |
+| `ALFALAH` | Bank Alfalah Limited | Alfalah, Bank Alfalah |
+| `ALHABIB` | Bank Al Habib Limited | AlHabib, Al Habib, Bank Al Habib |
+| `JSBANK` | JS Bank Limited | JS, JS Bank, JSBANK |
+
+### Islamic Banks
+
+| Bank Code | Bank Name | Also Accepts |
+|-----------|-----------|--------------|
+| `BANKISLAMI` | BankIslami Pakistan Limited | BankIslami, Bank Islami |
+| `DIB` | Dubai Islamic Bank Pakistan Limited | DubaiIslamic, Dubai Islamic, Dubai Islamic Bank |
+| `ALBARKA` | Al Baraka Bank (Pakistan) Limited | Albarka, Al Baraka, ALBARAKA |
+
+### Foreign Banks
+
+| Bank Code | Bank Name | Also Accepts |
+|-----------|-----------|--------------|
+| `CITI` | Citibank N.A. | Citi, Citibank |
+| `SCB` | Standard Chartered Bank (Pakistan) Limited | SCB, Standard Chartered, Standard Chartered Bank |
+| `BOK` | Bank of Korea | BOK |
+| `ICBC` | Industrial and Commercial Bank of China Limited | ICBC |
+
+### Public Sector Banks
+
+| Bank Code | Bank Name | Also Accepts |
+|-----------|-----------|--------------|
+| `NBP` | National Bank of Pakistan | NBP, National Bank |
+| `SINDH` | Sindh Bank Limited | SindhBank, Sindh Bank |
+| `BOP` | The Bank of Punjab | PunjabBank, Bank of Punjab, BOP |
+| `ZTBL` | Zarai Taraqiati Bank Limited | Zarai Taraqiati Bank, ZTBL |
+
+### Digital & Wallet Banks
+
+| Bank Code | Bank Name | Also Accepts |
+|-----------|-----------|--------------|
+| `JAZZCASH` | JazzCash - Mobilink Bank | JazzCash, Jazz Cash, Mobilink Bank |
+| `EASYPAISA` | Easypaisa - Telenor Microfinance Bank | EasyPaisa, Easypaisa, Telenor Microfinance |
+| `SADAPAY` | SadaPay | SADAPAY, Sada Pay |
+| `NAYAPAY` | Nayapay | NAYAPAY, NayaPay, Naya Pay |
+| `UPAISA` | UPaisa - U Microfinance Bank Limited | UPaisa, U Paisa, U Microfinance Bank |
+| `KEENU` | Keenu | KEENU, Keenu Bank |
+| `TAG` | TAG | TAG |
+| `FINJA` | Finja | FINJA, Finja Lending |
+| `BYKEA` | Bykea | BYKEA |
+
+### Microfinance Banks
+
+| Bank Code | Bank Name | Also Accepts |
+|-----------|-----------|--------------|
+| `NRSP` | NRSP Microfinance Bank Limited | NRSP, NRSP Microfinance |
+| `FMFB` | First Microfinance Bank Limited | First Microfinance Bank, FMFB |
+| `FINCA` | FINCA Microfinance Bank Limited | FINCA, FINCA Microfinance |
+| `FWBL` | First Women Bank Limited | FWBL, First Women Bank |
+| `APNA` | Apna Microfinance Bank Limited | Apna, Apna Microfinance |
+| `BURJ` | Burj Bank Limited | Burj, Burj Bank |
+| `MIB` | Mobilink Microfinance Bank Limited | MIB, Mobilink Microfinance |
+| `ADVANS` | Advans Pakistan Microfinance Bank Limited | Advans, Advans Pakistan |
+
+### Other Banks
+
+| Bank Code | Bank Name | Also Accepts |
+|-----------|-----------|--------------|
+| `SILK` | Silk Bank Limited | Silk, Silk Bank |
+| `SONERI` | Soneri Bank Limited | Soneri, Soneri Bank |
+| `SUMMIT` | Summit Bank Limited | Summit, Summit Bank |
+| `NIB` | NIB Bank Limited | NIB, NIB Bank |
+| `HMB` | Habib Metropolitan Bank Limited | HabibMetro, Habib Metro, Habib Metropolitan Bank |
+| `SAMBA` | Samba Bank Limited | Samba, Samba Bank |
+| `WASEELA` | Waseela Microfinance Bank Limited | Waseela, Waseela bank |
+
+### Financial Services
+
+| Bank Code | Bank Name | Also Accepts |
+|-----------|-----------|--------------|
+| `CDNS` | Central Directorate of National Savings | CDNS, National Savings |
+| `PAYMAX` | PayMax | PayMax |
+| `ALMEEZAN` | Al Meezan Investment Management Limited | Al Meezan, Al Meezan Investment |
+| `HBLAM` | HBL Asset Management Limited | HBL ASSET MANAGEMENT, HBL Asset Management |
+| `NBPFM` | NBP Fund Management Limited | NBP Fund Management |
+| `MCBAH` | MCB-Arif Habib Savings and Investments Limited | MCB-Arif Habib, MCB Arif Habib |
+
+### Non-Bank Financial Institutions
+
+| Bank Code | Bank Name | Also Accepts |
+|-----------|-----------|--------------|
+| `ABHI` | Abhi Finance Services Limited | ABHI |
+| `SEEDCREED` | SeedCreed Financial Services Limited | SEEDCREED, SeedCreed, Seed Creed |
+| `HUMRAH` | Humrah Financial Services | Humrah, HUMRAH |
+| `NUMBERS` | Numbers Private Limited | Numbers, NUMBERS |
+| `TEZPAY` | TezPay | TezPAy, Tez Pay, TEZPAY |
+| `EZWAGE` | EZ wage | EZ wage, EZwage, EZWAGE |
+
+### Special Codes
+
+| Bank Code | Bank Name | Also Accepts |
+|-----------|-----------|--------------|
+| `AFTIBFT` | AFT IBFT | AFT IBFT, AFT |
+
+<Note>
+  **Important:** The `bankCode` field is required and must match one of the standard codes listed above. The system will validate the bank code before processing the withdrawal. Bank codes are case-insensitive, so you can use `hbl`, `HBL`, or `Hbl`.
+</Note>
 
 ## Security Considerations
 
@@ -486,7 +633,8 @@ Use these test credentials in sandbox mode:
 - **CNIC**: `3520108345678` (optional)
 - **Phone**: `03123456789` (optional)
 - **Bank Account**: `PK36SCBL0000001123456702`
-- **Bank Name**: `Standard Chartered Bank`
+- **Bank Code**: `SCB` (required)
+- **Bank Name**: `Standard Chartered Bank` (optional)
 - **Account Title**: `Test User`
 
 ## Next Steps
