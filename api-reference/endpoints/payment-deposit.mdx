@@ -21,7 +21,9 @@ This endpoint creates a deposit order that initiates a mobile wallet charge from
 </ParamField>
 
 <ParamField body="amount" type="number" required>
-  Deposit amount (must be greater than 10)
+  Deposit amount. Minimum depends on the wallet provider:
+  - JazzCash: minimum 100
+  - Easypaisa: minimum 200
 </ParamField>
 
 <ParamField body="walletProvider" type="integer">

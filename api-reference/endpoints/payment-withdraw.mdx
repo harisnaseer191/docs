@@ -17,7 +17,7 @@ This endpoint creates a withdrawal order that processes a payout from your merch
 ## Request Body
 
 <ParamField body="amount" type="number" required>
-  Withdrawal amount (must be greater than 10)
+  Withdrawal amount. Minimum withdrawal amount is 300 (applies to all providers, including JazzCash and Easypaisa).
 </ParamField>
 
 <ParamField body="currency" type="string" required>
