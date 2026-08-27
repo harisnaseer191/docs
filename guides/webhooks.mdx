@@ -1,0 +1,135 @@
+---
+title: "Webhooks"
+description: "Receive and verify WayPay webhook notifications"
+---
+
+## Why webhooks matter
+
+A mobile wallet payment is not settled when our API responds to you. The customer still has to
+approve it on their handset — by entering their MPIN in a USSD prompt or approving in their wallet
+app — and that can take seconds or minutes.
+
+So a successful response to `POST /Payment/deposit` means **the request was accepted**, not that
+money moved. The `status` you receive is `Processing`. The terminal outcome arrives later, and the
+webhook is how you learn it.
+
+<Warning>
+Do not treat a successful HTTP response as a completed payment. Fulfil orders on the webhook, or on
+a status query — never on the accept response alone.
+</Warning>
+
+## Configuring an endpoint
+
+Register an HTTPS endpoint in the merchant portal. You will be shown a signing secret beginning
+`whsec_` exactly once — store it somewhere your application can read it, and treat it like a
+password.
+
+## Verifying the signature
+
+Every delivery carries a signature computed with HMAC-SHA256 over your endpoint's secret. **Always
+verify it before acting on a webhook.** An unverified webhook endpoint is a URL anyone can post
+payment notifications to.
+
+### Headers
+
+| Header | Description |
+|---|---|
+| `X-Swich-Signature-V2` | Signature in the form `t=<unix>,v1=<hex>` — **verify this one** |
+| `X-Swich-Signature-Timestamp` | The Unix timestamp, also present inside `X-Swich-Signature-V2` |
+| `X-Swich-Signature` | Legacy signature over the payload only — **deprecated** |
+| `X-Swich-Event-Type` | The event that occurred |
+| `X-Swich-Event-Id` | Unique event id, stable across retries |
+| `X-Swich-Delivery-Id` | Unique id for this delivery attempt |
+
+### How to verify
+
+The signed string is the timestamp, a full stop, then the **raw request body**:
+
+```text
+{timestamp}.{raw_body}
+```
+
+Compute HMAC-SHA256 of that string with your endpoint secret, hex-encode it, and compare it to the
+`v1` value using a constant-time comparison.
+
+```javascript
+const crypto = require("crypto");
+
+function verifyWebhook(rawBody, signatureHeader, secret, toleranceSeconds = 300) {
+  // "t=1724500000,v1=abc123..."
+  const parts = Object.fromEntries(
+    signatureHeader.split(",").map((kv) => kv.split("="))
+  );
+
+  const timestamp = Number(parts.t);
+  if (!timestamp) return false;
+
+  // Reject anything outside the tolerance window. This is what stops a captured
+  // request being replayed against you indefinitely.
+  const ageSeconds = Math.abs(Date.now() / 1000 - timestamp);
+  if (ageSeconds > toleranceSeconds) return false;
+
+  const expected = crypto
+    .createHmac("sha256", secret)
+    .update(`${timestamp}.${rawBody}`)
+    .digest("hex");
+
+  // Constant-time comparison — never use ===
+  return crypto.timingSafeEqual(
+    Buffer.from(expected),
+    Buffer.from(parts.v1)
+  );
+}
+```
+
+<Warning>
+Verify against the **raw request body**, exactly as received. Parsing the JSON and re-serialising it
+changes the bytes and the signature will not match.
+</Warning>
+
+### Timestamp tolerance
+
+We recommend rejecting deliveries whose timestamp is more than **300 seconds** from your own clock.
+The timestamp is part of the signed string, so an attacker cannot move it forward without
+invalidating the signature.
+
+### Migrating from the legacy signature
+
+The legacy `X-Swich-Signature` header contains only an HMAC over the payload, with no timestamp — so
+a captured request replays indefinitely. Both headers are sent during the transition period.
+
+**Migrate to `X-Swich-Signature-V2`.** The legacy header will be withdrawn on a date we will announce
+in advance. Until then, no action is required for existing integrations to keep working.
+
+## Responding
+
+Return a `2xx` status as soon as you have stored the event. Do the work afterwards, out of band.
+
+If you return a non-`2xx` or time out, we retry with exponential backoff. Retries reuse the same
+`X-Swich-Event-Id`.
+
+## Idempotency
+
+**You will occasionally receive the same event twice.** That is a normal property of at-least-once
+delivery, not a fault. A network failure after you responded — but before we recorded it — produces a
+redelivery.
+
+Deduplicate on `X-Swich-Event-Id`. Record the ids you have processed and ignore repeats. Crediting a
+customer twice because a webhook arrived twice is the failure mode this prevents.
+
+## Ordering
+
+Deliveries are **not** ordered. A `completed` event can arrive before a `pending` one for the same
+transaction.
+
+Always treat the transaction status inside the payload as authoritative, and never move a transaction
+backwards out of a terminal state.
+
+## Reconciliation
+
+Webhooks are a notification mechanism, not a guarantee. Endpoints go down, DNS breaks, and deploys
+happen mid-delivery.
+
+For any transaction where you have not received a terminal event within a few minutes, query
+`GET /Transaction/{reference}` and use that answer. Reconcile on a schedule rather than assuming
+delivery.

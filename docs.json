@@ -25,7 +25,7 @@
           },
           {
             "group": "Core Business Processes",
-            "pages": ["guides/checkout-flow","guides/deposit-flow","guides/withdrawal-flow","guides/transaction-status"]
+            "pages": ["guides/checkout-flow","guides/deposit-flow","guides/withdrawal-flow","guides/transaction-status","guides/webhooks"]
           }
         ]
       },

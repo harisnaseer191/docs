@@ -162,7 +162,9 @@ This endpoint creates a deposit order that initiates a mobile wallet charge from
       Wallet provider name (e.g., "JazzCash", "Easypaisa")
     </ResponseField>
     <ResponseField name="status" type="string">
-      Charge status (e.g., "Pending", "Success", "Failed")
+      Charge status. For mobile wallet payments this is `Processing` — the request has been accepted
+      and the customer must still approve it on their handset. It is **not** a completed payment.
+      The terminal outcome arrives by [webhook](/guides/webhooks) or via a status query.
     </ResponseField>
     <ResponseField name="transactionReference" type="string">
       Provider's transaction reference number
@@ -171,6 +173,8 @@ This endpoint creates a deposit order that initiates a mobile wallet charge from
       Status message from the wallet provider
     </ResponseField>
     <ResponseField name="isSuccess" type="boolean">
+      Whether the charge request was **accepted**, not whether the payment completed. Do not fulfil
+      an order on this field alone.
       Whether the charge initiation was successful
     </ResponseField>
     <ResponseField name="errorDetails" type="string">
