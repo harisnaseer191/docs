@@ -177,6 +177,14 @@ This endpoint creates a deposit order that initiates a mobile wallet charge from
       an order on this field alone.
       Whether the charge initiation was successful
     </ResponseField>
+    <ResponseField name="errorCode" type="string">
+      Stable, machine-readable error code. **Branch on this, not on `errorDetails`.** `null` when
+      there is no error. See the withdraw endpoint for the shared code vocabulary.
+    </ResponseField>
+    <ResponseField name="traceId" type="string">
+      Correlation id for this request, always present. Quote it to WayPay support to retrieve the
+      full server-side trace for this exact call.
+    </ResponseField>
     <ResponseField name="errorDetails" type="string">
       Detailed error information if charge failed
     </ResponseField>
@@ -278,7 +286,9 @@ print(f"Charge Status: {data['walletChargeInfo']['status']}")
     "transactionReference": "JC20251213123456",
     "message": "OTP sent to customer",
     "isSuccess": true,
-    "errorDetails": null
+    "errorCode": null,
+    "errorDetails": null,
+    "traceId": "8f3a1c22d4b64e0fa1c9b7e5d2f30a41"
   }
 }
 ```

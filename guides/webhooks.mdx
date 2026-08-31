@@ -101,6 +101,37 @@ a captured request replays indefinitely. Both headers are sent during the transi
 **Migrate to `X-Swich-Signature-V2`.** The legacy header will be withdrawn on a date we will announce
 in advance. Until then, no action is required for existing integrations to keep working.
 
+## Correlating with WayPay support
+
+Every webhook body carries a `data.traceId`:
+
+```json
+{
+  "id": "9f2b6c4d8e1a4f7b9c3d5e6f7a8b9c0d",
+  "type": "TransactionStatusChanged",
+  "created": 1788063247,
+  "livemode": true,
+  "data": {
+    "TransactionId": "b81d47c0-16e2-4f39-a0d5-77c9e3f21b64",
+    "PreviousStatus": "Pending",
+    "CurrentStatus": "Completed",
+    "TraceId": "8f3a1c22d4b64e0fa1c9b7e5d2f30a41",
+    "...": "..."
+  }
+}
+```
+
+It identifies the server-side operation that produced the delivery. If a webhook looks wrong to you,
+send us the `TraceId` — it is the fastest route to the exact processing trace on our side. The same
+identifier appears as `traceId` on synchronous API responses and on status-inquiry results, so a
+single payment can be followed end to end.
+
+<Note>
+`data` field names are **PascalCase** (`CurrentStatus`, `TraceId`), while the envelope around it is
+lowercase (`id`, `type`, `created`, `livemode`). A parser configured for camelCase will silently read
+nulls out of `data`.
+</Note>
+
 ## Responding
 
 Return a `2xx` status as soon as you have stored the event. Do the work afterwards, out of band.
@@ -124,6 +155,16 @@ transaction.
 
 Always treat the transaction status inside the payload as authoritative, and never move a transaction
 backwards out of a terminal state.
+
+Order by the envelope's `created` field (Unix seconds) and keep the newest. Discard any delivery whose
+`created` is older than the one you have already applied.
+
+<Warning>
+The **webhook is authoritative over the synchronous API response**, not the other way round. A payout
+can be confirmed by the provider while the original `POST /Payment/withdraw` call is still open, so a
+later webhook saying `Completed` supersedes a synchronous response that said `Failed` or `Processing`.
+If the two ever disagree, believe the webhook — or confirm with status inquiry.
+</Warning>
 
 ## Reconciliation
 

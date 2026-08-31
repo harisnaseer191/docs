@@ -207,8 +207,22 @@ This endpoint creates a withdrawal order that processes a payout from your merch
     <ResponseField name="isSuccess" type="boolean">
       Whether the payout was successful
     </ResponseField>
+    <ResponseField name="errorCode" type="string">
+      Stable, machine-readable error code. **Branch on this, not on `errorDetails`**, whose
+      wording may change. `null` when there is no error. Values include
+      `WP_REQUEST_REJECTED` (your request was rejected — `errorDetails` explains why and is safe
+      to show an end customer), `WP_OUTCOME_PENDING` (see the callout below) and
+      `WP_INTERNAL_ERROR` (something went wrong on our side — quote `traceId` to support).
+    </ResponseField>
     <ResponseField name="errorDetails" type="string">
-      Error details if payout failed
+      Human-readable error description. Never contains internal diagnostics — no exception text,
+      stack traces, SQL, or provider payloads. If you need us to investigate a specific failure,
+      send us the `traceId` rather than this text.
+    </ResponseField>
+    <ResponseField name="traceId" type="string">
+      Correlation id for this request, **always present** on both success and failure. Quote it
+      when contacting WayPay support and we can retrieve the complete server-side trace for this
+      exact call.
     </ResponseField>
     <ResponseField name="estimatedCompletionTime" type="datetime">
       Estimated time when payout will be completed
@@ -221,6 +235,18 @@ This endpoint creates a withdrawal order that processes a payout from your merch
     </ResponseField>
   </Expandable>
 </ResponseField>
+
+<Warning>
+**Never treat `status: "Processing"` as a failure, and never retry it.**
+
+When `errorCode` is `WP_OUTCOME_PENDING`, the disbursement request has already been submitted to
+the payment provider and we do not yet know the outcome. Re-submitting pays the beneficiary twice.
+
+Wait for the `TransactionStatusChanged` webhook, or poll
+[status inquiry](/api-reference/endpoints/transaction-by-ref) with your `orderRef`. The status
+inquiry result is authoritative — if it disagrees with the synchronous response you received here,
+the status inquiry is correct.
+</Warning>
 
 <RequestExample>
 ```bash cURL
@@ -346,7 +372,9 @@ print(f"Payout Status: {data['payoutInfo']['status']}")
     "transactionReference": "WD20251213123456",
     "message": "Payout initiated successfully",
     "isSuccess": true,
+    "errorCode": null,
     "errorDetails": null,
+    "traceId": "8f3a1c22d4b64e0fa1c9b7e5d2f30a41",
     "estimatedCompletionTime": "2025-12-14T10:00:00Z",
     "customerBankName": "Standard Chartered Bank",
     "customerAccountNumber": "PK36SCBL0000001123456702"

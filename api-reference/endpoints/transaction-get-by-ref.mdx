@@ -33,6 +33,14 @@ Retrieve detailed information about a specific transaction using one of three id
   Unique transaction identifier
 </ResponseField>
 
+<ResponseField name="traceId" type="string">
+  Correlation id for **this status-inquiry call**, always present. Quote it to WayPay support to
+  retrieve the server-side trace for the lookup. Note it identifies the inquiry, not the original
+  payment — use `txnRef` or `merchantOrderRef` to identify the payment itself.
+
+  Error responses (`400`, `404`) carry the same `traceId`, alongside an `errorCode`.
+</ResponseField>
+
 <ResponseField name="amount" type="number">
   Transaction amount
 </ResponseField>
@@ -71,7 +79,8 @@ Retrieve detailed information about a specific transaction using one of three id
 </ResponseField>
 
 <ResponseField name="transactionNotes" type="string">
-  Additional transaction notes
+  Additional transaction notes. Free text, intended for humans — do not parse it. It is omitted
+  entirely (`null`) whenever it would have described WayPay internals.
 </ResponseField>
 
 <ResponseField name="txnprovider" type="string">
