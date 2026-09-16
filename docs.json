@@ -9,7 +9,7 @@
   "favicon": "/favicon.svg",
   "openapi": ["/openapi.json"],
   "api": {
-    "baseUrl": "https://gateway.dev.waypay.live/Gateway/v1",
+    "baseUrl": "https://gateway.waypay.live/Gateway/v1",
     "auth": {
       "method": "bearer"
     }
