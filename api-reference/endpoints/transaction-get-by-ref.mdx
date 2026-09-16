@@ -33,6 +33,14 @@ Retrieve detailed information about a specific transaction using one of three id
   Unique transaction identifier
 </ResponseField>
 
+<ResponseField name="traceId" type="string">
+  Correlation id for **this status-inquiry call**, always present. Quote it to WayPay support to
+  retrieve the server-side trace for the lookup. Note it identifies the inquiry, not the original
+  payment — use `txnRef` or `merchantOrderRef` to identify the payment itself.
+
+  Error responses (`400`, `404`) carry the same `traceId`, alongside an `errorCode`.
+</ResponseField>
+
 <ResponseField name="amount" type="number">
   Transaction amount
 </ResponseField>
@@ -71,7 +79,8 @@ Retrieve detailed information about a specific transaction using one of three id
 </ResponseField>
 
 <ResponseField name="transactionNotes" type="string">
-  Additional transaction notes
+  Additional transaction notes. Free text, intended for humans — do not parse it. It is omitted
+  entirely (`null`) whenever it would have described WayPay internals.
 </ResponseField>
 
 <ResponseField name="txnprovider" type="string">
@@ -133,25 +142,25 @@ Retrieve detailed information about a specific transaction using one of three id
 <RequestExample>
 ```bash cURL (by Payment Intent ID)
 curl --request GET \
-  --url https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/550e8400-e29b-41d4-a716-446655440000 \
+  --url https://gateway.waypay.live/Gateway/v1/Transaction/by-ref/550e8400-e29b-41d4-a716-446655440000 \
   --header 'SWICH-API-Key: pk_test_xxxxxxxx'
 ```
 
 ```bash cURL (by Order Reference)
 curl --request GET \
-  --url https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/ORD123456 \
+  --url https://gateway.waypay.live/Gateway/v1/Transaction/by-ref/ORD123456 \
   --header 'SWICH-API-Key: pk_test_xxxxxxxx'
 ```
 
 ```bash cURL (by Transaction Reference)
 curl --request GET \
-  --url https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/WP20251212123456 \
+  --url https://gateway.waypay.live/Gateway/v1/Transaction/by-ref/WP20251212123456 \
   --header 'SWICH-API-Key: pk_test_xxxxxxxx'
 ```
 
 ```javascript Node.js (by Payment Intent ID)
 const response = await fetch(
-  'https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/550e8400-e29b-41d4-a716-446655440000',
+  'https://gateway.waypay.live/Gateway/v1/Transaction/by-ref/550e8400-e29b-41d4-a716-446655440000',
   {
     method: 'GET',
     headers: {
@@ -165,7 +174,7 @@ const data = await response.json();
 
 ```javascript Node.js (by Order Reference)
 const response = await fetch(
-  'https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/ORD123456',
+  'https://gateway.waypay.live/Gateway/v1/Transaction/by-ref/ORD123456',
   {
     method: 'GET',
     headers: {
@@ -179,7 +188,7 @@ const data = await response.json();
 
 ```javascript Node.js (by Transaction Reference)
 const response = await fetch(
-  'https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/WP20251212123456',
+  'https://gateway.waypay.live/Gateway/v1/Transaction/by-ref/WP20251212123456',
   {
     method: 'GET',
     headers: {
@@ -195,7 +204,7 @@ const data = await response.json();
 import requests
 
 response = requests.get(
-    'https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/550e8400-e29b-41d4-a716-446655440000',
+    'https://gateway.waypay.live/Gateway/v1/Transaction/by-ref/550e8400-e29b-41d4-a716-446655440000',
     headers={'SWICH-API-Key': 'pk_test_xxxxxxxx'}
 )
 ```
@@ -204,7 +213,7 @@ response = requests.get(
 import requests
 
 response = requests.get(
-    'https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/ORD123456',
+    'https://gateway.waypay.live/Gateway/v1/Transaction/by-ref/ORD123456',
     headers={'SWICH-API-Key': 'pk_test_xxxxxxxx'}
 )
 ```
@@ -213,7 +222,7 @@ response = requests.get(
 import requests
 
 response = requests.get(
-    'https://gateway.dev.waypay.live/Gateway/v1/Transaction/by-ref/WP20251212123456',
+    'https://gateway.waypay.live/Gateway/v1/Transaction/by-ref/WP20251212123456',
     headers={'SWICH-API-Key': 'pk_test_xxxxxxxx'}
 )
 ```

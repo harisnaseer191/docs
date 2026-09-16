@@ -1583,6 +1583,17 @@
           },
           "errorDetails": {
             "type": "string",
+            "nullable": true,
+            "description": "Human-readable, merchant-safe error description. Never contains exception text, stack traces, SQL, type names, or provider payloads."
+          },
+          "errorCode": {
+            "type": "string",
+            "description": "Stable, machine-readable error code. Branch on this rather than on errorDetails. One of WP_REQUEST_REJECTED, WP_OUTCOME_PENDING, WP_INTERNAL_ERROR, or a specific API error code. Null when there is no error.",
+            "nullable": true
+          },
+          "traceId": {
+            "type": "string",
+            "description": "Correlation id for this request, always present. Equals the Application Insights operation_Id — quote it to WayPay support to retrieve the full server-side trace.",
             "nullable": true
           }
         },
@@ -1887,7 +1898,7 @@
             "nullable": true
           }
         },
-        "additionalProperties": { }
+        "additionalProperties": {}
       },
       "DisbursementStatusResponse": {
         "type": "object",
@@ -2361,6 +2372,11 @@
           "feeCalculationBreakdown": {
             "type": "string",
             "nullable": true
+          },
+          "traceId": {
+            "type": "string",
+            "description": "Correlation id for this status-inquiry call, always present. Identifies the inquiry, not the original payment.",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -2437,7 +2453,7 @@
             "nullable": true
           }
         },
-        "additionalProperties": { }
+        "additionalProperties": {}
       },
       "PayoutInfo": {
         "type": "object",
@@ -2459,7 +2475,8 @@
           },
           "errorDetails": {
             "type": "string",
-            "nullable": true
+            "nullable": true,
+            "description": "Human-readable, merchant-safe error description. Never contains exception text, stack traces, SQL, type names, or provider payloads."
           },
           "estimatedCompletionTime": {
             "type": "string",
@@ -2472,6 +2489,16 @@
           },
           "customerAccountNumber": {
             "type": "string",
+            "nullable": true
+          },
+          "errorCode": {
+            "type": "string",
+            "description": "Stable, machine-readable error code. Branch on this rather than on errorDetails. One of WP_REQUEST_REJECTED, WP_OUTCOME_PENDING, WP_INTERNAL_ERROR, or a specific API error code. Null when there is no error.",
+            "nullable": true
+          },
+          "traceId": {
+            "type": "string",
+            "description": "Correlation id for this request, always present. Equals the Application Insights operation_Id — quote it to WayPay support to retrieve the full server-side trace.",
             "nullable": true
           }
         },
@@ -2502,7 +2529,7 @@
             "nullable": true
           }
         },
-        "additionalProperties": { }
+        "additionalProperties": {}
       },
       "RefundStatus": {
         "enum": [
@@ -2871,7 +2898,7 @@
             "type": "string"
           }
         },
-        "additionalProperties": { }
+        "additionalProperties": {}
       }
     }
   }
