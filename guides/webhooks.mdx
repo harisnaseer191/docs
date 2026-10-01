@@ -132,6 +132,10 @@ lowercase (`id`, `type`, `created`, `livemode`). A parser configured for camelCa
 nulls out of `data`.
 </Note>
 
+When a status change has a machine-readable cause, `data.Reason` carries it — for example
+`CHANNEL_CLOSED` or `CIRCUIT_OPEN` on a withdrawal that failed because it could not be sent to any
+provider. It is `null` otherwise.
+
 ## Responding
 
 Return a `2xx` status as soon as you have stored the event. Do the work afterwards, out of band.
