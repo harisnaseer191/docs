@@ -104,6 +104,32 @@ All errors follow the [RFC 7807](https://tools.ietf.org/html/rfc7807) Problem De
 }
 ```
 
+### Payment Channel Disabled
+
+Waypay can enable or disable a payment channel for your merchant account, separately for deposits and withdrawals. A new order on a disabled channel is rejected before anything is created or charged:
+
+```json
+{
+  "type": "https://datatracker.ietf.org/doc/html/rfc4918#section-11.2",
+  "title": "Payment channel disabled",
+  "status": 422,
+  "detail": "Easypaisa withdrawals are currently disabled for your merchant account. Please contact support to enable this channel.",
+  "errorCode": "MERCHANT_CHANNEL_DISABLED",
+  "message": "Easypaisa withdrawals are currently disabled for your merchant account. Please contact support to enable this channel.",
+  "channel": "EASYPAISA",
+  "operation": "Withdrawal",
+  "traceId": "4bf92f3577b34da6a3ce929d0e0e4736"
+}
+```
+
+- **Deposits** are matched on the wallet you request (`paymentMethod` / `walletProvider`).
+- **Withdrawals** are matched on the beneficiary's wallet (`customerRef.bankCode`). For example, `EASYPAISA` is an Easypaisa withdrawal.
+- Orders accepted before a channel was disabled are not affected. They complete normally and still send webhooks.
+- Re-sending an order you already submitted, with the same `Idempotency-Key`, returns that order's result instead of this error.
+- Do not retry this error. Contact support to have the channel enabled.
+
+On `POST /Payment/deposit`, if the channel is disabled while your order is being placed, you can also see this code as `walletChargeInfo.errorCode`.
+
 ### Invalid Mobile Number
 
 ```json
