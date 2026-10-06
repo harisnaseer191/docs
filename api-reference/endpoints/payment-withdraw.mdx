@@ -523,6 +523,7 @@ The `estimatedCompletionTime` field provides the expected completion timestamp.
 | Bank not found | Bank code not recognized | Check the Bank Codes Reference section for valid codes |
 | Account mismatch | Account title doesn't match bank records | Verify account holder name |
 | Insufficient balance | Not enough funds in merchant wallet | Top up wallet or reduce withdrawal amount |
+| `MERCHANT_CHANNEL_DISABLED` (422) | Withdrawals to the beneficiary's wallet (e.g. Easypaisa) are disabled for your account, whichever provider would process them | Contact support. See [Error Codes](/api-reference/endpoints/errors#payment-channel-disabled) |
 | Validation error | Missing required fields | Ensure all required fields are provided including bankCode |
 
 ## Bank Codes Reference

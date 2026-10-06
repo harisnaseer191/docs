@@ -377,6 +377,7 @@ print(f"Charge Status: {data['walletChargeInfo']['status']}")
 |-------|-------|----------|
 | Wallet not available | Customer's wallet account inactive | Ask customer to verify wallet account |
 | Insufficient balance | Customer wallet has insufficient funds | Customer needs to top up wallet |
+| `MERCHANT_CHANNEL_DISABLED` (422) | Deposits through the requested wallet are disabled for your account | Contact support. See [Error Codes](/api-reference/endpoints/errors#payment-channel-disabled) |
 | Invalid mobile number | Number not registered with wallet | Verify mobile number with customer |
 | OTP timeout | Customer didn't complete verification | Retry the deposit request |
 
